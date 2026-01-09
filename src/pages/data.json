@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "header": "Análisis de Requerimientos",
+    "type": "Technical Approach",
+    "status": "Done",
+    "target": "80",
+    "limit": "100",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 2,
+    "header": "Diseño de Interfaz",
+    "type": "Design",
+    "status": "In Progress",
+    "target": "45",
+    "limit": "100",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 3,
+    "header": "Resumen Ejecutivo v2",
+    "type": "Executive Summary",
+    "status": "Not Started",
+    "target": "0",
+    "limit": "50",
+    "reviewer": "Jamik Tashpulatov"
+  }
+]
