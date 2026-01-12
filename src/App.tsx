@@ -3,8 +3,10 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/features/auth/components/sidebar"
 import UsersPage from "./pages/userPages"
 import RegisterPage from "./pages/registerPage"
+// import { LoginForm } from "./features/auth/components/loginForm"
+import ApiTest from "@/features/auth/components/ApiTest";
 
-// 1. Creamos un componente que CONTENGA la lógica del título y el Sidebar
+
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
 
@@ -17,7 +19,6 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   }
 
   const currentTitle = routeTitles[location.pathname] || "Mi CMS"
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -37,15 +38,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   )
 }
 
-// 2. Tu componente App principal solo configura el Router
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Ruta pública (Login) fuera del layout del CMS */}
-        <Route path="/login" element={<div>Página de Login</div>} />
-
-        {/* Rutas protegidas dentro del Layout dinámico */}
+        <Route path="/login" element={<ApiTest/>} />
         <Route
           path="/*"
           element={

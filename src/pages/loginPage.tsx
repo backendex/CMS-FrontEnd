@@ -1,28 +1,26 @@
-import { LoginForm } from "@/features/auth/components/LoginForm";
+import { LoginForm } from "@/features/auth/components/loginForm";
 
 export default function LoginPage() {
   return (
-    // 'min-h-svh' asegura que ocupe toda la pantalla real en móviles y escritorio
-    <div className="grid min-h-svh w-full lg:grid-cols-2">
+     <div className="grid min-h-screen w-full lg:grid-cols-2">
       
-      {/* SECCIÓN IZQUIERDA: Formulario centrado */}
-      <div className="flex flex-col items-center justify-center bg-background p-6 md:p-10">
+      {/* COLUMNA IZQUIERDA: Formulario */}
+      <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">
         <div className="w-full max-w-sm">
           <LoginForm />
         </div>
       </div>
 
-      {/* SECCIÓN DERECHA: Imagen (solo visible en pantallas grandes) */}
-      <div className="relative hidden lg:block bg-muted">
+      {/* COLUMNA DERECHA: Imagen (Solo visible en Desktop) */}
+      <div className="relative block bg-slate-100">
         <img
           src="/login-background.jpg" 
           alt="Login Background"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        {/* Overlay para dar contraste si la imagen es muy clara */}
-        <div className="absolute inset-0 bg-slate-900/5" />
+        <div className="absolute inset-0 bg-slate-900/10" />
       </div>
+
     </div>
   );
 }
-/* 'grid-cols-1' por defecto (móvil), 'lg:grid-cols-2' en escritorio */

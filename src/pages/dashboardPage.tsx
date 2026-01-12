@@ -1,4 +1,3 @@
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -47,8 +46,7 @@ export default function DashboardPage() {
             <div className="aspect-video rounded-xl bg-muted/50 border" />
             <div className="aspect-video rounded-xl bg-muted/50 border" />
             <div className="aspect-video rounded-xl bg-muted/50 border" />
-          </div>
-          
+          </div>         
           {/* Bloque grande inferior */}
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 border md:min-h-min" />
         </div>
