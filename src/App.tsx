@@ -3,9 +3,9 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/features/auth/components/sidebar"
 import UsersPage from "./pages/userPages"
 import RegisterPage from "./pages/registerPage"
-// import { LoginForm } from "./features/auth/components/loginForm"
-import ApiTest from "@/features/auth/components/ApiTest";
-
+//import { LoginForm } from "./features/auth/components/loginForm"
+//import ApiTest from "@/features/auth/components/ApiTest";
+import LoginPage from "@/pages/loginPage"
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
@@ -42,7 +42,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<ApiTest/>} />
+        <Route path="/login" element={<LoginPage/>} />
         <Route
           path="/*"
           element={

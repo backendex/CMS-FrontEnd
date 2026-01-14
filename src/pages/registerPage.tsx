@@ -21,21 +21,34 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      // 1. Llamada a la API para crear el usuario
       await createUser({
-        email,
-        fullName: `${firstName} ${lastName}`,
-        rolId,
+        name: firstName,
+        lastName: lastName,
+        email: email,
+        rolId: rolId,
       });
 
+      // 2. Notificación de éxito al administrador
+      alert(`¡Éxito! Se ha enviado un correo de activación a ${email}`); 
+
+      // 3. Redirección a la tabla de usuarios
       navigate("/users");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      alert("Error al crear el usuario");
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      // Manejo de errores (401 si el token falla, etc.)
+      if (error.response?.status === 401) {
+        alert("Sesión de administrador no válida. Por favor, reingresa.");
+      } else {
+        alert("Error al crear el usuario. Revisa la consola para más detalles.");
+        console.error(error);
+      }
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="mx-auto space-y-4">
       <Button variant="ghost" onClick={() => navigate("/users")} className="group">

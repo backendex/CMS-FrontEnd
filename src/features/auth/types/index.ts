@@ -8,7 +8,6 @@ export interface User {
   avatarUrl?: string;
   mustChangePassword: boolean; 
 }
-
 export interface AuthResponse {
   user: User;
   token: string;

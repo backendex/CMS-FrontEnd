@@ -1,26 +1,24 @@
 import { LoginForm } from "@/features/auth/components/loginForm";
+//import { GalleryVerticalEnd } from "lucide-react";
 
 export default function LoginPage() {
+  // 
   return (
-     <div className="grid min-h-screen w-full lg:grid-cols-2">
-      
-      {/* COLUMNA IZQUIERDA: Formulario */}
-      <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">
-        <div className="w-full max-w-sm">
-          <LoginForm />
+    <div className="grid min-h-svh lg:grid-cols-2">
+      <div className="flex flex-col gap-4 p-6 md:p-10">        
+        <div className="flex flex-1 items-center justify-center">
+          <div className="w-full max-w-xs">
+            <LoginForm />
+          </div>
         </div>
       </div>
-
-      {/* COLUMNA DERECHA: Imagen (Solo visible en Desktop) */}
-      <div className="relative block bg-slate-100">
+      <div className="bg-muted relative hidden lg:block">
         <img
-          src="/login-background.jpg" 
-          alt="Login Background"
-          className="absolute inset-0 h-full w-full object-cover"
+          src="/login-background.jpg"
+          alt="Image"
+          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
-        <div className="absolute inset-0 bg-slate-900/10" />
       </div>
-
     </div>
-  );
+  )
 }
