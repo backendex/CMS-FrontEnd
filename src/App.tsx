@@ -6,6 +6,9 @@ import RegisterPage from "./pages/registerPage"
 //import { LoginForm } from "./features/auth/components/loginForm"
 //import ApiTest from "@/features/auth/components/ApiTest";
 import LoginPage from "@/pages/loginPage"
+import ChangePasswordPage from "./pages/changePasswordPage"
+
+
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
@@ -52,6 +55,7 @@ export default function App() {
                 <Route path="/dash" element={<div>Contenido del Dashboard</div>} />
                 <Route path="/users" element={<UsersPage/>}/>
                 <Route path="/users/new" element={<RegisterPage/>} />
+                <Route path="/change-password" element={<ChangePasswordPage />} />
                 <Route path="*" element={<Navigate to="/dash" replace />} />
               </Routes>
             </DashboardLayout>
