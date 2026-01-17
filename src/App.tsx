@@ -55,7 +55,7 @@ export default function App() {
                 <Route path="/dash" element={<div>Contenido del Dashboard</div>} />
                 <Route path="/users" element={<UsersPage/>}/>
                 <Route path="/users/new" element={<RegisterPage/>} />
-                <Route path="/change-password" element={<ChangePasswordPage />} />
+                <Route path="/changePass" element={<ChangePasswordPage />} />
                 <Route path="*" element={<Navigate to="/dash" replace />} />
               </Routes>
             </DashboardLayout>

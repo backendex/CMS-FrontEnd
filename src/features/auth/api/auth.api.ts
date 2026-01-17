@@ -1,48 +1,30 @@
 //import api from "@/lib/api";
 import axios from "axios";
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
 export interface LoginResponse {
-  success: boolean;
-  token: string;
-  mustChangePassword: boolean;
-  message?: string;
+  Success: boolean;
+  Token: string;
+  MustChangePassword: boolean;
+  Message?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user?: any;
+  User?: any;
+}
+export interface LoginRequest {
+  Email: string;
+  Password: string;
 }
 
-// auth.api.ts
-// export const login = async (credentials: { email: string; password: string }) => {
-//   try {
-//     const response = await axios.post("https://localhost:44351/api/auth/login", {
-//       Email: credentials.email,     
-//       Password: credentials.password 
-//     });
-//     return response.data;
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   } catch (error: any) {
-//     // Esto es vital para saber si el error es "Cuenta no activada"
-//     console.error("Error del Servidor (400):", error.response?.data);
-//     throw error.response?.data || error;
-//   }
-// };
+// ... otras interfaces
 
-se realizan comparaciones de los dos funciones para login
-// auth.api.ts
-export const login = async (credentials: { email: string; password: string }) => {
+// Cambiamos 'credentials' para que use el tipo LoginRequest (Mayúsculas)
+export const login = async (credentials: LoginRequest) => {
   try {
-    const response = await axios.post("https://localhost:44351/api/auth/login", {
-      Email: credentials.email,    // Usa 'Email' con E mayúscula
-      Password: credentials.password // Usa 'Password' con P mayúscula
-    });
+    // Enviamos directamente 'credentials' porque ya vienen con las llaves correctas
+    const response = await axios.post("https://localhost:44351/api/auth/login", credentials);
     return response.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error("Error del Servidor (400):", error.response?.data);
-    throw error.response?.data || error;
+    console.error("Error del Servidor:", error.response?.data);
+    throw error;
   }
 };
-
 
