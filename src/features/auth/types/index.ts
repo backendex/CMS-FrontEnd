@@ -6,7 +6,7 @@ export interface User {
   lastModified: string;
   lastLogin: string;
   avatarUrl?: string;
-  mustChangePassword: boolean; 
+  MustChangePassword: boolean; 
 }
 export interface AuthResponse {
   user: User;

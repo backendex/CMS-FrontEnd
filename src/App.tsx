@@ -3,14 +3,12 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/features/auth/components/sidebar"
 import UsersPage from "./pages/userPages"
 import RegisterPage from "./pages/registerPage"
-//import { LoginForm } from "./features/auth/components/loginForm"
-//import ApiTest from "@/features/auth/components/ApiTest";
 import LoginPage from "@/pages/loginPage"
 import ChangePasswordPage from "./pages/changePasswordPage"
+import { ProtectedRoute } from "./features/auth/components/protectedRoute"
 
-
-
-function DashboardLayout({ children }: { children: React.ReactNode }) {
+// 1. Definición del Layout (Asegúrate de cerrar todas las llaves)
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
 
   const routeTitles: Record<string, string> = {
@@ -22,6 +20,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   }
 
   const currentTitle = routeTitles[location.pathname] || "Mi CMS"
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -39,26 +38,34 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       </SidebarInset>
     </SidebarProvider>
   )
-}
+} 
 
+// 2. Componente principal App
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginPage/>} />
+        {/* RUTA PÚBLICA */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* RUTA DE CAMBIO DE CONTRASEÑA */}
+        <Route path="/changePass" element={<ChangePasswordPage />} />
+
+        {/* RUTAS PROTEGIDAS */}
         <Route
           path="/*"
           element={
-            <DashboardLayout>
-              <Routes>
-                <Route path="/" element={<Navigate to="/dash" replace />} />
-                <Route path="/dash" element={<div>Contenido del Dashboard</div>} />
-                <Route path="/users" element={<UsersPage/>}/>
-                <Route path="/users/new" element={<RegisterPage/>} />
-                <Route path="/changePass" element={<ChangePasswordPage />} />
-                <Route path="*" element={<Navigate to="/dash" replace />} />
-              </Routes>
-            </DashboardLayout>
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/dash" replace />} />
+                  <Route path="/dash" element={<div>Contenido del Dashboard</div>} />
+                  <Route path="/users" element={<UsersPage />} />
+                  <Route path="/users/new" element={<RegisterPage />} />
+                  <Route path="*" element={<Navigate to="/dash" replace />} />
+                </Routes>
+              </DashboardLayout>
+            </ProtectedRoute>
           }
         />
       </Routes>

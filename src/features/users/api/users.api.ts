@@ -43,9 +43,9 @@ export const getUsers = async (): Promise<User[]> => {
 };;
 
 export const changePassword = async (data: ChangePasswordDto) => {
-  // Usamos el axios directo o tu instancia 'api'
   const response = await axios.post("https://localhost:44351/api/auth/update-password", data);
   return response.data;
 };
+
 
 console.log("users.api.ts cargado");
