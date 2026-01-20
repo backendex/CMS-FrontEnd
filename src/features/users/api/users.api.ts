@@ -12,11 +12,12 @@ export interface User {
   rolId: number;        
   emailConfirmed: boolean;
 }
+// users.api.ts (o dto.ts)
 export interface ChangePasswordDto {
-  email: string;
-  currentPassword: string; // La clave temporal que usó para el login
   newPassword: string;
 }
+
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createUser = async (userData: any) => {
   const response = await axios.post("https://localhost:44351/api/auth/admin/create-user", userData);

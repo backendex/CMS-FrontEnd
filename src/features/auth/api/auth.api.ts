@@ -3,7 +3,7 @@ import axios from "axios";
 export interface LoginResponse {
   Success: boolean;
   Token: string;
-  MustChangePassword: boolean;
+  mustChangePassword: boolean;
   Message?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   User?: any;

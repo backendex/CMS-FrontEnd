@@ -6,6 +6,7 @@ import RegisterPage from "./pages/registerPage"
 import LoginPage from "@/pages/loginPage"
 import ChangePasswordPage from "./pages/changePasswordPage"
 import { ProtectedRoute } from "./features/auth/components/protectedRoute"
+import DashboardPage  from "./pages/dashboardPage"
 
 // 1. Definición del Layout (Asegúrate de cerrar todas las llaves)
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -59,7 +60,7 @@ export default function App() {
               <DashboardLayout>
                 <Routes>
                   <Route path="/" element={<Navigate to="/dash" replace />} />
-                  <Route path="/dash" element={<div>Contenido del Dashboard</div>} />
+                  <Route path="/dash" element={<DashboardPage/>} />
                   <Route path="/users" element={<UsersPage />} />
                   <Route path="/users/new" element={<RegisterPage />} />
                   <Route path="*" element={<Navigate to="/dash" replace />} />

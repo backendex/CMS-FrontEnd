@@ -1,57 +1,44 @@
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { SectionCards } from "@/components/ui/section-cards"
+
+// Importamos tus datos desde el archivo JSON
+import rawData from "@/pages/data.json";
 
 export default function DashboardPage() {
-  return (
-    <SidebarProvider>   
-      {/* Eliminamos 'bg-zinc-950' para usar el fondo por defecto */}
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 transition-[width,height] ease-linear">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
+  // Guardamos los datos en una constante para pasarlos como prop
+  const dashboardItems = rawData; 
+  console.log("Datos cargados:", rawData); // Revisa esto en la consola
 
-        {/* Contenedor principal con colores claros (muted) */}
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
+    return (
+    <SidebarProvider>   
+      <SidebarInset>
+        {/* Contenido Principal */}
+        <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background">
           
-          {/* Fila de 3 bloques superiores con aspecto suave */}
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50 border" />
-            <div className="aspect-video rounded-xl bg-muted/50 border" />
-            <div className="aspect-video rounded-xl bg-muted/50 border" />
-          </div>         
-          {/* Bloque grande inferior */}
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 border md:min-h-min" />
-        </div>
+          {/* 1. Sección de Tarjetas (Pasando los datos del JSON) */}
+          <section>
+            <SectionCards data={dashboardItems} />
+          </section>
+
+          {/* 2. Sección de Gráficos (Placeholders) */}
+          <div className="grid gap-4 md:grid-cols-3">
+             <div className="aspect-video rounded-xl bg-muted/50 border border-dashed flex items-center justify-center text-muted-foreground text-sm">
+                Gráfico de Ventas
+             </div>
+             <div className="col-span-2 aspect-video rounded-xl bg-muted/50 border border-dashed flex items-center justify-center text-muted-foreground text-sm">
+                Actividad Reciente
+             </div>
+          </div>   
+
+          {/* 3. Bloque grande inferior */}
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/20 border border-dashed md:min-h-min flex items-center justify-center">
+             <p className="text-muted-foreground">Tabla de Datos / Contenido Adicional</p>
+          </div>
+        </main>
       </SidebarInset>
-      
     </SidebarProvider>
   )
 }

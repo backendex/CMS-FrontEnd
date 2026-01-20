@@ -1,8 +1,6 @@
-import { LoginForm } from "@/features/auth/components/LoginForm";
-//import { GalleryVerticalEnd } from "lucide-/react";
+import {LoginForm} from "@/features/auth/components/LoginForm";
 
 export default function LoginPage() {
-  // 
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">        
@@ -14,7 +12,7 @@ export default function LoginPage() {
       </div>
       <div className="bg-muted relative hidden lg:block">
         <img
-          src="/login-background.jpg"
+          src="/black.jpg.jpg"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />

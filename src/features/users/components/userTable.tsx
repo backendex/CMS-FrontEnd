@@ -51,8 +51,7 @@ export function UserTable({ users }: UserTableProps) { // <-- Recibe los datos a
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border border-slate-200">
                     <AvatarImage src={user.avatar} />
-                    <AvatarFallback className="bg-indigo-50 text-indigo-700">
-                      {/* Usamos fullName en lugar de name */}
+                    <AvatarFallback className="bg-slate-100 text-slate-900">
                       {user.fullName.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>

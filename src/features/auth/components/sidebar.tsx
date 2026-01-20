@@ -34,7 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback} from "@/components/ui/avatar"
 
 // Menú de navegación superior
 const items = [
@@ -51,7 +51,6 @@ export function AppSidebar() {
       <SidebarHeader className="flex items-center justify-center p-4">
         <h2 className="text-xl font-bold tracking-tight">Mi CMS</h2>
       </SidebarHeader>
-
       {/* 2. Contenido Central (Lo que tenías antes) */}
       <SidebarContent>
         <SidebarGroup>
@@ -72,7 +71,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
       {/* 3. Footer (Menú de Usuario de la imagen) */}
       <SidebarFooter>
         <SidebarMenu>
@@ -84,7 +82,6 @@ export function AppSidebar() {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src="https://github.com/shadcn.png" />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -103,7 +100,6 @@ export function AppSidebar() {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src="https://github.com/shadcn.png" />
                       <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
