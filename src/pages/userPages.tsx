@@ -33,15 +33,13 @@ export default function UsersPage() {
   useEffect(() => {
     loadUsers(); // <--- Faltaba esta línea para que se ejecute al cargar la página
   }, [loadUsers]);
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Usuarios</h1>
           <p className="text-muted-foreground">Administra los accesos y roles.</p>
-        </div>
-        
+        </div>       
         <Button asChild>
           <Link to="/users/new" className="flex items-center">
             <Plus className="mr-2 h-4 w-4" />
@@ -49,7 +47,6 @@ export default function UsersPage() {
           </Link>
         </Button>
       </div>
-
       <div className="rounded-md border bg-white p-4">
         {loading ? (
           <div className="flex justify-center py-10">

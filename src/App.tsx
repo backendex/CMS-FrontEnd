@@ -1,75 +1,32 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom"
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/features/auth/components/sidebar"
-import UsersPage from "./pages/userPages"
-import RegisterPage from "./pages/registerPage"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import LoginPage from "@/pages/loginPage"
-import ChangePasswordPage from "./pages/changePasswordPage"
-import { ProtectedRoute } from "./features/auth/components/protectedRoute"
-import DashboardPage  from "./pages/dashboardPage"
+import ChangePasswordPage from "@/pages/changePasswordPage"
+import DashboardLayout from "@/pages/dashboard/dashboardLayout"
+import DashboardHome from "@/pages/dashboard/dashboardHome"
+import UsersPage from "@/pages/userPages"
+import  {ProtectedRoute}  from "@/features/auth/components/protectedRoute"
+import RegisterPage from "./pages/registerPage"
+import PostPage from "@/features/post/components/postForm"
 
-// 1. Definición del Layout (Asegúrate de cerrar todas las llaves)
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const location = useLocation()
-
-  const routeTitles: Record<string, string> = {
-    "/": "Dashboard",
-    "/dash": "Dashboard",
-    "/users": "Usuarios",
-    "/users/new": "Registro de Usuario",
-    "/settings": "Configuración",
-  }
-
-  const currentTitle = routeTitles[location.pathname] || "Mi CMS"
-
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-4 border-b bg-background px-4">
-          <SidebarTrigger />
-          <div className="h-4 w-[1px] bg-border" />
-          <span className="text-sm font-medium text-muted-foreground">
-            {currentTitle}
-          </span>
-        </header>
-        <main className="flex-1 p-6">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
-  )
-} 
-
-// 2. Componente principal App
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* RUTA PÚBLICA */}
-        <Route path="/login" element={<LoginPage />} />
+<Routes>
+  <Route path="/login" element={<LoginPage />} />
 
-        {/* RUTA DE CAMBIO DE CONTRASEÑA */}
-        <Route path="/changePass" element={<ChangePasswordPage />} />
-
-        {/* RUTAS PROTEGIDAS */}
-        <Route
-          path="/*"
-          element={
-            <ProtectedRoute>
-              <DashboardLayout>
-                <Routes>
-                  <Route path="/" element={<Navigate to="/dash" replace />} />
-                  <Route path="/dash" element={<DashboardPage/>} />
-                  <Route path="/users" element={<UsersPage />} />
-                  <Route path="/users/new" element={<RegisterPage />} />
-                  <Route path="*" element={<Navigate to="/dash" replace />} />
-                </Routes>
-              </DashboardLayout>
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+  <Route element={<ProtectedRoute />}>
+    <Route path="/changePass" element={<ChangePasswordPage />} />
+    <Route path="/postPage" element={<PostPage/>} />
+    <Route element={<DashboardLayout />}>
+      <Route path="/dash" element={<DashboardHome />} />s
+      <Route path="/users" element={<UsersPage />} />
+      <Route path="/users/new" element={<RegisterPage />} />
+    </Route>
+     <Route path="*" element={<Navigate to="/login" replace />} />
+  </Route>
+</Routes>
+</BrowserRouter>
   )
 }
+
+
