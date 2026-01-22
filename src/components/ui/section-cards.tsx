@@ -31,7 +31,6 @@ export function SectionCards({ data }: SectionCardsProps) {
       {data.map((item) => {
         // Cálculo del porcentaje para la barra de progreso
         const progress = (Number(item.target) / Number(item.limit)) * 100;
-
         return (
           <Card key={item.id} className="shadow-sm border-zinc-200 dark:border-zinc-800 bg-card">
             <CardHeader className="flex flex-row items-start justify-between pb-2 space-y-0">
@@ -55,7 +54,6 @@ export function SectionCards({ data }: SectionCardsProps) {
                 {item.status}
               </Badge>
             </CardHeader>
-
             <CardContent className="pt-4">
               <div className="flex items-end justify-between mb-2">
                 <div className="flex flex-col">
@@ -68,8 +66,7 @@ export function SectionCards({ data }: SectionCardsProps) {
                   </span>
                   <span className="text-sm text-muted-foreground">/{item.limit}</span>
                 </div>
-              </div>
-              
+              </div>             
               {/* Barra de progreso visual */}
               <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                 <div 

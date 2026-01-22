@@ -1,14 +1,14 @@
-import { 
-  LayoutDashboard, 
-  Users, 
-  PieChart, 
-  Settings, 
-  ChevronsUpDown, 
-  LogOut, 
-  BadgeCheck, 
-  CreditCard, 
-  Bell 
-} from "lucide-react"
+import {
+  LayoutDashboard,
+  Users,
+  PieChart,
+  Settings,
+  ChevronsUpDown,
+  LogOut,
+  BadgeCheck,
+  CreditCard,
+  Bell,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -22,7 +22,7 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 import {
   DropdownMenu,
@@ -32,19 +32,37 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-import { Avatar, AvatarFallback} from "@/components/ui/avatar"
-
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 // Menú de navegación superior
 const items = [
   { title: "Dashboard", url: "/dash", icon: LayoutDashboard },
   { title: "Usuarios", url: "/users", icon: Users },
+  { title: "Información", url: "/postPage", icon: Users },
   { title: "Estadísticas", url: "/charts", icon: PieChart },
   { title: "Configuración", url: "/settings", icon: Settings },
-]
+];
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const postItems = [
+  { title: "Enviar información", url: "/postPage", icon: Users },
+  { title: "Historial", url: "/postPage/history", icon: PieChart },
+];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function AppSidebar() {
+  const navigate = useNavigate(); // Inicializamos el hook de navegación
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleLogout = () => {
+    // 1. Limpiamos el storage
+    localStorage.removeItem("token");
+    localStorage.removeItem("mustChangePassword");
+
+    // 2. Redirigimos al login (usamos replace para limpiar el historial)
+    navigate("/login", { replace: true });
+  };
   return (
     <Sidebar variant="inset" collapsible="icon">
       {/* 1. Encabezado */}
@@ -86,7 +104,9 @@ export function AppSidebar() {
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">shadcn</span>
-                    <span className="truncate text-xs text-muted-foreground">m@example.com</span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      m@example.com
+                    </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4 opacity-50" />
                 </SidebarMenuButton>
@@ -128,6 +148,14 @@ export function AppSidebar() {
                   <LogOut className="mr-2 size-4" />
                   Log out
                 </DropdownMenuItem>
+                {/* Busca esta sección en tu SidebarFooter */}
+                <DropdownMenuItem
+                  className="text-red-500 cursor-pointer"
+                  onClick={handleLogout} 
+                >
+                  <LogOut className="mr-2 size-4" />
+                  Log out
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
@@ -135,5 +163,5 @@ export function AppSidebar() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

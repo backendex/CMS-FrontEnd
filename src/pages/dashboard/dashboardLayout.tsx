@@ -6,8 +6,10 @@ import {
 } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/features/auth/components/sidebar"
 
+
 export default function DashboardLayout() {
   const location = useLocation()
+  // const isPostPage = location.pathname.startsWith("/postPage")
 
   const routeTitles: Record<string, string> = {
     "/dash": "Dashboard",
@@ -20,7 +22,8 @@ export default function DashboardLayout() {
 
   return (
     <SidebarProvider defaultOpen>
-      <AppSidebar />
+      <AppSidebar/>
+      {/* <AppSidebar mode={isPostPage ? "post" : "default"} /> */}
 
       <SidebarInset>
         {/* HEADER */}
