@@ -7,7 +7,7 @@ import UsersPage from "@/pages/userPages"
 import  {ProtectedRoute}  from "@/features/auth/components/protectedRoute"
 import RegisterPage from "@/pages/registerPage"
 import Register from "@/pages/registerPage"
-import PostForm from "@/features/post/components/postForm"
+import CreatePostPage   from "@/pages/post/postCreatePage"
 
 export default function App() {
   return (
@@ -18,7 +18,7 @@ export default function App() {
     <Route path="/changePass" element={<ChangePasswordPage />} />
     <Route element={<DashboardLayout />}>
       <Route path="/dash" element={<DashboardHome />} />s
-      <Route path="/postForm" element={<PostForm/>} />
+     <Route path="/dash/post/create" element={<CreatePostPage />} />
       <Route path="/users" element={<UsersPage />} />
       <Route path="/users/new" element={<RegisterPage />} />
       <Route path="/register" element={<Register />} />
