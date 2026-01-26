@@ -65,7 +65,7 @@ export function PostForm({
           rows={10}
         />
       </div>
-
+      
       <div className="flex items-center gap-4">
         <Button
           type="button"
@@ -76,7 +76,6 @@ export function PostForm({
         >
           Borrador
         </Button>
-
         <Button
           type="button"
           variant={values.status === "published" ? "default" : "outline"}
@@ -87,7 +86,6 @@ export function PostForm({
           Publicado
         </Button>
       </div>
-
       <Button type="submit" disabled={isLoading}>
         {isLoading ? "Guardando..." : "Guardar"}
       </Button>
