@@ -21,27 +21,23 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // 1. Llamada a la API para crear el usuario
       await createUser({
         name: firstName,
         lastName: lastName,
         email: email,
         rolId: rolId,
+        // isDeleted: false, // Podrías agregarlo aquí si tu API ya lo espera
       });
 
-      // 2. Notificación de éxito al administrador
       alert(`¡Éxito! Se ha enviado un correo de activación a ${email}`); 
-
-      // 3. Redirección a la tabla de usuarios
       navigate("/users");
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      // Manejo de errores (401 si el token falla, etc.)
       if (error.response?.status === 401) {
         alert("Sesión de administrador no válida. Por favor, reingresa.");
       } else {
-        alert("Error al crear el usuario. Revisa la consola para más detalles.");
+        alert("Error al crear el usuario.");
         console.error(error);
       }
     } finally {
@@ -50,15 +46,27 @@ export default function RegisterPage() {
   };
   
   return (
-    <div className="mx-auto space-y-4">
-      <Button variant="ghost" onClick={() => navigate("/users")} className="group">
+    /* MODIFICACIÓN 1: 
+       Cambiamos "mx-auto" por "ml-10" (margen izquierdo) o "ml-0" si quieres pegarlo totalmente.
+       Añadimos "max-w-2xl" para que el formulario no se estire demasiado a la derecha.
+    */
+    <div className="ml-10 max-w-2xl space-y-2 pt-2">
+      
+      {/* MODIFICACIÓN 2: 
+         El botón ahora se alineará naturalmente a la izquierda con el Card 
+      */}
+      <Button 
+        variant="ghost" 
+        onClick={() => navigate("/users")} 
+        className="group hover:bg-transparent p-0"
+      >
         <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
         Volver a la lista
       </Button>
 
-      <Card>
+      <Card className="shadow-sm border-slate-200">
         <CardHeader>
-          <CardTitle>Nuevo Usuario</CardTitle>
+          <CardTitle className="text-2xl font-bold">Nuevo Usuario</CardTitle>
           <CardDescription>
             Crea una nueva cuenta para que alguien acceda al panel.
           </CardDescription>
@@ -66,11 +74,11 @@ export default function RegisterPage() {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Nombre / Apellido */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Nombre</Label>
+                <Label htmlFor="firstName">Nombre</Label>
                 <Input
+                  id="firstName"
                   placeholder="Ej. Juan"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
@@ -79,8 +87,9 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Apellido</Label>
+                <Label htmlFor="lastName">Apellido</Label>
                 <Input
+                  id="lastName"
                   placeholder="Ej. Pérez"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
@@ -89,10 +98,10 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
-              <Label>Correo Electrónico</Label>
+              <Label htmlFor="email">Correo Electrónico</Label>
               <Input
+                id="email"
                 type="email"
                 placeholder="juan@ejemplo.com"
                 value={email}
@@ -101,7 +110,6 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Rol */}
             <div className="space-y-2">
               <Label>Rol del Usuario</Label>
               <Select
@@ -118,8 +126,7 @@ export default function RegisterPage() {
               </Select>
             </div>
 
-            {/* Botones */}
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-4">
               <Button
                 type="button"
                 variant="outline"

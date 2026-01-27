@@ -8,7 +8,8 @@ import  {ProtectedRoute}  from "@/features/auth/components/protectedRoute"
 import RegisterPage from "@/pages/registerPage"
 import Register from "@/pages/registerPage"
 import CreatePostPage   from "@/pages/post/postCreatePage"
-
+import {CMSContentEditor} from "@/pages/cmsContentPage"
+import MediaPage from "@/pages/dashboard/mediaPage"
 export default function App() {
   return (
     <BrowserRouter>
@@ -17,11 +18,13 @@ export default function App() {
   <Route element={<ProtectedRoute />}>
     <Route path="/changePass" element={<ChangePasswordPage />} />
     <Route element={<DashboardLayout />}>
-      <Route path="/dash" element={<DashboardHome />} />s
+     <Route path="/dash" element={<DashboardHome />} />s
      <Route path="/dash/post/create" element={<CreatePostPage />} />
       <Route path="/users" element={<UsersPage />} />
       <Route path="/users/new" element={<RegisterPage />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/content" element={<CMSContentEditor/>} />
+      <Route path="/mediaPage" element={<MediaPage/>} />
     </Route>
      <Route path="*" element={<Navigate to="/login" replace />} />
   </Route>

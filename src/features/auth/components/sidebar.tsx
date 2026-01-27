@@ -40,8 +40,8 @@ import { useNavigate } from "react-router-dom";
 const items = [
   { title: "Dashboard", url: "/dash", icon: LayoutDashboard },
   { title: "Usuarios", url: "/users", icon: Users },
-  { title: "Información", url: "/postPage", icon: Users },
-  { title: "Estadísticas", url: "/charts", icon: PieChart },
+  { title: "Gestor de contenido", url: "/content", icon: Users },
+  { title: "Biblioteca de medios", url: "/mediaPage", icon: PieChart },
   { title: "Configuración", url: "/settings", icon: Settings },
 ];
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -144,10 +144,6 @@ export function AppSidebar() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-500">
-                  <LogOut className="mr-2 size-4" />
-                  Log out
-                </DropdownMenuItem>
                 {/* Busca esta sección en tu SidebarFooter */}
                 <DropdownMenuItem
                   className="text-red-500 cursor-pointer"

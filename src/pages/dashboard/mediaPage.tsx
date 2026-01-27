@@ -1,54 +1,103 @@
-//Aqui se para las paginas 
-import { Plus, Search, FileIcon, Copy, Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card} from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Search, Upload, FolderOpen, Globe, MoreVertical, FileIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 
 export default function MediaPage() {
   return (
-    <div className="p-6 space-y-6 h-full flex flex-col">
-      {/* 1. Header */}
+    <div className="space-y-6">
+      {/* Header con Contexto */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Biblioteca de Medios</h1>
-          <p className="text-muted-foreground">Gestiona tus imágenes y archivos para los artículos.</p>
+          <h1 className="text-2xl font-bold tracking-tight">Biblioteca de Medios</h1>
+          <p className="text-sm text-muted-foreground">
+            Gestionando archivos para: <span className="font-medium text-primary text-black"></span>
+          </p>
         </div>
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" /> Subir archivo
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="hidden sm:flex">
+            <FolderOpen className="mr-2 h-4 w-4" /> Nueva Carpeta
+          </Button>
+          <Button size="sm" className=" bg-black/90 text-white">
+            <Upload className="mr-2 h-4 w-4" /> Subir Multimedia
+          </Button>
+        </div>
       </div>
 
-      {/* 2. Barra de búsqueda y filtros */}
-      <div className="relative w-full max-w-sm">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Buscar archivos..." className="pl-8" />
-      </div>
+      {/* Barra de Herramientas */}
+      <Card className="p-2">
+        <div className="flex flex-col lg:flex-row gap-4 justify-between">
+          <Tabs defaultValue="site" className="w-full lg:w-auto">
+            <TabsList className="grid w-full grid-cols-2 lg:w-[300px]">
+              <TabsTrigger value="site">Esta Web</TabsTrigger>
+              <TabsTrigger value="global" className="flex gap-2">
+                <Globe className="h-4 w-4" /> Global
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          <div className="relative w-full lg:max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Buscar por nombre o etiqueta..."
+              className="pl-8 w-full"
+            />
+          </div>
+        </div>
+      </Card>
 
-      {/* 3. Grid de Medios */}
-      <ScrollArea className="flex-1 rounded-md border bg-muted/20 p-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {/* Ejemplo de un ítem de imagen */}
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Card key={i} className="group relative overflow-hidden cursor-pointer hover:ring-2 ring-primary transition-all">
-              <div className="aspect-square bg-muted flex items-center justify-center">
-                <FileIcon className="h-10 w-10 text-muted-foreground/40" />
-                {/* Aquí iría la <img src="..." /> cuando tengas datos */}
-              </div>
+      {/* Grid de Medios */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {/* Simulación de items (puedes mapear tus datos aquí) */}
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+          <Card key={item} className="overflow-hidden group cursor-pointer border-muted">
+            <CardContent className="p-0 relative aspect-square bg-muted flex items-center justify-center">
+              {item % 3 === 0 ? (
+                <FileIcon className="h-10 w-10 text-muted-foreground" />
+              ) : (
+                <img
+                  src={`https://picsum.photos/seed/${item + 50}/400/400`}
+                  alt="Asset"
+                  className="object-cover w-full h-full transition-transform group-hover:scale-105"
+                />
+              )}
               
               {/* Overlay de acciones rápidas */}
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                <Button size="icon" variant="secondary" className="h-8 w-8">
-                  <Copy className="h-4 w-4" />
-                </Button>
-                <Button size="icon" variant="destructive" className="h-8 w-8">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                 <Button size="sm" variant="secondary" className="h-8 text-xs">Ver</Button>
+                 <Button size="sm" variant="destructive" className="h-8 text-xs text-white">Borrar</Button>
               </div>
-            </Card>
-          ))}
-        </div>
-      </ScrollArea>
+
+              <div className="absolute top-1 right-1">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 bg-white/50 backdrop-blur-sm hover:bg-white text-black">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>Renombrar</DropdownMenuItem>
+                    <DropdownMenuItem>Copiar URL</DropdownMenuItem>
+                    <DropdownMenuItem className="text-destructive">Eliminar</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </CardContent>
+            <div className="p-2 border-t">
+              <p className="text-[11px] font-medium truncate">hero-banner-v2.jpg</p>
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wider">1.2 MB • JPG</p>
+            </div>
+          </Card>
+        ))}
+      </div>
     </div>
-  )
+  );
 }

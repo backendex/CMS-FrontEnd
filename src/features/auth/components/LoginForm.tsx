@@ -14,14 +14,12 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  // 1. Estados para el formulario
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const navigate = useNavigate()
 
-  // 2. Lógica de envío
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -30,21 +28,24 @@ export function LoginForm({
     try {
       const res = await login({ email, password })
 
-      // Guardamos el token en el almacenamiento local
+      // 1. Guardar token
       localStorage.setItem("token", res.token)
 
-      // 3. Verificación de contraseña temporal
-      // El backend debe devolver un flag como 'isTemporary'
-      if (res.user?.isTemporaryPassword) {
-        // Si es temporal, lo mandamos a la pantalla de cambio obligatorio
-        navigate("/change-password", { state: { email } })
+      // 2. Guardar flag
+      localStorage.setItem(
+        "mustChangePassword",
+        res.mustChangePassword ? "true" : "false"
+      )
+
+      // 3. Redirección obligatoria
+      if (res.mustChangePassword) {
+        navigate("/change-password", { replace: true })
       } else {
-        // Si es un usuario antiguo, va directo al dashboard
-        navigate("/dash")
+        navigate("/dash", { replace: true })
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-    } catch (err: any) {
-      setError("Invalid credentials or account not activated.")
+
+    } catch {
+      setError("Credenciales inválidas o cuenta deshabilitada")
     } finally {
       setLoading(false)
     }
@@ -64,7 +65,6 @@ export function LoginForm({
           </p>
         </div>
 
-        {/* Mostrar error si existe */}
         {error && (
           <p className="text-sm font-medium text-destructive text-center bg-destructive/10 py-2 rounded-md">
             {error}
@@ -76,7 +76,6 @@ export function LoginForm({
           <Input 
             id="email" 
             type="email" 
-            placeholder="m@example.com" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required 
@@ -84,15 +83,7 @@ export function LoginForm({
         </Field>
 
         <Field>
-          <div className="flex items-center">
-            <FieldLabel htmlFor="password">Password</FieldLabel>
-            <a
-              href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              Forgot your password?
-            </a>
-          </div>
+          <FieldLabel htmlFor="password">Password</FieldLabel>
           <Input 
             id="password" 
             type="password" 
