@@ -13,8 +13,9 @@ export interface User {
   emailConfirmed: boolean;
 }
 // users.api.ts (o dto.ts)
-export interface ChangePasswordDto {
+export interface ChangePasswordRequest {
   newPassword: string;
+  confirmPassword: string;
 }
 
 
@@ -43,10 +44,26 @@ export const getUsers = async (): Promise<User[]> => {
   }
 };;
 
-export const changePassword = async (data: ChangePasswordDto) => {
-  const response = await axios.post("https://localhost:44351/api/auth/update-password", data);
-  return response.data;
+export const changePassword = async (data: ChangePasswordRequest) => {
+  const token = localStorage.getItem("token");
+
+  console.log("TOKEN ENVIADO:", token);
+
+  if (!token) {
+    throw new Error("No hay token en localStorage");
+  }
+
+  return axios.post(
+    "https://localhost:44351/api/auth/change-password",
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 };
 
 
-console.log("users.api.ts cargado");
+

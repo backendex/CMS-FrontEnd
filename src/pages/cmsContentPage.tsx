@@ -37,9 +37,7 @@ export function CMSContentEditor() {
           </Button>
         </div>
       </div>
-
       <Separator />
-
       {/* Grid Principal: 3 columnas (8 para editor, 4 para sidebar) */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         {/* Columna Principal (Izquierda) */}
@@ -57,7 +55,6 @@ export function CMSContentEditor() {
                   className="text-lg font-medium"
                 />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="content">Cuerpo del Contenido</Label>
                 <Textarea
@@ -108,7 +105,6 @@ export function CMSContentEditor() {
               </Button>
             </CardContent>
           </Card>
-
           {/* Card de Organización */}
           <Card>
             <CardHeader>

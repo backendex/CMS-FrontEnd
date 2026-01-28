@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { login } from "../api/auth.api" // Asegúrate de que la ruta sea correcta
+import { login } from "../api/auth.api"
 import {
   Field,
   FieldGroup,
@@ -24,44 +24,60 @@ export function LoginForm({
     e.preventDefault()
     setLoading(true)
     setError("")
+    console.log("SUBMIT PRESIONADO")
 
     try {
-      const res = await login({ email, password })
+      console.log("ENVIANDO LOGIN:", {
+        Email: email,
+        Password: password,
+      }) 
 
-      // 1. Guardar token
+      const res = await login({
+        Email: email,
+        Password: password,
+      })
+
+      console.log("LOGIN RESPONSE:", res)
+
       localStorage.setItem("token", res.token)
-
-      // 2. Guardar flag
       localStorage.setItem(
         "mustChangePassword",
         res.mustChangePassword ? "true" : "false"
       )
 
-      // 3. Redirección obligatoria
+      console.log("ANTES DE NAVEGAR, PATH ACTUAL:", window.location.pathname)
       if (res.mustChangePassword) {
-        navigate("/change-password", { replace: true })
+        navigate("/changePass", { replace: true })
       } else {
+        console.log("REDIRECCIONANDO A /dash")
         navigate("/dash", { replace: true })
       }
 
-    } catch {
+       setTimeout(() => {
+       console.log("DESPUÉS DE NAVEGAR, PATH:", window.location.pathname)
+      }, 100)
+
+    } catch (err) {
+      console.error(err)
       setError("Credenciales inválidas o cuenta deshabilitada")
     } finally {
       setLoading(false)
     }
   }
 
+ 
+
   return (
-    <form 
-      onSubmit={handleSubmit} 
-      className={cn("flex flex-col gap-6", className)} 
+    <form
+      onSubmit={handleSubmit}
+      className={cn("flex flex-col gap-6", className)}
       {...props}
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Login to your account</h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
+          <p className="text-muted-foreground text-sm">
+            Enter your email below to login
           </p>
         </div>
 
@@ -72,24 +88,22 @@ export function LoginForm({
         )}
 
         <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input 
-            id="email" 
-            type="email" 
+          <FieldLabel>Email</FieldLabel>
+          <Input
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required 
+            required
           />
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="password">Password</FieldLabel>
-          <Input 
-            id="password" 
-            type="password" 
+          <FieldLabel>Password</FieldLabel>
+          <Input
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required 
+            required
           />
         </Field>
 

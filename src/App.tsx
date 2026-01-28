@@ -15,10 +15,10 @@ export default function App() {
     <BrowserRouter>
 <Routes>
   <Route path="/login" element={<LoginPage />} />
-  <Route element={<ProtectedRoute />}>
-    <Route path="/changePass" element={<ChangePasswordPage />} />
+  <Route path="/changePass" element={<ChangePasswordPage />} />
+  <Route element={<ProtectedRoute children={""}/>}>
     <Route element={<DashboardLayout />}>
-     <Route path="/dash" element={<DashboardHome />} />s
+     <Route path="/dash" element={<DashboardHome />} />
      <Route path="/dash/post/create" element={<CreatePostPage />} />
       <Route path="/users" element={<UsersPage />} />
       <Route path="/users/new" element={<RegisterPage />} />

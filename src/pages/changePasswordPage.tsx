@@ -45,6 +45,7 @@ const formSchema = z
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("SUBMIT EJECUTADO", values);
     setLoading(true);
     try {
       await changePassword({
@@ -75,7 +76,6 @@ const formSchema = z
     <div className="flex min-h-svh items-center justify-center bg-muted/40 p-6">
       <div className="w-full max-w-[400px] rounded-xl border bg-card p-8 shadow-sm">
         <h1 className="mb-6 text-2xl font-bold">Cambiar contraseña</h1>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -109,7 +109,7 @@ const formSchema = z
             <Button
               type="submit"
               className="w-full"
-              disabled={!form.formState.isValid || loading}
+              // disabled={!form.formState.isValid || loading}
             >
               {loading ? "Actualizando..." : "Actualizar contraseña"}
             </Button>
