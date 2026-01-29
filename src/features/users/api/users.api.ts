@@ -44,26 +44,34 @@ export const getUsers = async (): Promise<User[]> => {
   }
 };;
 
-export const changePassword = async (data: ChangePasswordRequest) => {
-  const token = localStorage.getItem("token");
+// export const changePassword = async (data: ChangePasswordRequest) => {
+//   const token = localStorage.getItem("token");
 
-  console.log("TOKEN ENVIADO:", token);
+//   console.log("TOKEN ENVIADO:", token);
 
-  if (!token) {
-    throw new Error("No hay token en localStorage");
-  }
+//   if (!token) {
+//     throw new Error("No hay token en localStorage");
+//   }
+//   return axios.post(
+//     "https://localhost:44351/api/auth/change-password",
+//     data,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//     }
+//   );
+// };
+// En tu servicio de API (users.api.ts o similar)
+export const changePassword = async (dto) => {
+  const token = localStorage.getItem("token"); // O donde guardes el token del login
 
-  return axios.post(
-    "https://localhost:44351/api/auth/change-password",
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+  return await axios.post("/api/auth/change-password", dto, {
+    headers: {
+      Authorization: `Bearer ${token}` // Esto es lo que activa el [Authorize] en C#
     }
-  );
+  });
 };
-
 
 

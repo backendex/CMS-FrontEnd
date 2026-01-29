@@ -1,10 +1,9 @@
-"use client";
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // El hook debe estar en el nivel superior
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+
 import { useToast } from "@/components/ui/use-toast";
 import { changePassword } from "@/features/users/api/users.api";
 import { Button } from "@/components/ui/button";
@@ -30,10 +29,11 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-  export default function ChangePasswordPage() {
-    const navigate = useNavigate();
-    const { toast } = useToast();
-    const [loading, setLoading] = useState(false);
+export default function ChangePasswordPage() {
+  // 1. TODOS los hooks se llaman al principio, siempre, sin condiciones.
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     mode: "onChange",
@@ -44,38 +44,52 @@ const formSchema = z
     },
   });
 
+  useEffect(() => {
+    toast({
+      title: "Acceso restringido",
+      description: "Por seguridad, debe cambiar su contraseña temporal.",
+    });
+  }, [toast]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("SUBMIT EJECUTADO", values);
-    setLoading(true);
-    try {
-      await changePassword({
-        newPassword: values.newPassword,
-      });
+  setLoading(true);
+  try {
+    await changePassword({
+      newPassword: values.newPassword,
+      confirmPassword: values.confirmPassword,
+    });
+    
+    // LIMPIAMOS TODO: Para que empiece de cero sin el flag de "mustChange" viejo
+    localStorage.removeItem("token");
+    localStorage.removeItem("mustChangePassword");
 
-      localStorage.setItem("mustChangePassword", "false");
+    toast({
+      title: "¡Éxito!",
+      description: "Contraseña actualizada. Por favor, inicie sesión con su nueva clave.",
+    });
 
-      toast({
-        title: "Éxito",
-        description: "Contraseña actualizada correctamente",
-      });
+    navigate("/login", { replace: true });
+  } // ... resto del catch
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   catch (error: any) {
+      // Imprime esto en la consola para ver el detalle real
+      console.error("Detalle del error:", error.response?.data);
 
-      navigate("/dash");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description:
-          error.response?.data?.message || "Error del servidor",
+        description: error.response?.data?.message || "Error al actualizar.",
       });
     } finally {
       setLoading(false);
     }
   }
+
   return (
     <div className="flex min-h-svh items-center justify-center bg-muted/40 p-6">
       <div className="w-full max-w-[400px] rounded-xl border bg-card p-8 shadow-sm">
         <h1 className="mb-6 text-2xl font-bold">Cambiar contraseña</h1>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -106,11 +120,7 @@ const formSchema = z
               )}
             />
 
-            <Button
-              type="submit"
-              className="w-full"
-              // disabled={!form.formState.isValid || loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Actualizando..." : "Actualizar contraseña"}
             </Button>
           </form>
@@ -119,3 +129,12 @@ const formSchema = z
     </div>
   );
 }
+
+// En ChangePasswordPage.tsx
+// const handleSuccess = () => {
+//   // 1. IMPORTANTE: Actualizamos el valor para que el ProtectedRoute nos deje pasar
+//   localStorage.setItem("mustChangePassword", "false");
+
+//   // 2. Ahora sí, navegamos
+//   navigate("/dash");
+// };
