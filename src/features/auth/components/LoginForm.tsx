@@ -44,19 +44,18 @@ export function LoginForm({
         "mustChangePassword",
         res.mustChangePassword ? "true" : "false"
       )
-
       console.log("ANTES DE NAVEGAR, PATH ACTUAL:", window.location.pathname)
       if (res.mustChangePassword) {
         navigate("/changePass", { replace: true })
       } else {
-        console.log("REDIRECCIONANDO A /dash")
-        navigate("/dash", { replace: true })
+        //Despues de loguearse y cambiar password redirecciona a site para empezar a gestionar las paginas
+        console.log("REDIRECCIONANDO A /site")
+        navigate("/site", { replace: true })
       }
 
        setTimeout(() => {
        console.log("DESPUÉS DE NAVEGAR, PATH:", window.location.pathname)
       }, 100)
-
     } catch (err) {
       console.error(err)
       setError("Credenciales inválidas o cuenta deshabilitada")
@@ -64,9 +63,6 @@ export function LoginForm({
       setLoading(false)
     }
   }
-
- 
-
   return (
     <form
       onSubmit={handleSubmit}

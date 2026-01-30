@@ -23,22 +23,19 @@ export default function DashboardLayout() {
   return (
     <SidebarProvider defaultOpen>
       <AppSidebar/>
-      {/* <AppSidebar mode={isPostPage ? "post" : "default"} /> */}
 
       <SidebarInset>
-        {/* HEADER */}
         <header className="flex h-14 items-center gap-4 border-b px-4">
           <SidebarTrigger />
           <span className="text-sm font-medium text-muted-foreground">
             {currentTitle}
           </span>
         </header>
-
-        {/* AQUÍ SE RENDERIZAN LAS PÁGINAS */}
         <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background">
-          <Outlet />   {/* ← ÚNICO lugar válido */}
+          <Outlet />   
         </main>
       </SidebarInset>
+      
     </SidebarProvider>
   )
 }

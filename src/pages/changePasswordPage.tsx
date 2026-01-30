@@ -59,7 +59,6 @@ export default function ChangePasswordPage() {
       confirmPassword: values.confirmPassword,
     });
     
-    // LIMPIAMOS TODO: Para que empiece de cero sin el flag de "mustChange" viejo
     localStorage.removeItem("token");
     localStorage.removeItem("mustChangePassword");
 
@@ -69,7 +68,7 @@ export default function ChangePasswordPage() {
     });
 
     navigate("/login", { replace: true });
-  } // ... resto del catch
+  } 
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    catch (error: any) {
       // Imprime esto en la consola para ver el detalle real
@@ -105,7 +104,6 @@ export default function ChangePasswordPage() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="confirmPassword"
@@ -119,7 +117,6 @@ export default function ChangePasswordPage() {
                 </FormItem>
               )}
             />
-
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Actualizando..." : "Actualizar contraseña"}
             </Button>
@@ -129,12 +126,3 @@ export default function ChangePasswordPage() {
     </div>
   );
 }
-
-// En ChangePasswordPage.tsx
-// const handleSuccess = () => {
-//   // 1. IMPORTANTE: Actualizamos el valor para que el ProtectedRoute nos deje pasar
-//   localStorage.setItem("mustChangePassword", "false");
-
-//   // 2. Ahora sí, navegamos
-//   navigate("/dash");
-// };

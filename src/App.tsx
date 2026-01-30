@@ -11,6 +11,8 @@ import CreatePostPage   from "@/pages/post/postCreatePage"
 import {CMSContentEditor} from "@/pages/cmsContentPage"
 import MediaPage from "@/pages/dashboard/mediaPage"
 import { Toaster } from "@/components/ui/toaster";
+import DashboardSite from "./pages/dashboard/dashboardSite"
+import ToursPage from "./pages/post/tourPage"
 export default function App() {
   return (
     <BrowserRouter>
@@ -18,16 +20,17 @@ export default function App() {
   <Route path="/login" element={<LoginPage />} />
   <Route path="/" element={<LoginPage />} />
   <Route path="/changePass" element={<ChangePasswordPage/>} />
+  <Route path="/site" element={<DashboardSite />} />
   <Route element={<ProtectedRoute/>}>
     <Route element={<DashboardLayout />}>
      <Route path="/dash" element={<DashboardHome />} />
-     {/* <Route path="/dash" element={<DashboardHome />} /> */}
      <Route path="/dash/post/create" element={<CreatePostPage />} />
      <Route path="/users" element={<UsersPage />} />
      <Route path="/users/new" element={<RegisterPage />} />
      <Route path="/register" element={<Register />} />
      <Route path="/content" element={<CMSContentEditor/>} />
      <Route path="/mediaPage" element={<MediaPage/>} />
+     <Route path="/tour" element={<ToursPage/>} />
     </Route>
      <Route path="*" element={<Navigate to="/login" replace />} />
   </Route>

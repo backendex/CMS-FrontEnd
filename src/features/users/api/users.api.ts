@@ -44,25 +44,6 @@ export const getUsers = async (): Promise<User[]> => {
   }
 };;
 
-// export const changePassword = async (data: ChangePasswordRequest) => {
-//   const token = localStorage.getItem("token");
-
-//   console.log("TOKEN ENVIADO:", token);
-
-//   if (!token) {
-//     throw new Error("No hay token en localStorage");
-//   }
-//   return axios.post(
-//     "https://localhost:44351/api/auth/change-password",
-//     data,
-//     {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         "Content-Type": "application/json",
-//       },
-//     }
-//   );
-// };
 // En tu servicio de API (users.api.ts o similar)
 export const changePassword = async (dto) => {
   const token = localStorage.getItem("token"); // O donde guardes el token del login
