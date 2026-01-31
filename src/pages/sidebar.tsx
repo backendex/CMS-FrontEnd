@@ -40,7 +40,8 @@ import { useNavigate } from "react-router-dom";
 const items = [
   { title: "Dashboard", url: "/dash", icon: LayoutDashboard },
   { title: "Usuarios", url: "/users", icon: Users },
-  { title: "Gestor de contenido", url: "/content", icon: Users },
+  { title: "Tours", url: "/tour", icon: Users },
+  { title: "Gestor de contenido", url: "/content", icon: PieChart },
   { title: "Biblioteca de medios", url: "/mediaPage", icon: PieChart },
   { title: "Configuración", url: "/settings", icon: Settings },
 ];
@@ -52,7 +53,7 @@ const postItems = [
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function AppSidebar() {
-  const navigate = useNavigate(); // Inicializamos el hook de navegación
+  const navigate = useNavigate(); 
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleLogout = () => {

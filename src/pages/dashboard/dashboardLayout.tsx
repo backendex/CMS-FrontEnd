@@ -4,7 +4,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/features/auth/components/sidebar"
+import { AppSidebar } from "@/pages/sidebar"
 
 
 export default function DashboardLayout() {
