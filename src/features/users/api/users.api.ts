@@ -43,16 +43,20 @@ export const getUsers = async (): Promise<User[]> => {
     throw error;
   }
 };;
-
+                                                                      
 // En tu servicio de API (users.api.ts o similar)
 export const changePassword = async (dto) => {
-  const token = localStorage.getItem("token"); // O donde guardes el token del login
+  // 1. Define la URL completa de tu backend
+  const token = localStorage.getItem("token");
+  const BACKEND_URL = "https://localhost:44351/api/auth/changePass"; 
 
-  return await axios.post("/api/auth/change-password", dto, {
+  console.log("🚀 Intentando conectar a:", BACKEND_URL);
+  console.log("📦 Datos enviados:", dto);
+
+  return await axios.post(BACKEND_URL, dto, {
     headers: {
-      Authorization: `Bearer ${token}` // Esto es lo que activa el [Authorize] en C#
+      Authorization: `Bearer ${token}` // Si token es null, aquí dirá "Bearer null" -> Error 401
     }
   });
 };
-
 

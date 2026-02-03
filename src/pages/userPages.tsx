@@ -11,7 +11,6 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]); 
   const [loading, setLoading] = useState(true);
 
-  // Definimos la función de carga
   const loadUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -28,10 +27,8 @@ export default function UsersPage() {
       setLoading(false);
     }
   }, []);
-
-  // 2. EL CAMBIO CLAVE: Llamar a la función dentro del useEffect
   useEffect(() => {
-    loadUsers(); // <--- Faltaba esta línea para que se ejecute al cargar la página
+    loadUsers(); 
   }, [loadUsers]);
   return (
     <div className="space-y-6">

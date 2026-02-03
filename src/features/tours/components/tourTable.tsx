@@ -128,7 +128,7 @@ export function ToursTable() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </TableCell>
+                </TableCell>..
               </TableRow>
             ))}
           </TableBody>
