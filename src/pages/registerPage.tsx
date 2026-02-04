@@ -26,7 +26,6 @@ export default function RegisterPage() {
         lastName: lastName,
         email: email,
         rolId: rolId,
-        // isDeleted: false, // Podrías agregarlo aquí si tu API ya lo espera
       });
 
       alert(`¡Éxito! Se ha enviado un correo de activación a ${email}`); 
@@ -46,15 +45,8 @@ export default function RegisterPage() {
   };
   
   return (
-    /* MODIFICACIÓN 1: 
-       Cambiamos "mx-auto" por "ml-10" (margen izquierdo) o "ml-0" si quieres pegarlo totalmente.
-       Añadimos "max-w-2xl" para que el formulario no se estire demasiado a la derecha.
-    */
+
     <div className="ml-10 max-w-2xl space-y-2 pt-2">
-      
-      {/* MODIFICACIÓN 2: 
-         El botón ahora se alineará naturalmente a la izquierda con el Card 
-      */}
       <Button 
         variant="ghost" 
         onClick={() => navigate("/users")} 

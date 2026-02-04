@@ -9,8 +9,8 @@ import RegisterPage from "@/pages/registerPage"
 import Register from "@/pages/registerPage"
 import MediaPage from "@/pages/content/mediaPage"
 import { Toaster } from "@/components/ui/toaster";
-import DashboardSite from "./pages/dashboard/dashboardSite"
 import {ToursTable} from "./features/tours/components/tourTable"
+import SitePage from "./pages/sitePage"
 export default function App() {
   return (
     <BrowserRouter>
@@ -18,7 +18,7 @@ export default function App() {
   <Route path="/login" element={<LoginPage />} />
   <Route path="/" element={<LoginPage />} />
   <Route path="/changePass" element={<ChangePasswordPage/>} />
-  <Route path="/site" element={<DashboardSite />} />
+  <Route path="/site" element = {<SitePage/>} />
   <Route element={<ProtectedRoute/>}>
     <Route element={<DashboardLayout />}>
      <Route path="/dash" element={<DashboardHome />} />
