@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "@/lib/api"
 import { SiteType } from "@/features/sites/types/siteType";
 export interface LoginRequest {
   email: string;
@@ -29,11 +29,18 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
     localStorage.setItem("userId", data.userId.toString());
     localStorage.setItem("token", data.token);
   }
+
+  if (data.success) {
+  localStorage.setItem("token", data.token);
+}
+
   
   return data;
 };
 
 export const getMe = async (): Promise<MeResponse> => {
-  const { data } = await axios.get(`https://localhost:44351/api/auth/getUserAccess/${userId}`);
+  const { data } = await axios.get(
+    "https://localhost:44351/api/site/user-access"
+  );
   return data;
 };

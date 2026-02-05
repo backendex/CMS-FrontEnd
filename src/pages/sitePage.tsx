@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import  SiteSelector  from "@/features/sites/components/siteSelector";
 import { SiteType } from "@/features/sites/types/siteType";
 import { useEffect, useState } from "react";
 import { getMe } from "@/features/auth/api/auth.api";
 import { useNavigate } from "react-router-dom";
 
-export default function SiteSelectorPage() {
+export default function SitePage() {
   const [sites, setSites] = useState<SiteType[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -22,9 +23,10 @@ export default function SiteSelectorPage() {
       alert("Este sitio está en mantenimiento");
       return;
     }
+    
+    localStorage.setItem("activeSite", JSON.stringify(site));
 
-    localStorage.setItem("activeSiteId", site.id);
-    navigate(`/dashboard/${site.id}`);
+    navigate(`/dash/${site.id}`);
   };
 
   if (loading) {
@@ -38,8 +40,8 @@ export default function SiteSelectorPage() {
         <p>No tienes sitios asignados.</p>
       </div>
     );
-  }
-
+  } 
+   
   return (
     <div className="min-h-screen bg-gray-50 p-10">
       <h1 className="text-3xl font-bold mb-2">CMS</h1>
@@ -53,7 +55,6 @@ export default function SiteSelectorPage() {
             key={site.id}
             site={{
               ...site,
-              url: site.domain,
               color: site.color ?? "#3b82f6",
             }}
             onManage={() => handleManage(site)}
@@ -63,3 +64,4 @@ export default function SiteSelectorPage() {
     </div>
   );
 }
+

@@ -1,7 +1,8 @@
 import { SectionCards } from "@/components/ui/section-cards"
 import rawData from "@/pages/data.json"
-
-export default function DashboardHome() {
+import { Globe } from "lucide-react";
+import { SiteType } from "@/features/sites/types/siteType";
+export default function DashboardHome({ site }: { site: SiteType }) {
   const dashboardItems = rawData
 
   console.log("Datos cargados:", rawData)
