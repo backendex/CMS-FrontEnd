@@ -1,11 +1,15 @@
-import { SectionCards } from "@/components/ui/section-cards"
-import rawData from "@/pages/data.json"
-import { Globe } from "lucide-react";
-import { SiteType } from "@/features/sites/types/siteType";
-export default function DashboardHome({ site }: { site: SiteType }) {
-  const dashboardItems = rawData
+import { SectionCards } from "@/components/ui/section-cards";
+import { useSite } from "@/features/sites/components/siteContext";
+import rawData from "@/pages/data.json";
+import { useEffect } from "react";
+export default function DashboardHome() {
+  const dashboardItems = rawData;
+  const { activeSite } = useSite();
+  useEffect(() => {
+    fetchDashboardData(activeSite.id);
+  }, [activeSite]);
 
-  console.log("Datos cargados:", rawData)
+  console.log("Datos cargados:", rawData);
 
   return (
     <>
@@ -19,7 +23,6 @@ export default function DashboardHome({ site }: { site: SiteType }) {
         <div className="aspect-video rounded-xl bg-muted/50 border border-dashed flex items-center justify-center text-muted-foreground text-sm">
           Gráfico de Ventas
         </div>
-
         <div className="col-span-2 aspect-video rounded-xl bg-muted/50 border border-dashed flex items-center justify-center text-muted-foreground text-sm">
           Actividad Reciente
         </div>
@@ -32,5 +35,8 @@ export default function DashboardHome({ site }: { site: SiteType }) {
         </p>
       </div>
     </>
-  )
+  );
+}
+function fetchDashboardData(id: string) {
+  throw new Error("Function not implemented.");
 }

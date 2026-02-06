@@ -1,24 +1,25 @@
 import { ExternalLink, Globe } from "lucide-react";
 import { SiteType } from "@/features/sites/types/siteType";
+
 interface Props {
   site: SiteType;
-  onManage: (site: SiteType) => void;
+  onManage: () => void;
 }
 
 export default function SiteSelector({ site, onManage }: Props) {
   const isDisabled = !site.isActive;
   const isMaintenance = site.isActive && site.isMaintenance;
 
-  const statusLabel = isDisabled
-    ? "Deshabilitado"
-    : isMaintenance
-      ? "Mantenimiento"
+  const statusLabel = isMaintenance
+    ? "Mantenimiento"
+    : isDisabled
+      ? "Deshabilitado"
       : "Activo";
 
-  const statusClasses = isDisabled
-    ? "bg-gray-200 text-gray-600"
-    : isMaintenance
-      ? "bg-yellow-100 text-yellow-700"
+  const statusClasses = isMaintenance
+    ? "bg-yellow-100 text-yellow-700"
+    : isDisabled
+      ? "bg-gray-200 text-gray-600"
       : "bg-green-100 text-green-700";
 
   return (
@@ -42,6 +43,7 @@ export default function SiteSelector({ site, onManage }: Props) {
             {statusLabel}
           </span>
         </div>
+
         {/* Info */}
         <div>
           <h3 className="font-semibold text-lg">{site.name}</h3>
@@ -52,22 +54,22 @@ export default function SiteSelector({ site, onManage }: Props) {
         <p className="text-sm text-gray-600">
           ↗ {site.toursCount} Tours / Actividades
         </p>
+
         {/* Actions */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => onManage(site)}
-            disabled={isDisabled || isMaintenance}
+            onClick={onManage}
+            disabled={isDisabled}
             className={`flex-1 rounded-lg py-2 text-sm font-medium transition
               ${
-                isDisabled || isMaintenance
+                isDisabled
                   ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                   : "bg-black text-white hover:bg-gray-900"
               }
             `}
-          >
+                    >
             Gestionar →
           </button>
-
           <a
             href={`https://${site.domain}`}
             target="_blank"

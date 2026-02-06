@@ -20,64 +20,51 @@ export function LoginForm({
     e.preventDefault();
     setLoading(true);
     setError("");
-    console.log("SUBMIT PRESIONADO");
-    const res = await login({
-      email: email,
-      password: password,
-    });
 
-    console.log("LOGIN RESPONSE:", res);
-
-    // 1. GUARDAR EL TOKEN
-    localStorage.setItem("token", res.token);
-
-    // 2. GUARDAR EL USERID (Este es el que hace que SitePage funcione dinámicamente)
-    // Asegúrate de usar el nombre exacto que devuelve tu C#: res.userId o res.id
-    if (res.userId) {
-      localStorage.setItem("userId", res.userId.toString());
-    }
-
-    localStorage.setItem(
-      "mustChangePassword",
-      res.mustChangePassword ? "true" : "false",
-    );
     try {
-      console.log("ENVIANDO LOGIN:", {
-        Email: email,
-        Password: password,
-      });
+      console.log("ENVIANDO LOGIN:", { email, password });
 
       const res = await login({
-        email: email,
-        password: password,
+        email,
+        password,
       });
 
-      console.log("LOGIN RESPONSE:", res);
+      console.log("LOGIN RESPONSE RECIBIDA:", res);
 
-      localStorage.setItem("token", res.token);
-      localStorage.setItem(
-        "mustChangePassword",
-        res.mustChangePassword ? "true" : "false",
-      );
-      console.log("ANTES DE NAVEGAR, PATH ACTUAL:", window.location.pathname);
-      if (res.mustChangePassword) {
-        navigate("/changePass", { replace: true });
+      if (res && res.token) {
+        localStorage.setItem("token", res.token);
+        localStorage.removeItem("activeSiteId");
+        
+        const mustChangeStr = res.mustChangePassword ? "true" : "false";
+        localStorage.setItem("mustChangePassword", mustChangeStr);
+
+        if (res.userId) {
+          localStorage.setItem("userId", res.userId.toString());
+        }
+
+        console.log("DATOS GUARDADOS EN STORAGE:", {
+          token: !!localStorage.getItem("token"),
+          mustChange: localStorage.getItem("mustChangePassword")
+        });
+
+        if (res.mustChangePassword) {
+          navigate("/changePass", { replace: true });
+        } else {
+          navigate("/site", { replace: true });
+        }
       } else {
-        //Despues de loguearse y cambiar password redirecciona a site para empezar a gestionar las paginas
-        console.log("REDIRECCIONANDO A /site");
-        navigate("/site", { replace: true });
+        setError("Error: El servidor no devolvió un token válido.");
       }
 
-      setTimeout(() => {
-        console.log("DESPUÉS DE NAVEGAR, PATH:", window.location.pathname);
-      }, 100);
-    } catch (err) {
-      console.error(err);
-      setError("Credenciales inválidas o cuenta deshabilitada");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error("ERROR EN LOGIN:", err);
+      setError(err.response?.data?.message || "Credenciales inválidas o cuenta deshabilitada");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -102,27 +89,30 @@ export function LoginForm({
           <FieldLabel>Email</FieldLabel>
           <Input
             type="email"
+            placeholder="name@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={loading}
           />
         </Field>
 
         <Field>
-          <FieldLabel>Password</FieldLabel>
+          <div className="flex items-center justify-between">
+            <FieldLabel>Password</FieldLabel>
+          </div>
           <Input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={loading}
           />
         </Field>
 
-        <Field>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </Button>
-        </Field>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </Button>
       </FieldGroup>
     </form>
   );
