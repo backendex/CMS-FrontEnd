@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import SiteSelector from "@/features/sites/components/siteSelector";
 import { SiteType } from "@/features/sites/types/siteType";
 import { useEffect, useState } from "react";
@@ -21,19 +20,21 @@ export default function SitePage() {
   }, []);
 
   const handleManage = (site: SiteType) => {
+    
+    console.log("1. Click en gestionar", site.id);
+
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
       return;
     }
-
     if (site.isMaintenance) {
       alert("Este sitio está en mantenimiento");
       return;
     }
-
-    // setActiveSite(site);
-    // navigate(`/dash/${site.id}`);
+    console.log("3. Guardando sitio y navegando...");
+    setActiveSite(site);
+    navigate(`/dash/${site.id}`);
   };
 
   if (loading) {
@@ -48,6 +49,7 @@ export default function SitePage() {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-gray-50 p-10">
       <h1 className="text-3xl font-bold mb-2">CMS</h1>
@@ -69,4 +71,5 @@ export default function SitePage() {
       </div>
     </div>
   );
-}
+} 
+

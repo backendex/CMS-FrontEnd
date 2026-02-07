@@ -9,19 +9,22 @@ import { SiteProvider, useSite } from "@/features/sites/components/siteContext";
 
 export default function DashboardLayout() {
   const location = useLocation();
-
-  const routeTitles: Record<string, string> = {
-    "/dash": "Dashboard",
-    "/users": "Usuarios",
-    "/users/new": "Registro de Usuario",
-    "/postPage": "Envío de información",
-  };
-  const currentTitle = routeTitles[location.pathname] || "Mi CMS";
-  const { siteId } = useParams();
+  const { siteId } = useParams<{ siteId: string }>();
   const { activeSite } = useSite();
 
+  const routeTitles: Record<string, string> = {
+    [`/dash/${siteId}`]: "Dashboard",
+    [`/dash/${siteId}/users`]: "Usuarios",
+    [`/dash/${siteId}/users/new`]: "Nuevo Usuario",
+  };
+
+  const currentTitle = routeTitles[location.pathname] || "Mi CMS";
+  
+  console.log("Guid en Contexto:", activeSite?.id);
+  console.log("Guid en URL:", siteId);
+
   if (!activeSite || activeSite.id !== Number(siteId)) {
-    return <Navigate to="/dash" replace />;
+    return <Navigate to="/site" replace />;
   }
 
   return (
