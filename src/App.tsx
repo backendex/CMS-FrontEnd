@@ -12,17 +12,16 @@ import { Toaster } from "@/components/ui/toaster";
 import {ToursTable} from "./features/tours/components/tourTable"
 import SitePage from "./pages/sitePage"
 import { SiteProvider } from "./features/sites/components/siteContext"
+import  ContentPage  from "@/pages/content/contentPage"
 
 export default function App() {
   return (
     <BrowserRouter>
       <SiteProvider>
         <Routes>
-          {/* Rutas Públicas */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<LoginPage />} />
           <Route path="/changePass" element={<ChangePasswordPage />} />
-          {/* Rutas Protegidas */}
           <Route element={<ProtectedRoute />}>
             <Route path="/site" element={<SitePage />} />
             <Route path="/dash/:siteId" element={<DashboardLayout />}>
@@ -32,6 +31,7 @@ export default function App() {
               <Route path="register" element={<Register />} />
               <Route path="mediaPage" element={<MediaPage />} />
               <Route path="tour" element={<ToursTable />} />
+              <Route path="contenido" element={<ContentPage/>} />
             </Route>
             <Route path="*" element={<Navigate to="/site" replace />} />
           </Route>
@@ -41,3 +41,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+

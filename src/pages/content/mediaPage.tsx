@@ -1,4 +1,3 @@
-import { useState } from "react"; // 1. Agregamos useState
 import { Search, FolderOpen, Globe, MoreVertical} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,25 +10,27 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { CloudinaryUpload } from "@/features/auth/components/cloudinaryUpload";
+import { useState } from "react";
+
 
 export default function MediaPage() {
-  const [mediaItems, setMediaItems] = useState([
+  const [mediaItems, setMedia] = useState([
     { id: 1, url: "https://picsum.photos/seed/51/400/400", name: "hero-banner-v2.jpg", size: "1.2 MB", format: "JPG" },
     { id: 2, url: "https://picsum.photos/seed/52/400/400", name: "footer-logo.png", size: "0.5 MB", format: "PNG" },
   ]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleUploadSuccess = (url: string, metadata: any) => {
+   const handleUploadSuccess = (url: string, metadata: any) => {
     const newMedia = {
-      id: metadata.public_id, // Usamos el ID real de Cloudinary
+      id: metadata.public_id,
       url: url,
       name: metadata.original_filename + "." + metadata.format,
       size: `${(metadata.bytes / 1024 / 1024).toFixed(1)} MB`,
       format: metadata.format.toUpperCase(),
     };
-    setMediaItems((prev) => [newMedia, ...prev]);
-  }
-
+    setMedia((prev) => [newMedia, ...prev]);
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -105,3 +106,5 @@ export default function MediaPage() {
     </div>
   );
 }
+
+

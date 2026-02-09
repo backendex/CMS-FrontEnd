@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { ToursTable } from "@/features/tours/components/tourTable";
 import { TourForm } from "@/features/tours/components/tourForm";
+import { useState } from "react";
 
 export default function ToursPage() {
-  // Un estado simple para decidir qué ver (luego será con rutas)
   const [isEditing, setIsEditing] = useState(false);
-
+ 
   return (
     <div className="container mx-auto">
       {isEditing ? (
@@ -23,3 +22,5 @@ export default function ToursPage() {
     </div>
   );
 }
+
+

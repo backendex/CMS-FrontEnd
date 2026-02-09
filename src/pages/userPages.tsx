@@ -1,35 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState, useCallback } from "react"; // 1. Agregamos useCallback por buena práctica
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Loader2, Plus } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import { UserTable } from "@/features/users/components/userTable"; 
 import { getUsers, User } from "@/features/users/api/users.api";
 
 export default function UsersPage() {
+  const { siteId } = useParams<{ siteId: string }>(); 
   const [users, setUsers] = useState<User[]>([]); 
   const [loading, setLoading] = useState(true);
 
+  
   const loadUsers = useCallback(async () => {
+    if (!siteId || siteId === "undefined") return;
     try {
       setLoading(true);
-      console.log("Iniciando petición a la API...");
+      console.log(`Iniciando petición para el sitio: ${siteId}`);
       
-      const response = await getUsers();
-      console.log("Datos recibidos:", response);
-
+      const response = await getUsers(siteId); // Pasamos el siteId a la API
       setUsers(response);
     } catch (error: any) {
       console.error("Error en la carga:", error);
-      alert("Error de conexión con el servidor");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [siteId]);
+    
   useEffect(() => {
     loadUsers(); 
   }, [loadUsers]);
+
+  if (!siteId) return <p>Cargando contexto del sitio...</p>;
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

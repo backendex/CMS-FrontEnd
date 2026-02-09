@@ -11,7 +11,8 @@ export default function DashboardLayout() {
   const location = useLocation();
   const { siteId } = useParams<{ siteId: string }>();
   const { activeSite } = useSite();
-
+  
+  console.log("Comparando:", activeSite?.id, "con", siteId);
   const routeTitles: Record<string, string> = {
     [`/dash/${siteId}`]: "Dashboard",
     [`/dash/${siteId}/users`]: "Usuarios",
@@ -23,12 +24,15 @@ export default function DashboardLayout() {
   console.log("Guid en Contexto:", activeSite?.id);
   console.log("Guid en URL:", siteId);
 
-  if (!activeSite || activeSite.id !== Number(siteId)) {
+  if (!activeSite) {
+    return <p>Cargando configuración del sitio...</p>; 
+  }
+   if (String(activeSite.id) !== String(siteId)) {
+    console.warn("Divergencia de IDs, redirigiendo...");
     return <Navigate to="/site" replace />;
   }
-
+ 
   return (
-    <SiteProvider>
       <SidebarProvider defaultOpen>
         <AppSidebar />
         <SidebarInset>
@@ -43,6 +47,13 @@ export default function DashboardLayout() {
           </main>
         </SidebarInset>
       </SidebarProvider>
-    </SiteProvider>
   );
 }
+
+
+
+  
+
+
+
+ 

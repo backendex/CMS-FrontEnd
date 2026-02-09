@@ -1,5 +1,5 @@
-import api from "@/lib/api";
-import axios from "axios";
+import {api} from "@/lib/api";
+// import axios from "axios";
 export interface CreateUserDto {
   email: string;
   fullName: string;
@@ -12,23 +12,20 @@ export interface User {
   rolId: number;        
   emailConfirmed: boolean;
 }
-// users.api.ts (o dto.ts)
 export interface ChangePasswordRequest {
   newPassword: string;
   confirmPassword: string;
 }
 
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createUser = async (userData: any) => {
-  const response = await axios.post("https://localhost:44351/api/auth/admin/create-user", userData);
+export const createUser = async(siteId: string, userData: any) => {
+  const response = await api.post(`https://localhost:44351/api/auth/admin/${siteId}/create-user`, userData);
   return response.data;
 };
 
-export const getUsers = async (): Promise<User[]> => {
+export const getUsers = async (siteId: string): Promise<User[]> => {
   try {
-    // Revisa si falta el prefijo "/auth" antes de "/users"
-    const res = await api.get("https://localhost:44351/api/auth/users"); 
+    const res = await api.get(`https://localhost:44351/api/auth/${siteId}/users`); 
     console.log("Status:", res.status);
     return res.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,19 +41,23 @@ export const getUsers = async (): Promise<User[]> => {
   }
 };;
                                                                       
-// En tu servicio de API (users.api.ts o similar)
-export const changePassword = async (dto) => {
-  // 1. Define la URL completa de tu backend
-  const token = localStorage.getItem("token");
-  const BACKEND_URL = "https://localhost:44351/api/auth/changePass"; 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// export const changePassword = async (dto: any) => {
+//   // 1. Define la URL completa de tu backend
+//   const token = localStorage.getItem("token");
+//   const BACKEND_URL = "https://localhost:44351/api/auth/changePass"; 
 
-  console.log("🚀 Intentando conectar a:", BACKEND_URL);
-  console.log("📦 Datos enviados:", dto);
+//   console.log("Intentando conectar a:", BACKEND_URL);
+//   console.log("Datos enviados:", dto);
 
-  return await axios.post(BACKEND_URL, dto, {
-    headers: {
-      Authorization: `Bearer ${token}` // Si token es null, aquí dirá "Bearer null" -> Error 401
-    }
-  });
+//   return await api.post(BACKEND_URL, dto, {
+//     headers: {
+//       Authorization: `Bearer ${token}` // Si token es null, aquí dirá "Bearer null" -> Error 401
+//     }
+//   });
+// };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const changePassword = async (dto: any) => {
+  return await api.post("/auth/changePass", dto);
 };
 

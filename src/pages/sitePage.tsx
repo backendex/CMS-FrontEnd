@@ -49,7 +49,7 @@ export default function SitePage() {
       </div>
     );
   }
-
+  
   return (
     <div className="min-h-screen bg-gray-50 p-10">
       <h1 className="text-3xl font-bold mb-2">CMS</h1>
@@ -57,19 +57,19 @@ export default function SitePage() {
         Selecciona un ecosistema para administrar.
       </p>
 
-      <div className="flex gap-6 flex-wrap">
+      <div className="flex flex-wrap gap-4"> {/* Añadí flex-wrap por si tienes muchos sitios */}
         {sites.map((site) => (
-          <SiteSelector
-            key={site.id}
-            site={{
-              ...site,
-              color: site.color ?? "#3b82f6",
-            }}
-            onManage={() => handleManage(site)}
+          <SiteSelector 
+            key={site.id} 
+            site={site} 
+            // CORRECCIÓN: Usa la función handleManage que definiste arriba
+            onManage={() => handleManage(site)} 
           />
         ))}
       </div>
     </div>
   );
-} 
+}
+  
+
 

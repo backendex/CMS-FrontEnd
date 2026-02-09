@@ -8,6 +8,7 @@ import {
   BadgeCheck,
   CreditCard,
   Bell,
+  ImageIcon,
 } from "lucide-react";
 
 import {
@@ -35,35 +36,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useNavigate } from "react-router-dom";
-// Menú de navegación superior
-const items = [
-  { title: "Dashboard", url: "/dash", icon: LayoutDashboard },
-  { title: "Usuarios", url: "/users", icon: Users },
-  { title: "Tours", url: "/tour", icon: Users },
-  { title: "Gestor de contenido", url: "/content", icon: PieChart },
-  { title: "Biblioteca de medios", url: "/mediaPage", icon: PieChart },
-  { title: "Configuración", url: "/settings", icon: Settings },
-];
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const postItems = [
-  { title: "Enviar información", url: "/postPage", icon: Users },
-  { title: "Historial", url: "/postPage/history", icon: PieChart },
-];
+import { useNavigate, useParams } from "react-router-dom";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function AppSidebar() {
   const navigate = useNavigate(); 
+  const { siteId } = useParams<{ siteId: string }>();
 
+  const items = [
+      { title: "Dashboard", url: `/dash/${siteId}`, icon: LayoutDashboard },
+      { title: "Usuarios", url: `/dash/${siteId}/users`, icon: Users },
+      { title: "Tours", url: `/dash/${siteId}/tour`, icon: Users },
+      { title: "Gestor de contenido", url: `/dash/${siteId}/contenido`, icon: PieChart },
+      { title: "Biblioteca de medios", url: `/dash/${siteId}/mediaPage`, icon: ImageIcon },
+      { title: "Configuración", url: `/dash/${siteId}/settings`, icon: Settings },
+    ];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleLogout = () => {
-    // 1. Limpiamos el storage
     localStorage.removeItem("token");
     localStorage.removeItem("mustChangePassword");
-
-    // 2. Redirigimos al login (usamos replace para limpiar el historial)
+    localStorage.removeItem("activeSite");
     navigate("/login", { replace: true });
   };
+
   return (
     <Sidebar variant="inset" collapsible="icon">
       {/* 1. Encabezado */}

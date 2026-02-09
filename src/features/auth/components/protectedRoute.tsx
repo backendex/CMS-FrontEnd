@@ -8,9 +8,13 @@ export function ProtectedRoute ({children} : ProtectedRouteProps) {
   const mustChange = localStorage.getItem("mustChangePassword") === "true";
   const location = useLocation();
 
-  //validamos
+  console.log("Ruta actual:", location.pathname);
+  console.log("¿Hay Token?:", !!token);
+  console.log("¿Debe cambiar pass?:", mustChange);
+
   if(!token)
   {
+    console.warn("Bloqueado por falta de token");
     return <Navigate to="/login"  state={{from: location}} replace />;
   }
 
