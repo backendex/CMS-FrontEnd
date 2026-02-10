@@ -1,5 +1,4 @@
 import {api} from "@/lib/api";
-// import axios from "axios";
 export interface CreateUserDto {
   email: string;
   fullName: string;
@@ -18,14 +17,14 @@ export interface ChangePasswordRequest {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createUser = async(siteId: string, userData: any) => {
-  const response = await api.post(`https://localhost:44351/api/auth/admin/${siteId}/create-user`, userData);
+export const createUser = async(userData: any) => {
+  const response = await api.post(`https://localhost:44351/api/auth/admin/create-user`, userData);
   return response.data;
 };
 
-export const getUsers = async (siteId: string): Promise<User[]> => {
+export const getUsers = async (): Promise<User[]> => {
   try {
-    const res = await api.get(`https://localhost:44351/api/auth/${siteId}/users`); 
+    const res = await api.get(`https://localhost:44351/users`); 
     console.log("Status:", res.status);
     return res.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

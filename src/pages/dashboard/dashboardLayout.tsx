@@ -20,7 +20,6 @@ export default function DashboardLayout() {
   };
 
   const currentTitle = routeTitles[location.pathname] || "Mi CMS";
-  
   console.log("Guid en Contexto:", activeSite?.id);
   console.log("Guid en URL:", siteId);
 

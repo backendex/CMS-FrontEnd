@@ -1,26 +1,29 @@
 import { useState } from "react";
-import { tourService } from "@/features/tours/services/tourService";
+import { useParams, useNavigate } from "react-router-dom";
+import { TourForm } from "@/features/tours/components/tourForm";
 
-// En tu AddTourPage
-// eslint-disable-next-line react-hooks/rules-of-hooks
-const [formData, setFormData] = useState({
-  name: "",
-  description: "",
-  price: 0,
-  category: "adventure",
-  siteId: "tu-guid-fijo-para-pruebas", // Usa uno que exista en tu DB
-  isActive: true,
-  seoTitle: "",
-  seoDescription: "",
-  slug: ""
-});
+export default function AddTourPage() {
+  const { siteId } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-const handleSave = async () => {
-  try {
-    console.log("Enviando datos...", formData);
-    const result = await tourService.create(formData);
-    alert("Tour guardado en Postgres con ID: " + result.id);
-  } catch (error) {
-    console.error("Error al guardar:", error);
-  }
-};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleCreate = async (data: any) => {
+    if (!siteId) return;
+    setLoading(true);
+    try {
+      navigate(`/dash/${siteId}/tours`);
+    } catch (error) {
+      console.error("Error al crear:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-6">Crear Nuevo Tour</h1>
+      <TourForm onSubmit={handleCreate} isLoading={loading} />
+    </div>
+  );
+}

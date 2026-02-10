@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,34 +7,39 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft } from "lucide-react";
 import { createUser } from "@/features/users/api/users.api";
+import { FormEvent } from 'react';
 
 export default function RegisterPage() {
+  const { siteId } = useParams<{ siteId: string }>();
   const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [rolId, setRolId] = useState<number>(2); // default User
+  const [rolId, setRolId] = useState<number>(2);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // 2. Corregida la firma de la función y quitado el parámetro extra userData
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!siteId) return;
     setLoading(true);
+    e.preventDefault(); 
 
     try {
       await createUser({
-        name: firstName,
-        lastName: lastName,
-        email: email,
-        rolId: rolId,
-      });
-
-      alert(`¡Éxito! Se ha enviado un correo de activación a ${email}`); 
-      navigate("/users");
-
+      name: firstName,
+      lastName: lastName,
+      email: email,
+      rolId: rolId,
+      siteId: siteId 
+    });
+    
+    navigate(`/dash/${siteId}/users`)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error.response?.status === 401) {
-        alert("Sesión de administrador no válida. Por favor, reingresa.");
+        alert("Sesión no válida o sin permisos de administrador.");
       } else {
         alert("Error al crear el usuario.");
         console.error(error);
@@ -43,13 +48,17 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
+
+  if (!siteId || siteId === "undefined") {
+    return <p className="p-10">Cargando contexto del sitio...</p>;
+  }
   
   return (
 
     <div className="ml-10 max-w-2xl space-y-2 pt-2">
       <Button 
         variant="ghost" 
-        onClick={() => navigate("/users")} 
+        onClick={() => navigate(`/${siteId}/users`)} 
         className="group hover:bg-transparent p-0"
       >
         <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
@@ -123,7 +132,7 @@ export default function RegisterPage() {
                 type="button"
                 variant="outline"
                 className="flex-1"
-                onClick={() => navigate("/users")}
+                onClick={() => navigate(`/dash/${siteId}/users`)}
               >
                 Cancelar
               </Button>
