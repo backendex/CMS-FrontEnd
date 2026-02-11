@@ -1,28 +1,79 @@
-import axios from 'axios';
+import api from "@/lib/api";
+import { Tour } from "@/features/tours/types/tourType";
 
-export interface Tour {
-  id?: string;
-  siteid: string;      
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  isactive: boolean;   
-  seotitle: string;    
-  seodescription: string; 
-  slug: string;
-}
+const BASE_URL = "https://localhost:44351/api/tour";
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:44351/api';
+/**
+ * Obtiene todos los tours vinculados a un sitio específico.
+ */
+export const getToursBySite = async (siteId: string): Promise<Tour[]> => {
+  try {
+    const res = await api.get(`${BASE_URL}/${siteId}/getTours`);
+    return res.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.response) {
+      console.error("Error de servidor al obtener tours:", error.response.data);
+    } else if (error.request) {
+      console.error("Error de red: No se pudo contactar con el servidor de tours.");
+    }
+    throw error;
+  }
+};
 
-export const tourService = {
-  getBySite: async (siteId: string): Promise<Tour[]> => {
-    const response = await axios.get(`${API_URL}/tour/site/${siteId}`); 
-    return response.data;
-  },
+/**
+ * Crea un nuevo tour bajo la estructura multisitio.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createTour = async (siteId: string, tourData: any) => {
+  try {
+    const res = await api.post(`${BASE_URL}/createTour`, tourData);
+    return res.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.response) {
+      console.error("Error al crear tour:", error.response.data);
+    }
+    throw error;
+  }
+};
 
-  create: async (tour: Tour): Promise<Tour> => {
-    const response = await axios.post(`${API_URL}/tour`, tour);
-    return response.data;
-  },
+/**
+ * Obtiene el detalle de un tour por su ID único.
+ */
+export const getTourById = async (id: string): Promise<Tour> => {
+  try {
+    const res = await api.get(`${BASE_URL}/${id}`);
+    return res.data;
+  } catch (error: any) {
+    console.error(`Error al obtener el tour con ID ${id}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Actualiza la información de un tour existente.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const updateTour = async (id: string, tourData: any) => {
+  try {
+    const res = await api.put(`${BASE_URL}/${id}`, tourData);
+    return res.data;
+  } catch (error: any) {
+    console.error("Error al actualizar tour:", error);
+    throw error;
+  }
+};
+
+/**
+ * Elimina un tour de la base de datos.
+ */
+export const deleteTour = async (id: string) => {
+  try {
+    const res = await api.delete(`${BASE_URL}/${id}`);
+    return res.data;
+  } catch (error: any) {
+    console.error("Error al eliminar tour:", error);
+    throw error;
+  }
 };
