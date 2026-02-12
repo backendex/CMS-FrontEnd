@@ -7,8 +7,8 @@ interface SiteContextType {
 }
 
 const SiteContext = createContext<SiteContextType | undefined>(undefined);
+const saved = localStorage.getItem("activeSite");
 
-// Hook seguro
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSite = () => {
   const context = useContext(SiteContext);
@@ -20,8 +20,6 @@ export const useSite = () => {
 
 export const SiteProvider = ({ children }: { children: ReactNode }) => {
   const [activeSite, setActiveSiteState] = useState<SiteType | null>(null);
-
-  // 🔄 Persistencia
   useEffect(() => {
     const stored = localStorage.getItem("activeSite");
     if (stored) {

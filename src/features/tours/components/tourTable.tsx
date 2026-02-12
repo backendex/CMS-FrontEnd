@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Loader2 } from "lucide-react";
 // Importamos las funciones directamente como en tu servicio de Auth
 import { getToursBySite, deleteTour } from "../api/tour.api";
-import { Tour } from "@/features/tours/types/tourType";
+import { Tour } from "@/features/tours/types/tourType"; 
 
 interface ToursTableProps {
   siteId?: string;

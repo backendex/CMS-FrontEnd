@@ -49,7 +49,7 @@ export default function SitePage() {
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 p-10">
       <h1 className="text-3xl font-bold mb-2">CMS</h1>
@@ -62,7 +62,6 @@ export default function SitePage() {
           <SiteSelector 
             key={site.id} 
             site={site} 
-            // CORRECCIÓN: Usa la función handleManage que definiste arriba
             onManage={() => handleManage(site)} 
           />
         ))}

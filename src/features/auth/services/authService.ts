@@ -20,7 +20,6 @@ export const login = async (credentials: any) => {
       String(mustChangePassword)
     );
   }
-
   return {
     token,
     mustChangePassword,

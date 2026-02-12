@@ -21,7 +21,7 @@ export default function SiteSelector({ site, onManage }: Props) {
     : isDisabled
       ? "bg-gray-200 text-gray-600"
       : "bg-green-100 text-green-700";
-
+      
   return (
     <div
       className={`w-[300px] rounded-xl border bg-white shadow-sm overflow-hidden

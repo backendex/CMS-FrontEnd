@@ -23,7 +23,6 @@ export function TourForm({ onSubmit, isLoading, initialData }: any) {
     const { name, value } = e.target;
     
     if (name === "name") {
-      // Generación automática de slug al escribir el nombre
       const generatedSlug = value.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
       setFormData({ ...formData, name: value, slug: generatedSlug });
     } else {

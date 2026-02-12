@@ -7,9 +7,6 @@ export default function ContentPage() {
 
   return (
     <div className="container mx-auto pb-10">
-      {/* Pasamos el siteId al Manager para que, en el futuro, 
-        el componente sepa qué textos de qué sitio traer desde C# 
-      */}
       <ContentManager siteId={siteId} />
     </div>
   );

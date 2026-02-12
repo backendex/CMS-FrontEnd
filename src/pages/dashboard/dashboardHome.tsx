@@ -43,6 +43,4 @@ export default function DashboardHome() {
 function fetchDashboardData(id: string) {
   console.log("Cargando datos para el sitio:", id);
 }
-// function fetchDashboardData(id: string) {
-//   throw new Error("Function not implemented.");
-// }
+

@@ -16,13 +16,20 @@ export interface ChangePasswordRequest {
   confirmPassword: string;
 }
 
+export interface CreateUserDto {
+  email: string;
+  fullName: string;
+  rolId: number;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createUser = async(userData: any) => {
   const response = await api.post(`https://localhost:44351/api/auth/admin/create-user`, userData);
   return response.data;
 };
 
-export const getUsers = async (): Promise<User[]> => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getUsers = async (siteId: string): Promise<User[]> => {
   try {
     const res = await api.get(`https://localhost:44351/users`); 
     console.log("Status:", res.status);
@@ -40,21 +47,6 @@ export const getUsers = async (): Promise<User[]> => {
   }
 };;
                                                                       
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// export const changePassword = async (dto: any) => {
-//   // 1. Define la URL completa de tu backend
-//   const token = localStorage.getItem("token");
-//   const BACKEND_URL = "https://localhost:44351/api/auth/changePass"; 
-
-//   console.log("Intentando conectar a:", BACKEND_URL);
-//   console.log("Datos enviados:", dto);
-
-//   return await api.post(BACKEND_URL, dto, {
-//     headers: {
-//       Authorization: `Bearer ${token}` // Si token es null, aquí dirá "Bearer null" -> Error 401
-//     }
-//   });
-// };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const changePassword = async (dto: any) => {
   return await api.post("/auth/changePass", dto);

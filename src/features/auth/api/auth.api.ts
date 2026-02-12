@@ -29,16 +29,12 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
     localStorage.setItem("userId", data.userId.toString());
     localStorage.setItem("token", data.token);
   }
-
-  if (data.success) {
-  localStorage.setItem("token", data.token);
-}
-
   
   return data;
 };
 
-export const getMe = async (): Promise<MeResponse> => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getMe = async (siteId: string): Promise<MeResponse> => {
   const { data } = await axios.get(
     "https://localhost:44351/api/site/user-access"
   );
