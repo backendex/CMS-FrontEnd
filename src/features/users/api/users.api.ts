@@ -27,7 +27,6 @@ export const createUser = async(userData: any) => {
   const response = await api.post(`https://localhost:44351/api/auth/admin/create-user`, userData);
   return response.data;
 };
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getUsers = async (siteId: string): Promise<User[]> => {
   try {
@@ -45,8 +44,7 @@ export const getUsers = async (siteId: string): Promise<User[]> => {
     }
     throw error;
   }
-};;
-                                                                      
+};;                                                                   
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const changePassword = async (dto: any) => {
   return await api.post("/auth/changePass", dto);

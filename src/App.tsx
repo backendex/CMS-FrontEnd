@@ -9,10 +9,12 @@ import RegisterPage from "@/pages/registerPage"
 import Register from "@/pages/registerPage"
 import MediaPage from "@/pages/content/mediaPage"
 import { Toaster } from "@/components/ui/toaster";
-import {ToursTable} from "./features/tours/components/tourTable"
+// import {ToursTable} from "./features/tours/components/tourTable"
 import SitePage from "./pages/sitePage"
 import { SiteProvider } from "./features/sites/components/siteContext"
 import  ContentPage  from "@/pages/content/contentPage"
+import TourPage from "@/pages/content/Tour/tourPage"
+import AddTourPage from "./pages/content/Tour/addTourPage"
 
 export default function App() {
   return (
@@ -30,7 +32,8 @@ export default function App() {
               <Route path="users/new" element={<RegisterPage />} />
               <Route path="register" element={<Register />} />
               <Route path="mediaPage" element={<MediaPage />} />
-              <Route path="tour" element={<ToursTable />} />
+              <Route path="tour" element={<TourPage/>} />
+              <Route path="tour/new" element={<AddTourPage/>} />
               <Route path="contenido" element={<ContentPage/>} />
             </Route>
             <Route path="*" element={<Navigate to="/site" replace />} />

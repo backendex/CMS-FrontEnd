@@ -4,8 +4,9 @@ import { useEffect, useState, useCallback } from "react"; // 1. Agregamos useCal
 import { Link, useParams } from "react-router-dom";
 import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserTable } from "@/features/users/components/userTable";
+//import { UserTable } from "@/features/users/components/userTable";
 import { getUsers, User } from "@/features/users/api/users.api";
+import { UserTable } from "@/features/users/components/userTable";
 
 export default function UsersPage() {
   const { siteId } = useParams<{ siteId: string }>();

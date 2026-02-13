@@ -1,33 +1,44 @@
 import api from "@/lib/api";
 import { Tour } from "@/features/tours/types/tourType";
 
-const BASE_URL = "https://localhost:44351/api/tour";
+//const BASE_URL = "https://localhost:44351/api/tour";
 
-/**
- * Obtiene todos los tours vinculados a un sitio específico.
- */
-export const getToursBySite = async (siteId: string): Promise<Tour[]> => {
+export const getTour = async (siteId: string): Promise<Tour[]> => {
   try {
-    const res = await api.get(`${BASE_URL}/${siteId}/getTours`);
+    if (!siteId || siteId === "") {
+      console.warn("getTour fue llamado sin un siteId válido.");
+      return [];
+    }
+    const res = await api.get(`https://localhost:44351/api/tour/getTour${siteId}`);
+    
+    console.log("Datos crudos desde .NET:", res.data);
+    
+    if (!Array.isArray(res.data)) {
+      console.error("La API no devolvió un array. Se recibió:", res.data);
+      return [];
+    }
     return res.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    if (error.response) {
-      console.error("Error de servidor al obtener tours:", error.response.data);
-    } else if (error.request) {
-      console.error("Error de red: No se pudo contactar con el servidor de tours.");
-    }
+    console.error("Error en la petición GET tours:", error);
     throw error;
   }
 };
 
-/**
- * Crea un nuevo tour bajo la estructura multisitio.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createTour = async (siteId: string, tourData: any) => {
+export const getTourById = async (siteId: string): Promise<Tour> => {
   try {
-    const res = await api.post(`${BASE_URL}/createTour`, tourData);
+    const res = await api.get(`https://localhost:44351/api/tour/getTourById`);
+    return res.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error(`Error al obtener el tour con ID ${siteId}:`, error);
+    throw error;
+  }
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createTour = async (tourData: any) => {
+  try {
+    const res = await api.post(`https://localhost:44351/api/tour/createTour`, tourData);
     return res.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -38,42 +49,27 @@ export const createTour = async (siteId: string, tourData: any) => {
   }
 };
 
-/**
- * Obtiene el detalle de un tour por su ID único.
- */
-export const getTourById = async (id: string): Promise<Tour> => {
-  try {
-    const res = await api.get(`${BASE_URL}/${id}`);
-    return res.data;
-  } catch (error: any) {
-    console.error(`Error al obtener el tour con ID ${id}:`, error);
-    throw error;
-  }
-};
-
-/**
- * Actualiza la información de un tour existente.
- */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const updateTour = async (id: string, tourData: any) => {
   try {
-    const res = await api.put(`${BASE_URL}/${id}`, tourData);
+    const res = await api.put(`https://localhost:44351/api/tour/${id}`, tourData);
     return res.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Error al actualizar tour:", error);
     throw error;
   }
 };
 
-/**
- * Elimina un tour de la base de datos.
- */
 export const deleteTour = async (id: string) => {
   try {
-    const res = await api.delete(`${BASE_URL}/${id}`);
+    const res = await api.delete(`https://localhost:44351/api/tour/${id}`);
     return res.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Error al eliminar tour:", error);
     throw error;
   }
 };
+
+

@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash2, Loader2 } from "lucide-react";
+// Importamos las funciones directamente como en tu servicio de Auth
+import { getTour, deleteTour } from "../api/tour.api";
+import { Tour } from "@/features/tours/types/tourType"; 
+//import { useCallback, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,15 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Loader2 } from "lucide-react";
-// Importamos las funciones directamente como en tu servicio de Auth
-import { getToursBySite, deleteTour } from "../api/tour.api";
-import { Tour } from "@/features/tours/types/tourType"; 
-
 interface ToursTableProps {
-  siteId?: string;
+  siteId?: Tour;
 }
 
 export function ToursTable({ siteId }: ToursTableProps) {
@@ -28,11 +28,10 @@ export function ToursTable({ siteId }: ToursTableProps) {
     if (!siteId) {
       setLoading(false);
       return;
-    }
-    
+    }    
     try {
       setLoading(true);
-      const data = await getToursBySite(siteId);
+      const data = await getTour(siteId);
       setTours(data);
     } catch (error) {
       console.error("Error en el componente ToursTable:", error);
@@ -41,7 +40,6 @@ export function ToursTable({ siteId }: ToursTableProps) {
     }
   }, [siteId]);
 
-  
   useEffect(() => {
     loadTours();
   }, [siteId, loadTours]); 
@@ -52,7 +50,6 @@ export function ToursTable({ siteId }: ToursTableProps) {
 
     try {
       await deleteTour(id);
-      // Actualizamos la lista localmente para no tener que recargar toda la página
       setTours(tours.filter((t) => t.id !== id));
     } catch (error) {
       alert("No se pudo eliminar el tour.");
@@ -68,7 +65,7 @@ export function ToursTable({ siteId }: ToursTableProps) {
   }
 
   return (
-    <div className="rounded-md border bg-white shadow-sm">
+    <div className="w-full bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
       <Table>
         <TableHeader>
           <TableRow>

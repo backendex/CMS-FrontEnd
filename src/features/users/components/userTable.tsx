@@ -27,9 +27,8 @@ interface UserTableProps {
 }
 
 // 3. Modifica la función para recibir las props
-export function UserTable({ users }: UserTableProps) { // <-- Recibe los datos aquí
+export function UserTable({ users = [] }: UserTableProps) { // <-- Recibe los datos aquí
   
-  // Helper actualizado para usar los datos reales de la base de datos
   const getStatusStyles = (confirmed: boolean) => {
     if (confirmed) {
       return "bg-green-100 text-green-700 hover:bg-green-100 border-none px-3 py-1";
@@ -40,7 +39,6 @@ export function UserTable({ users }: UserTableProps) { // <-- Recibe los datos a
   return (
     <div className="w-full bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
       <Table>
-        {/* ... (TableHeader se mantiene igual) ... */}
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id} className="group hover:bg-slate-50/30 transition-colors">
@@ -87,7 +85,6 @@ export function UserTable({ users }: UserTableProps) { // <-- Recibe los datos a
           ))}
         </TableBody>
       </Table>
-      {/* ... (Footer de paginación) ... */}
     </div>
   );
 }
