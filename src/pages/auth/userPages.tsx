@@ -5,7 +5,8 @@ import { Link, useParams } from "react-router-dom";
 import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 //import { UserTable } from "@/features/users/components/userTable";
-import { getUsers, User } from "@/features/users/api/users.api";
+import { getUsers } from "@/features/auth/api/auth.api";
+import { User } from "@/features/auth/types/authType"
 import { UserTable } from "@/features/users/components/userTable";
 
 export default function UsersPage() {

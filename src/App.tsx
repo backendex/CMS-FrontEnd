@@ -1,18 +1,16 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import LoginPage from "@/pages/loginPage"
-import ChangePasswordPage from "@/pages/changePasswordPage"
+import LoginPage from "@/pages/auth/loginPage"
+import ChangePasswordPage from "@/pages/auth/changePasswordPage"
 import DashboardLayout from "@/pages/dashboard/dashboardLayout"
 import DashboardHome from "@/pages/dashboard/dashboardHome"
-import UsersPage from "@/pages/userPages"
+import UsersPage from "@/pages/auth/userPages"
 import  {ProtectedRoute}  from "@/features/auth/components/protectedRoute"
-import RegisterPage from "@/pages/registerPage"
-import Register from "@/pages/registerPage"
+import RegisterPage from "@/pages/auth/registerPage"
+import Register from "@/pages/auth/registerPage"
 import MediaPage from "@/pages/content/mediaPage"
 import { Toaster } from "@/components/ui/toaster";
-// import {ToursTable} from "./features/tours/components/tourTable"
 import SitePage from "./pages/sitePage"
 import { SiteProvider } from "./features/sites/components/siteContext"
-import  ContentPage  from "@/pages/content/contentPage"
 import TourPage from "@/pages/content/Tour/tourPage"
 import AddTourPage from "./pages/content/Tour/addTourPage"
 
@@ -34,7 +32,6 @@ export default function App() {
               <Route path="mediaPage" element={<MediaPage />} />
               <Route path="tour" element={<TourPage/>} />
               <Route path="tour/new" element={<AddTourPage/>} />
-              <Route path="contenido" element={<ContentPage/>} />
             </Route>
             <Route path="*" element={<Navigate to="/site" replace />} />
           </Route>

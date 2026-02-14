@@ -1,10 +1,5 @@
 import { ExternalLink, Globe } from "lucide-react";
-import { SiteType } from "@/features/sites/types/siteType";
-
-interface Props {
-  site: SiteType;
-  onManage: () => void;
-}
+import { Props } from "@/features/sites/types/siteType";
 
 export default function SiteSelector({ site, onManage }: Props) {
   const isDisabled = !site.isActive;

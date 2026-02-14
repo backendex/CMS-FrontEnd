@@ -18,3 +18,6 @@ export interface Tour {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dynamic_data: any;
 }
+export interface ToursTableProps {
+  tours: Tour;
+}

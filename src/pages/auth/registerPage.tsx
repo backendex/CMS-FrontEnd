@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft } from "lucide-react";
-import { createUser } from "@/features/users/api/users.api";
+import { createUser } from "@/features/auth/api/auth.api";
 import { FormEvent } from 'react';
 
 export default function RegisterPage() {

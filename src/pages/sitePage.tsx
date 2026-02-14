@@ -1,7 +1,7 @@
 import SiteSelector from "@/features/sites/components/siteSelector";
 import { SiteType } from "@/features/sites/types/siteType";
 import { useEffect, useState } from "react";
-import { getMe } from "@/features/auth/api/auth.api";
+import { getMe } from "@/features/sites/api/site.api";
 import { useNavigate } from "react-router-dom";
 import { useSite } from "@/features/sites/components/siteContext";
 

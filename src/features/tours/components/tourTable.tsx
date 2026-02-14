@@ -3,10 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Loader2 } from "lucide-react";
-// Importamos las funciones directamente como en tu servicio de Auth
 import { getTour, deleteTour } from "../api/tour.api";
-import { Tour } from "@/features/tours/types/tourType"; 
-//import { useCallback, useEffect, useState } from "react";
+import { Tour,ToursTableProps } from "@/features/tours/types/tourType"; 
 import {
   Table,
   TableBody,
@@ -15,35 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-interface ToursTableProps {
-  siteId?: Tour;
-}
 
 export function ToursTable({ siteId }: ToursTableProps) {
   console.log("Prop siteId recibida en el componente Tabla:", siteId);
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const loadTours = useCallback(async () => {
-    if (!siteId) {
-      setLoading(false);
-      return;
-    }    
-    try {
-      setLoading(true);
-      const data = await getTour(siteId);
-      setTours(data);
-    } catch (error) {
-      console.error("Error en el componente ToursTable:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [siteId]);
-
-  useEffect(() => {
-    loadTours();
-  }, [siteId, loadTours]); 
-
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("¿Estás seguro de eliminar este tour?")) return;

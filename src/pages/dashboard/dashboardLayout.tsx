@@ -5,7 +5,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/pages/sidebar";
-import { SiteProvider, useSite } from "@/features/sites/components/siteContext";
+import { useSite } from "@/features/sites/components/siteContext";
 
 export default function DashboardLayout() {
   const location = useLocation();

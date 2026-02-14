@@ -3,11 +3,10 @@ import { Link } from "react-router-dom";
 import { Loader2, Plus } from "lucide-react"; 
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { UserTable } from "@/features/users/components/userTable";
 import {getTour} from "@/features/tours/api/tour.api"
 import {Tour} from "@/features/tours/types/tourType"
 import { useCallback } from "react";
-
+import { ToursTable } from "@/features/tours/components/tourTable";
 
 export default function TourPage() {
   const { siteId } = useParams(); 
@@ -19,6 +18,7 @@ export default function TourPage() {
       try {
         setLoading(true);
         console.log(`Iniciando petición para el sitio: ${siteId}`);
+        
         const response = await getTour(siteId);
         setTour(response);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,8 +56,8 @@ export default function TourPage() {
           <div className="flex justify-center py-10">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
-        ) : (
-          <UserTable tours={tour} />
+        ) : (                   
+           <ToursTable tours ={tour} />
         )}
       </div>
     </div>
