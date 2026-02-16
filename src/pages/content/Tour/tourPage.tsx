@@ -8,7 +8,7 @@ import {Tour} from "@/features/tours/types/tourType"
 import { useCallback } from "react";
 import { ToursTable } from "@/features/tours/components/tourTable";
 
-export default function TourPage() {
+export function TourPage() {
   const { siteId } = useParams(); 
   const [loading, setLoading] = useState(true);
   const [tour, setTour] = useState<Tour[]>([]);

@@ -1,34 +1,17 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Edit2, Trash2 } from "lucide-react";
+import {UserTableProps} from "@/features/users/types/userType"
 import { 
   Table, 
   TableBody, 
   TableCell, 
   TableRow 
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Edit2, Trash2 } from "lucide-react";
 
-// 1. Datos de ejemplo (Mock Data) basados en tu imagen
-// 1. Define la interfaz para que coincida con tu Backend
-interface User {
-  id: string;
-  fullName: string;   // Cambiado de 'name' para coincidir con tu API
-  email: string;
-  rolId: number;      // Cambiado de 'role' string a ID numérico
-  emailConfirmed: boolean; // Usaremos esto para el Status
-  avatar?: string;
-}
-
-// 2. Define las Props
-interface UserTableProps {
-  users: User[];
-}
-
-// 3. Modifica la función para recibir las props
 export function UserTable({ users = [] }: UserTableProps) { // <-- Recibe los datos aquí
-  
   const getStatusStyles = (confirmed: boolean) => {
     if (confirmed) {
       return "bg-green-100 text-green-700 hover:bg-green-100 border-none px-3 py-1";

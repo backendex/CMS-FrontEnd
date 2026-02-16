@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom"; // El hook debe estar en el nive
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-
 import { useToast } from "@/components/ui/use-toast";
-import { changePassword } from "@/features/auth/api/auth.api";
+// import { changePassword } from "@/features/auth/api/auth.api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,7 +29,6 @@ const formSchema = z
   });
 
 export default function ChangePasswordPage() {
-  // 1. TODOS los hooks se llaman al principio, siempre, sin condiciones.
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -54,7 +52,7 @@ export default function ChangePasswordPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
   setLoading(true);
   try {
-    await changePassword({
+    await changePasswordPage({
       newPassword: values.newPassword,
       confirmPassword: values.confirmPassword,
     });

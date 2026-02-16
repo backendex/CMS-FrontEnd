@@ -54,7 +54,6 @@ export default function RegisterPage() {
   }
   
   return (
-
     <div className="ml-10 max-w-2xl space-y-2 pt-2">
       <Button 
         variant="ghost" 
@@ -136,7 +135,6 @@ export default function RegisterPage() {
               >
                 Cancelar
               </Button>
-
               <Button type="submit" className="flex-1" disabled={loading}>
                 {loading ? "Registrando..." : "Crear Usuario"}
               </Button>

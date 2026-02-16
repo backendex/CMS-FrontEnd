@@ -11,8 +11,9 @@ import MediaPage from "@/pages/content/mediaPage"
 import { Toaster } from "@/components/ui/toaster";
 import SitePage from "./pages/sitePage"
 import { SiteProvider } from "./features/sites/components/siteContext"
-import TourPage from "@/pages/content/Tour/tourPage"
+import {TourPage} from "@/pages/content/Tour/tourPage"
 import AddTourPage from "./pages/content/Tour/addTourPage"
+import { TourEditPage } from "./pages/content/Tour/tourEditPage"
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
               <Route path="mediaPage" element={<MediaPage />} />
               <Route path="tour" element={<TourPage/>} />
               <Route path="tour/new" element={<AddTourPage/>} />
+              <Route path="tour/edit" element={<TourEditPage/>} />
             </Route>
             <Route path="*" element={<Navigate to="/site" replace />} />
           </Route>

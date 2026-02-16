@@ -20,4 +20,5 @@ export interface Tour {
 }
 export interface ToursTableProps {
   tours: Tour;
+  siteId?: Tour;
 }

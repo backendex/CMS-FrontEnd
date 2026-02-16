@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from "react"; // 1. Agregamos useCal
 import { Link, useParams } from "react-router-dom";
 import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-//import { UserTable } from "@/features/users/components/userTable";
 import { getUsers } from "@/features/auth/api/auth.api";
 import { User } from "@/features/auth/types/authType"
 import { UserTable } from "@/features/users/components/userTable";
@@ -19,7 +18,6 @@ export default function UsersPage() {
     try {
       setLoading(true);
       console.log(`Iniciando petición para el sitio: ${siteId}`);
-
       const response = await getUsers(siteId);
       setUsers(response);
     } catch (error: any) {
@@ -45,7 +43,6 @@ export default function UsersPage() {
           </p>
         </div>
         <Button asChild>
-          {/* Construimos la ruta relativa al dashboard del sitio actual */}
           <Link to={`/dash/${siteId}/users/new`} className="flex items-center">
             <Plus className="mr-2 h-4 w-4" />
             Agregar Usuario

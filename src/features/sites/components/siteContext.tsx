@@ -1,12 +1,9 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { SiteType } from "@/features/sites/types/siteType";
-
-interface SiteContextType {
-  activeSite: SiteType | null;
-  setActiveSite: (site: SiteType) => void;
-}
+import {SiteContextType} from "@/features/sites/types/siteType"
 
 const SiteContext = createContext<SiteContextType | undefined>(undefined);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const saved = localStorage.getItem("activeSite");
 
 // eslint-disable-next-line react-refresh/only-export-components
