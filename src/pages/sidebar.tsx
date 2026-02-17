@@ -46,6 +46,7 @@ export function AppSidebar() {
       { title: "Dashboard", url: `/dash/${siteId}`, icon: LayoutDashboard },
       { title: "Usuarios", url: `/dash/${siteId}/users`, icon: Users },
       { title: "Tours", url: `/dash/${siteId}/tour`, icon: Users },
+      {title : "Blog", url:`/dash/${siteId}/blog`, icon: Users},
       { title: "Gestor de contenido", url: `/dash/${siteId}/contenido`, icon: PieChart },
       { title: "Biblioteca de medios", url: `/dash/${siteId}/mediaPage`, icon: ImageIcon },
       { title: "Configuración", url: `/dash/${siteId}/settings`, icon: Settings },
