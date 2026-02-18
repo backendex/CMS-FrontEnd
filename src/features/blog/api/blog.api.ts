@@ -22,7 +22,7 @@ export const createPost = async (postData: BlogPost): Promise<{ id: number; mess
 /**
  * Obtiene la lista de blogs (puedes filtrar por siteId después)
  */
-export const getBlogs = async (): Promise<BlogPost[]> => {
+export const getBlogs = async (siteId: string): Promise<BlogPost[]> => {
   try {
     const res = await api.get(`${BASE_URL}/getPosts`); 
     return res.data;

@@ -15,13 +15,13 @@ export default function AddTourPage() {
   try {
     const payload = {
       ...data,
-      siteId: siteId, // El GUID que tu controlador exige
-      category: "General", // Agrega este campo si tu DTO lo pide como obligatorio
+      siteId: siteId, 
+      category: "General", 
     };
 
     await createTour(payload);
     alert("¡Tour añadido exitosamente!");
-    navigate(`/dash/${siteId}/tours`); // Cambia a la ruta de la lista
+    navigate(`/dash/${siteId}/tours`); 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Error de validación:", error.response?.data?.errors);

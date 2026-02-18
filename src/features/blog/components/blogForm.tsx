@@ -1,20 +1,22 @@
 import React, { useState } from "react";
-import { useYoastAnalysis } from "@/features/blog/hooks/useYoastAnalyst"; // Verifica que el nombre del archivo sea exacto
-import { BlogPost } from "../types/types";
-import {BlogFormProps} from "@/features/blog/types/types"
+import { useYoastAnalysis } from "@/features/blog/hooks/useYoastAnalyst"; 
+import { BlogPost, BlogFormProps } from "@/features/blog/types/types";
+import { Button } from "@/components/ui/button";
+import GooglePreview from "@/features/blog/components/googlePreview"; 
 
 const defaultPost: BlogPost = {
   title: '',
   slug: '',
   content: '',
-  siteId: 'extreme-adventure', // Valor inicial
+  siteId: '', 
+  featuredImage: '', 
   seoData: {
     seoTitle: '',
     metaDescription: '',
     focusKeyword: '',
-    ogTitle: '',
+    ogTitle: '',        
     ogDescription: '',
-    ogImage: '',
+    ogImage: '', 
     canonicalUrl: '',
     robotsContent: 'index, follow'
   }
@@ -22,11 +24,8 @@ const defaultPost: BlogPost = {
 
 export const BlogForm: React.FC<BlogFormProps> = ({ initialData, onSubmit, isSubmitting }) => {
   const [post, setPost] = useState<BlogPost>(initialData || defaultPost);
-  
-  // Tu hook de inteligencia SEO
   const seoScore = useYoastAnalysis(post.content, post.title, post.seoData);
 
-  // Función para actualizar campos anidados (como seoData)
   const handleSeoChange = (field: string, value: string) => {
     setPost({
       ...post,
@@ -34,10 +33,30 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialData, onSubmit, isSub
     });
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const autoSlug = post.slug || post.title.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    const imgUrl = post.featuredImage || 'https://via.placeholder.com/800';
+
+    const finalPost = {
+      ...post,
+      slug: autoSlug,
+      featuredImage: imgUrl,
+      seoData: {
+        ...post.seoData,
+        ogTitle: post.seoData.ogTitle || post.title,
+        ogDescription: post.seoData.ogDescription || post.seoData.metaDescription,
+        ogImage: post.seoData.ogImage || imgUrl,
+        canonicalUrl: post.seoData.canonicalUrl || `https://tusitio.com/blog/${autoSlug}`
+      }
+    };
+    onSubmit(finalPost);
+  };
+
   return (
-    <div style={{ display: 'flex', gap: '40px', padding: '20px' }}>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '40px', padding: '20px' }}>
       
-      {/* SECCIÓN IZQUIERDA: Editor de Contenido */}
+      {/* SECCIÓN IZQUIERDA: Editor */}
       <div style={{ flex: 2 }}>
         <input 
           style={{ width: '100%', fontSize: '2rem', marginBottom: '20px' }}
@@ -46,6 +65,10 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialData, onSubmit, isSub
           onChange={(e) => setPost({...post, title: e.target.value})}
         />
         
+        <div style={{ marginBottom: '20px', fontSize: '0.9rem', color: '#666' }}>
+          <strong>Slug:</strong> {post.slug || 'se generará del título'}
+        </div>
+
         <textarea 
           style={{ width: '100%', minHeight: '400px' }}
           placeholder="Escribe aquí la historia de tu tour..."
@@ -54,18 +77,18 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialData, onSubmit, isSub
         />
       </div>
 
-      {/* SECCIÓN DERECHA: Sidebar de Yoast SEO */}
+      {/* SECCIÓN DERECHA: Sidebar */}
       <aside style={{ flex: 1, background: '#f9f9f9', padding: '20px', borderRadius: '8px' }}>
-        <h3>Análisis SEO</h3>
+        <h3 style={{ marginBottom: '15px' }}>Análisis SEO</h3>
         
-        {/* Semáforo Visual */}
         <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             padding: '10px', 
             background: '#fff', 
             borderRadius: '5px',
-            border: `1px solid ${seoScore.color}` 
+            border: `1px solid ${seoScore.color}`,
+            marginBottom: '20px'
         }}>
           <div style={{ 
             width: 15, height: 15, borderRadius: '50%', 
@@ -74,7 +97,28 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialData, onSubmit, isSub
           <strong>{seoScore.message} ({seoScore.points}/100)</strong>
         </div>
 
+        {/* 2. AQUÍ APARECE EL PREVIEW (Justo debajo del semáforo) */}
+        <div style={{ marginBottom: '25px' }}>
+          <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold', fontSize: '14px' }}>
+            Vista previa en Google:
+          </label>
+          <GooglePreview 
+            title={post.seoData.seoTitle || post.title} 
+            slug={post.slug} 
+            description={post.seoData.metaDescription} 
+            siteDomain="tusitio.com" 
+          />
+        </div>
+
         <div style={{ marginTop: '20px' }}>
+          <label>URL Imagen Destacada</label>
+          <input 
+            style={{ width: '100%', marginBottom: '15px' }}
+            placeholder="https://link-de-tu-imagen.jpg"
+            value={post.featuredImage}
+            onChange={(e) => setPost({...post, featuredImage: e.target.value})}
+          />
+
           <label>Palabra Clave (Focus Keyword)</label>
           <input 
             style={{ width: '100%', marginBottom: '15px' }}
@@ -97,14 +141,14 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialData, onSubmit, isSub
           />
         </div>
 
-        <button 
-          onClick={() => onSubmit(post)}
+        <Button 
+          type="submit"
           disabled={isSubmitting}
-          style={{ width: '100%', marginTop: '20px', padding: '10px', background: '#007bff', color: '#fff' }}
+          style={{ width: '100%', marginTop: '20px', padding: '10px'}}
         >
-          {isSubmitting ? 'Guardando...' : 'Guardar en Postgres'}
-        </button>
+          {isSubmitting ? 'Guardando...' : 'Guardar blog'}
+        </Button>
       </aside>
-    </div>
+    </form>
   );
 };

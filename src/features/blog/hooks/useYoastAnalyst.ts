@@ -42,7 +42,7 @@ export const useYoastAnalysis = (content: string, title: string, seoData: SeoMet
       setScore({ color: '#4caf50', message: '¡SEO Excelente!', points: currentPoints }); // Verde
     }
 
-  }, [content, title, seoData]); // Se dispara cada vez que algo cambia
+  }, [content, title, seoData]);
 
   return score;
 };
