@@ -2,153 +2,148 @@ import React, { useState } from "react";
 import { useYoastAnalysis } from "@/features/blog/hooks/useYoastAnalyst"; 
 import { BlogPost, BlogFormProps } from "@/features/blog/types/types";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
 import GooglePreview from "@/features/blog/components/googlePreview"; 
 
-const defaultPost: BlogPost = {
-  title: '',
-  slug: '',
-  content: '',
-  siteId: '', 
-  featuredImage: '', 
-  seoData: {
-    seoTitle: '',
-    metaDescription: '',
-    focusKeyword: '',
-    ogTitle: '',        
-    ogDescription: '',
-    ogImage: '', 
-    canonicalUrl: '',
-    robotsContent: 'index, follow'
-  }
-};
-
 export const BlogForm: React.FC<BlogFormProps> = ({ initialData, onSubmit, isSubmitting }) => {
-  const [post, setPost] = useState<BlogPost>(initialData || defaultPost);
+  const [post, setPost] = useState<BlogPost>(initialData || {
+    title: '', slug: '', content: '', siteId: '', featuredImage: '',
+    seoData: { seoTitle: '', metaDescription: '', focusKeyword: '', ogTitle: '', ogDescription: '', ogImage: '', canonicalUrl: '', robotsContent: 'index, follow' }
+  });
+
   const seoScore = useYoastAnalysis(post.content, post.title, post.seoData);
 
   const handleSeoChange = (field: string, value: string) => {
-    setPost({
-      ...post,
-      seoData: { ...post.seoData, [field]: value }
-    });
+    setPost({ ...post, seoData: { ...post.seoData, [field]: value } });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const autoSlug = post.slug || post.title.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-    const imgUrl = post.featuredImage || 'https://via.placeholder.com/800';
-
-    const finalPost = {
-      ...post,
-      slug: autoSlug,
-      featuredImage: imgUrl,
-      seoData: {
-        ...post.seoData,
-        ogTitle: post.seoData.ogTitle || post.title,
-        ogDescription: post.seoData.ogDescription || post.seoData.metaDescription,
-        ogImage: post.seoData.ogImage || imgUrl,
-        canonicalUrl: post.seoData.canonicalUrl || `https://tusitio.com/blog/${autoSlug}`
-      }
-    };
-    onSubmit(finalPost);
+    onSubmit({ ...post, slug: autoSlug });
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '40px', padding: '20px' }}>
+    <form onSubmit={handleSubmit} className="space-y-8 p-6 max-w-5xl mx-auto">
       
-      {/* SECCIÓN IZQUIERDA: Editor */}
-      <div style={{ flex: 2 }}>
-        <input 
-          style={{ width: '100%', fontSize: '2rem', marginBottom: '20px' }}
-          placeholder="Título del Post"
-          value={post.title}
-          onChange={(e) => setPost({...post, title: e.target.value})}
-        />
-        
-        <div style={{ marginBottom: '20px', fontSize: '0.9rem', color: '#666' }}>
-          <strong>Slug:</strong> {post.slug || 'se generará del título'}
-        </div>
-
-        <textarea 
-          style={{ width: '100%', minHeight: '400px' }}
-          placeholder="Escribe aquí la historia de tu tour..."
-          value={post.content}
-          onChange={(e) => setPost({...post, content: e.target.value})}
-        />
-      </div>
-
-      {/* SECCIÓN DERECHA: Sidebar */}
-      <aside style={{ flex: 1, background: '#f9f9f9', padding: '20px', borderRadius: '8px' }}>
-        <h3 style={{ marginBottom: '15px' }}>Análisis SEO</h3>
-        
-        <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            padding: '10px', 
-            background: '#fff', 
-            borderRadius: '5px',
-            border: `1px solid ${seoScore.color}`,
-            marginBottom: '20px'
-        }}>
-          <div style={{ 
-            width: 15, height: 15, borderRadius: '50%', 
-            backgroundColor: seoScore.color, marginRight: 10 
-          }} />
-          <strong>{seoScore.message} ({seoScore.points}/100)</strong>
-        </div>
-
-        {/* 2. AQUÍ APARECE EL PREVIEW (Justo debajo del semáforo) */}
-        <div style={{ marginBottom: '25px' }}>
-          <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold', fontSize: '14px' }}>
-            Vista previa en Google:
-          </label>
-          <GooglePreview 
-            title={post.seoData.seoTitle || post.title} 
-            slug={post.slug} 
-            description={post.seoData.metaDescription} 
-            siteDomain="tusitio.com" 
+      {/* SECCIÓN DEL EDITOR PRINCIPAL */}
+      <Card className="border-none shadow-none bg-transparent">
+        <CardContent className="p-0 space-y-4">
+          <Input 
+            className="text-4xl font-bold h-auto py-4 border-none shadow-none focus-visible:ring-0 placeholder:opacity-50"
+            placeholder="Añadir el título"
+            value={post.title}
+            onChange={(e) => setPost({...post, title: e.target.value})}
           />
-        </div>
+          
+          <div className="text-sm text-muted-foreground px-3">
+            <strong>Enlace permanente:</strong> {post.slug || 'autogenerado'}
+          </div>
 
-        <div style={{ marginTop: '20px' }}>
-          <label>URL Imagen Destacada</label>
-          <input 
-            style={{ width: '100%', marginBottom: '15px' }}
-            placeholder="https://link-de-tu-imagen.jpg"
-            value={post.featuredImage}
-            onChange={(e) => setPost({...post, featuredImage: e.target.value})}
+          <Textarea 
+            className="min-h-[400px] text-lg leading-relaxed border-none shadow-none focus-visible:ring-0 resize-none"
+            placeholder="Empieza a escribir o teclea / para elegir un bloque"
+            value={post.content}
+            onChange={(e) => setPost({...post, content: e.target.value})}
           />
+        </CardContent>
+      </Card>
 
-          <label>Palabra Clave (Focus Keyword)</label>
-          <input 
-            style={{ width: '100%', marginBottom: '15px' }}
-            value={post.seoData.focusKeyword}
-            onChange={(e) => handleSeoChange('focusKeyword', e.target.value)}
-          />
+      {/* SECCIÓN YOAST SEO ESTILO SHADCN */}
+      <Card className="border shadow-sm">
+        <CardHeader className="bg-muted/50 border-bottom py-3">
+          <CardTitle className="text-sm font-medium">Yoast SEO</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Tabs defaultValue="seo" className="w-full">
+            <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-auto p-0">
+              <TabsTrigger value="seo" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3">SEO</TabsTrigger>
+              <TabsTrigger value="social" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3">Social</TabsTrigger>
+            </TabsList>
 
-          <label>SEO Title (Google)</label>
-          <input 
-            style={{ width: '100%', marginBottom: '15px' }}
-            value={post.seoData.seoTitle}
-            onChange={(e) => handleSeoChange('seoTitle', e.target.value)}
-          />
+            <TabsContent value="seo" className="p-6 space-y-6">
+              {/* Vista Previa */}
+              <div className="space-y-3">
+                <Label className="text-base">Vista previa de Google</Label>
+                <GooglePreview 
+                  title={post.seoData.seoTitle || post.title} 
+                  slug={post.slug} 
+                  description={post.seoData.metaDescription} 
+                  siteDomain="tusitio.com" 
+                />
+              </div>
 
-          <label>Meta Description</label>
-          <textarea 
-            style={{ width: '100%', height: '80px' }}
-            value={post.seoData.metaDescription}
-            onChange={(e) => handleSeoChange('metaDescription', e.target.value)}
-          />
-        </div>
+              {/* Campos SEO */}
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="keyword">Frase clave objetivo</Label>
+                  <Input 
+                    id="keyword"
+                    value={post.seoData.focusKeyword}
+                    onChange={(e) => handleSeoChange('focusKeyword', e.target.value)}
+                  />
+                </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="seoTitle">Título SEO</Label>
+                  <Input 
+                    id="seoTitle"
+                    value={post.seoData.seoTitle}
+                    onChange={(e) => handleSeoChange('seoTitle', e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="meta">Metadescripción</Label>
+                  <Textarea 
+                    id="meta"
+                    value={post.seoData.metaDescription}
+                    onChange={(e) => handleSeoChange('metaDescription', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Semáforo de Análisis */}
+              <div className="pt-4 border-t flex items-center gap-3">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: seoScore.color }} 
+                />
+                <span className="text-sm font-medium">
+                  Análisis SEO: {seoScore.message} ({seoScore.points}/100)
+                </span>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="social" className="p-6">
+              <div className="space-y-4">
+                <Label>Imagen para redes sociales</Label>
+                <Input 
+                  placeholder="URL de la imagen (Open Graph)"
+                  value={post.featuredImage}
+                  onChange={(e) => setPost({...post, featuredImage: e.target.value})}
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+
+      {/* BOTÓN DE ACCIÓN ACCESIBLE */}
+      <div className="flex justify-end pt-4">
         <Button 
-          type="submit"
+          type="submit" 
+          size="lg" 
           disabled={isSubmitting}
-          style={{ width: '100%', marginTop: '20px', padding: '10px'}}
+          className="px-10"
         >
-          {isSubmitting ? 'Guardando...' : 'Guardar blog'}
+          {isSubmitting ? 'Guardando...' : 'Publicar'}
         </Button>
-      </aside>
+      </div>
     </form>
   );
 };

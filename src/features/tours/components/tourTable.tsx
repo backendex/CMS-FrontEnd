@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom"; // Importante para la navegación
 import { deleteTour } from "@/features/tours/api/tour.api";
 import { Tour, ToursTableProps } from "@/features/tours/types/tourType"; 
 import {
@@ -16,6 +18,7 @@ import {
 interface ExtendedProps extends ToursTableProps {
   tours: Tour[];
 }
+
 export function ToursTable({ siteId, tours }: ExtendedProps) {
   const [list, setList] = useState<Tour[]>(tours);
 
@@ -28,7 +31,6 @@ export function ToursTable({ siteId, tours }: ExtendedProps) {
     try {
       await deleteTour(id);
       setList(prev => prev.filter((t) => t.id !== id));
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       alert("No se pudo eliminar el tour.");
     }
@@ -71,7 +73,19 @@ export function ToursTable({ siteId, tours }: ExtendedProps) {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon"><Pencil className="h-4 w-4" /></Button>
+                    
+                    {/* --- BOTÓN EDITAR FUNCIONAL --- */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      asChild
+                      className="text-slate-500 hover:text-amber-600"
+                    >
+                      <Link to={`/dash/${siteId}/tour/edit/${tour.id}`}>                    
+                        <Pencil className="h-4 w-4" />
+                      </Link>
+                    </Button>
+
                     <Button
                       variant="ghost"
                       size="icon"

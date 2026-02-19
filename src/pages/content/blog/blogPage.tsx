@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getBlogs } from '@/features/blog/api/blog.api';
-import { BlogPost } from '@/features/blog/types/types';
+import { BlogPost, BlogsTableProps } from '@/features/blog/types/types';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus } from 'lucide-react';
 import { BlogsTable } from '@/features/blog/components/blogTable';
@@ -10,7 +11,7 @@ interface ExtendedProps extends BlogsTableProps {
   blogs: Blogs[];
 }
 export function BlogPage() {
-  const { siteId } = useParams<{ siteId: string }>(); 
+  const { siteId, id } = useParams<{ siteId: string, id: string }>(); 
   const [loading, setLoading] = useState(true);
   const [Blogs, setBlogs] = useState<BlogPost[]>([]);
 
@@ -58,7 +59,7 @@ export function BlogPage() {
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (                   
-           <BlogsTable blogs ={Blogs} />
+           <BlogsTable blogs ={Blogs} siteId ={siteId} />
         )}
       </div>
     </div>

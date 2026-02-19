@@ -1,45 +1,61 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { BlogForm } from '@/features/blog/components/blogForm';
-import { createPost } from '@/features/blog/api/blog.api';
-import GooglePreview from '@/features/blog/components/googlePreview';
-import { BlogPost } from '@/features/blog/types/types';
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { BlogForm } from "@/features/blog/components/blogForm"; // Ajusta la ruta según tu carpeta
+import { createPost } from "@/features/blog/api/blog.api"; // Tu función de axios/fetch
+import { BlogPost } from "@/features/blog/types/types";
 
-export default function AddBlogPage() {
+const AddBlogPage: React.FC = () => {
   const { siteId } = useParams<{ siteId: string }>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
- const handleCreate = async (data: any) => {
-   if (!siteId) return;
-   setLoading(true);
-   try {
-     const payload = {
-       ...data,
-       siteId: siteId, 
-       category: "General", 
-     };
- 
-     await createPost(payload);
-     alert("¡Tour añadido exitosamente!");
-     navigate(`/dash/${siteId}/blog`); 
-   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   } catch (error: any) {
-     console.error("Error de validación:", error.response?.data?.errors);
-     alert("Error de validación. Revisa los campos obligatorios.");
-   } finally {
-     setLoading(false);
-   }
- };
- 
- if (!siteId || siteId === "undefined") {
-    return <p className="p-10">Cargando contexto del sitio...</p>;
-  }
+  const handleCreate = async (data: BlogPost) => {
+    setLoading(true);
+    try {
+      const payload = {
+        ...data,
+        siteId: siteId || data.siteId, 
+      };
+
+      console.log("Enviando a Postgres:", payload);
+
+      // 2. Llamada a la API
+      await createPost(payload);
+
+      // 3. Si todo sale bien, avisamos y redirigimos
+      alert("¡Blog creado con éxito!");
+      navigate(`/dash/${siteId}/blog`); 
+      
+    } catch (error: any) {
+      // Aquí atrapamos los errores 400 que vimos en tu consola
+      console.error("Error completo del servidor:", error.response?.data);
+      
+      const serverErrors = error.response?.data?.errors;
+      if (serverErrors) {
+        // Mostramos un mensaje amigable con los campos que faltan
+        const missingFields = Object.keys(serverErrors).join(", ");
+        alert(`Error: Faltan campos obligatorios (${missingFields})`);
+      } else {
+        alert("Ocurrió un error al conectar con el servidor.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-      <div className="p-8">
-        <h1 className="text-3xl font-bold mb-6">Crear Nuevo blog</h1>
-        <BlogForm onSubmit={handleCreate} isLoading={loading} />
-      </div>
-    );
-}
+    <div style={{ padding: '20px' }}>
+      <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>
+        Crear Nuevo blog
+      </h1>
+
+      {/* Pasamos onSubmit y el estado de carga al formulario */}
+      <BlogForm 
+        onSubmit={handleCreate} 
+        isSubmitting={loading} 
+      />
+    </div>
+  );
+};
+
+export default AddBlogPage;

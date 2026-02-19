@@ -4,9 +4,6 @@ import { BlogPost } from "@/features/blog/types/types";
 // Usamos el puerto que ya tienes configurado en tu servicio de Auth
 const BASE_URL = "https://localhost:44351/api/Content";
 
-/**
- * Crea un nuevo registro de blog en la base de datos de Postgres
- */
 export const createPost = async (postData: BlogPost): Promise<{ id: number; message: string }> => {
   try {
     // Usamos el endpoint que confirmaste
@@ -19,9 +16,6 @@ export const createPost = async (postData: BlogPost): Promise<{ id: number; mess
   }
 };
 
-/**
- * Obtiene la lista de blogs (puedes filtrar por siteId después)
- */
 export const getBlogs = async (siteId: string): Promise<BlogPost[]> => {
   try {
     const res = await api.get(`${BASE_URL}/getPosts`); 
@@ -33,9 +27,24 @@ export const getBlogs = async (siteId: string): Promise<BlogPost[]> => {
   }
 };
 
-/**
- * Manejador de errores consistente con tu estructura de Auth
- */
+export const getPostById = async (id: string, siteId: string): Promise<BlogPost> => {
+  try {
+    const res = await api.get(`${BASE_URL}/getPostById`, {
+      params: { id, siteId }
+    });
+    return res.data;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    handleBlogApiError(error);
+    throw error;
+  }
+};
+
+export const updatePost = async (id: string, data: BlogPost) => {
+  const response = await api.put(`${BASE_URL}/updatePost`, data);
+  return response.data;
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleBlogApiError = (error: any) => {
   if (error.response) {
@@ -48,3 +57,4 @@ const handleBlogApiError = (error: any) => {
     console.error("Error:", error.message);
   }
 };
+

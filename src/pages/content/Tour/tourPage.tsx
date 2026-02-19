@@ -10,6 +10,7 @@ import { ToursTable } from "@/features/tours/components/tourTable";
 
 export function TourPage() {
   const { siteId } = useParams(); 
+  const {id} = useParams<{ id: string }>()
   const [loading, setLoading] = useState(true);
   const [tour, setTour] = useState<Tour[]>([]);
   
@@ -57,7 +58,7 @@ export function TourPage() {
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (                   
-           <ToursTable tours ={tour} />
+           <ToursTable tours ={tour} siteId={siteId} />
         )}
       </div>
     </div>

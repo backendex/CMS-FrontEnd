@@ -14,7 +14,7 @@ import { SiteProvider } from "./features/sites/components/siteContext"
 import {TourPage} from "@/pages/content/Tour/tourPage"
 import AddTourPage from "./pages/content/Tour/addTourPage"
 import { TourEditPage } from "./pages/content/Tour/tourEditPage"
-import { EditBlogPage } from "./pages/content/blog/editBlogPage"
+import EditBlogPage  from "./pages/content/blog/editBlogPage"
 import { BlogPage } from "./pages/content/blog/blogPage"
 import  AddBlogPage  from "./pages/content/blog/addBlogPage"
 
@@ -36,10 +36,10 @@ export default function App() {
               <Route path="mediaPage" element={<MediaPage />} />
               <Route path="tour" element={<TourPage/>} />
               <Route path="tour/new" element={<AddTourPage/>} />
-              <Route path="tour/edit" element={<TourEditPage/>} />
+              <Route path="tour/edit/:id" element={<TourEditPage/>} />
               <Route path="blog" element={<BlogPage/>} />
               <Route path="blog/new" element={<AddBlogPage/>}/>
-              <Route path="blog/edit" element={<EditBlogPage/>} />
+              <Route path="blog/edit/:id" element={<EditBlogPage/>} />
             </Route>
             <Route path="*" element={<Navigate to="/site" replace />} />
           </Route>

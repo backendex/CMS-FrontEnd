@@ -12,7 +12,7 @@ export function TourEditPage() {
     if(!siteId) return;
     setLoading(true);
     try {
-        navigate(`/dash/${siteId}/tour/edit`)
+        navigate(`/dash/${siteId}/tour`)
     } catch (error) {
         console.error("Error al crear:", error)
     }finally{
