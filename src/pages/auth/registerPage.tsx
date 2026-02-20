@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft } from "lucide-react";
-import { createUser } from "@/features/auth/api/auth.api";
+import { createUser } from "@/features/users/api/user.api";
 import { FormEvent } from 'react';
 
 export default function RegisterPage() {
@@ -18,7 +18,6 @@ export default function RegisterPage() {
   const [rolId, setRolId] = useState<number>(2);
   const navigate = useNavigate();
 
-  // 2. Corregida la firma de la función y quitado el parámetro extra userData
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     

@@ -4,8 +4,8 @@ import { useEffect, useState, useCallback } from "react"; // 1. Agregamos useCal
 import { Link, useParams } from "react-router-dom";
 import { Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getUsers } from "@/features/auth/api/auth.api";
-import { User } from "@/features/auth/types/authType"
+import { getUsers } from "@/features/users/api/user.api";
+import { User } from "@/features/users/types/userType"
 import { UserTable } from "@/features/users/components/userTable";
 
 export default function UsersPage() {

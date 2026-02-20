@@ -8,6 +8,8 @@ export interface SeoMetadata {
   canonicalUrl: string;
 }
 export interface BlogPost {
+  imageUrl: any;
+  id: any;
   title: string;
   slug: string;
   content: string;

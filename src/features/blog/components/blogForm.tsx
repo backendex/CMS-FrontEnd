@@ -132,8 +132,6 @@ export const BlogForm: React.FC<BlogFormProps> = ({ initialData, onSubmit, isSub
           </Tabs>
         </CardContent>
       </Card>
-
-      {/* BOTÓN DE ACCIÓN ACCESIBLE */}
       <div className="flex justify-end pt-4">
         <Button 
           type="submit" 
