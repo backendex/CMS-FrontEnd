@@ -13,14 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 
 export function BlogsTable({ blogs, onDelete, siteId }: BlogsTableProps) {
   const [list, setList] = useState<BlogPost[]>(blogs);
@@ -77,10 +69,10 @@ export function BlogsTable({ blogs, onDelete, siteId }: BlogsTableProps) {
                 <TableCell>
                   <div className="flex flex-col">
                     <span className="font-medium text-slate-900 line-clamp-1">
-                      {blog.title}
+                      {blog.postTitle}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      /{blog.slug}
+                      /{blog.postName}
                     </span>
                   </div>
                 </TableCell>
@@ -106,8 +98,8 @@ export function BlogsTable({ blogs, onDelete, siteId }: BlogsTableProps) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={blog.isPublished ? "default" : "secondary"}>
-                    {blog.isPublished ? "Publicado" : "Borrador"}
+                  <Badge variant={blog.postStatus ? "default" : "secondary"}>
+                    <span>{blog.postStatus === 'publish' ? 'Publicado' : 'Borrador'}</span>
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -118,14 +110,10 @@ export function BlogsTable({ blogs, onDelete, siteId }: BlogsTableProps) {
                       asChild
                       className="text-slate-500 hover:text-amber-600"
                     >
-                      {/* Usamos una validación simple para evitar IDs nulos */}
-                      
-                      <Link to={`/dash/${siteId}/blog/edit/${blog.id}`}>
-                      
+                      <Link to={`/dash/${siteId}/blog/edit/${blog.id}`}>                    
                         <Pencil className="h-4 w-4" />
                       </Link>
                     </Button>
-                    {/* --- BOTÓN ELIMINAR --- */}
                     <Button
                       variant="ghost"
                       size="icon"

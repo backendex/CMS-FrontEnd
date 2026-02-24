@@ -8,15 +8,16 @@ export interface SeoMetadata {
   canonicalUrl: string;
 }
 export interface BlogPost {
-  imageUrl: any;
-  id: any;
-  title: string;
-  slug: string;
-  content: string;
-  featuredImage?: string;
-  siteId: string; 
-  isPublished: boolean;
-  seoData: SeoMetadata; 
+  id: number; 
+  title: string;           // Corresponde a post_title
+  slug: string;            // Corresponde a post_name
+  content: string;         // Corresponde a post_content
+  postDate?: Date | string; // Corresponde a post_date
+  imageUrl: string;        // URL completa para la vista
+  featuredImage?: string;  // ID o path de la imagen destacada
+  siteId: string;          // Tu GUID: '7674eb51-27c0-4c59-b4e6-1c451a26939f'
+  isPublished: boolean;    // Corresponde a post_status ('publish' vs 'draft')
+  seoData: SeoMetadata;    // Objeto anidado para metadatos
 }
 export interface PreviewProps {
   title: string;
