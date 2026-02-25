@@ -22,3 +22,11 @@ export interface ToursTableProps {
   tours: Tour;
   siteId?: Tour;
 }
+export interface ContentType {
+  id: string;
+  name: string;
+  siteid: string;
+  schema_definition?: {
+        fields: string[]; 
+    };
+}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import api from "@/lib/api";
 import { Tour } from "@/features/tours/types/tourType";
 
@@ -16,14 +17,14 @@ export const getTour = async (siteId: string): Promise<Tour[]> => {
     throw error;
   }
 };
-
-export const getTourById = async (siteId: string): Promise<Tour> => {
+export const getTourById = async (id: string, siteId: string): Promise<Tour> => {
   try {
-    const res = await api.get(`${BASE_URL}/getTourById`);
+    const res = await api.get(`${BASE_URL}/getTourById`, {
+      params: { id, siteId } 
+    });
     return res.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error(`Error al obtener el tour con ID ${siteId}:`, error);
+    console.error(`Error al obtener el tour con ID ${id}:`, error);
     throw error;
   }
 };
@@ -43,22 +44,16 @@ export const createTour = async (tourData: any) => {
     throw error;
   }
 };
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const updateTour = async (id: string, tourData: any) => {
+export const updateTour = async (id: string, tourData: Partial<Tour>) => {
   try {
-    const res = await api.put(
-      `${BASE_URL}/tour/${id}`,
-      tourData,
-    );
+    const res = await api.put(`${BASE_URL}/${id}`, tourData);
     return res.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Error al actualizar tour:", error);
     throw error;
   }
 };
-
 export const deleteTour = async (id: string) => {
   try {
     const res = await api.delete(`${BASE_URL}/${id}`);
@@ -68,4 +63,11 @@ export const deleteTour = async (id: string) => {
     console.error("Error al eliminar tour:", error);
     throw error;
   }
+};
+//Se añade funcion para contentType, nuevo ncambio para traer la informsción 
+export const getContentTypes = async (siteId: string) => {
+  const res = await api.get(`${BASE_URL}/content-type`, {
+    params: { siteId }
+  });
+  return res.data;
 };
