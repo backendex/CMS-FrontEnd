@@ -8,16 +8,33 @@ export interface SeoMetadata {
   canonicalUrl: string;
 }
 export interface BlogPost {
-  id: number; 
-  title: string;           // Corresponde a post_title
-  slug: string;            // Corresponde a post_name
-  content: string;         // Corresponde a post_content
-  postDate?: Date | string; // Corresponde a post_date
-  imageUrl: string;        // URL completa para la vista
-  featuredImage?: string;  // ID o path de la imagen destacada
-  siteId: string;          // Tu GUID: '7674eb51-27c0-4c59-b4e6-1c451a26939f'
-  isPublished: boolean;    // Corresponde a post_status ('publish' vs 'draft')
-  seoData: SeoMetadata;    // Objeto anidado para metadatos
+  // Identificadores
+  id: number; // long en C# es number en TS
+  siteId: string; // Guid en C# es string en TS
+  // Auditoría y Fechas (Strings según tu modelo de C#)
+  postAuthor: number;
+  postDate: string;
+  postDateGmt: string;
+  postModified: string;
+  postModifiedGmt: string;
+  postTitle: string;    // Este es el que debes usar en la columna "Título"
+  postContent: string;
+  postExcerpt: string;
+  postName: string;     // Este es el "slug"
+  postStatus: string;   // 'publish', 'draft', etc.
+  commentStatus: string;
+  pingStatus: string;
+  postType: string;     // 'post'
+  postPassword?: string;
+  toPing?: string;
+  pinged?: string;
+  postContentFiltered?: string;
+  postParent: number;
+  guid: string;         // URL interna de WP
+  menuOrder: number;
+  postMimeType?: string;
+  commentCount: number;
+  seoData: SeoMetadata; 
 }
 export interface PreviewProps {
   title: string;

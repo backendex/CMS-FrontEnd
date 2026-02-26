@@ -19,8 +19,7 @@ export function BlogPage() {
         if (!siteId || siteId === "undefined") return;
         try {
           setLoading(true);
-          console.log(`Iniciando petición para el sitio: ${siteId}`);
-          
+          console.log(`Iniciando petición para el sitio: ${siteId}`);         
           const response = await getBlogs(siteId);
           setBlogs(response);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

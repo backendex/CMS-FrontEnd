@@ -70,7 +70,7 @@ export const BlogForm: React.FC<BlogFormProps> = ({
             <strong>Enlace permanente:</strong>{" "}
             {post.postName || "autogenerado"}
           </div>
-
+          
           <div className="relative">
             <div
               className="min-h-[500px] w-full p-3 text-lg leading-relaxed focus:outline-none prose max-w-none bg-transparent border-none"

@@ -6,15 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { getContentTypes } from "@/features/tours/api/tour.api";
-import { ContentType } from "@/features/tours/types/tourType"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function TourForm({ onSubmit, initialData, siteId }: any) {
   const [contentTypes, setContentTypes] = useState<{ id: string, name: string }[]>([]);
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loading, setLoading] = useState<ContentType[]>(content);
-
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: initialData?.name || "",
     description: initialData?.description || "",

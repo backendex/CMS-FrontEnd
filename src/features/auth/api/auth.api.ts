@@ -14,7 +14,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
   return data;
 };
                                                                 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any 
 export const changePassword = async (dto: any) => {
   return await api.post(`${BASE_URL}/changePass`, dto);
 };

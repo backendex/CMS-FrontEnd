@@ -10,7 +10,8 @@ import { ToursTable } from "@/features/tours/components/tourTable";
 
 export function TourPage() {
   const { siteId } = useParams(); 
-  const {id} = useParams<{ id: string }>()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const {id} = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [tour, setTour] = useState<Tour[]>([]);
   
