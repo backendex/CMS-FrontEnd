@@ -1,11 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import api from "@/lib/api";
 import { BlogPost } from "@/features/blog/types/types";
 
 const BASE_URL = "https://localhost:44351/api/Content";
 
-export const createPost = async (postData: BlogPost): Promise<{ id: number; message: string }> => {
+export const getBlogs = async (siteId: string, siteName: string): Promise<BlogPost[]> => {
   try {
-    const res = await api.post(`${BASE_URL}/createPost`, postData);
+    const res = await api.get(`${BASE_URL}/getPosts`, {
+      params: {siteId, siteName}
+    }); 
+    console.log("Datos crudos recicidos:", res.data)
     return res.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -14,12 +18,22 @@ export const createPost = async (postData: BlogPost): Promise<{ id: number; mess
   }
 };
 
-export const getBlogs = async (siteId: string): Promise<BlogPost[]> => {
+export const getByIdBlogs = async (siteName: string, id: number,siteId: string): Promise<BlogPost[]> => {
+try {
+  const res = await api.get(`${BASE_URL}/getByIdPost`, {
+    params: {siteName, id, siteId}
+  });
+  console.log("Datos crudos recibidos:", res.data)
+  return res.data;
+} catch (error: any) {
+  handleBlogApiError(error);
+  throw error;
+}
+};
+
+export const createPost = async (postData: BlogPost): Promise<{ id: number; message: string }> => {
   try {
-    const res = await api.get(`${BASE_URL}/getPosts`, {
-      params: {siteId}
-    }); 
-    console.log("Datos crudos recicidos:", res.data)
+    const res = await api.post(`${BASE_URL}/createPost`, postData);
     return res.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

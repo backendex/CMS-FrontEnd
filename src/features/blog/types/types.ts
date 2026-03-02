@@ -10,7 +10,8 @@ export interface SeoMetadata {
 export interface BlogPost {
   // Identificadores
   id: number; // long en C# es number en TS
-  siteId: string; // Guid en C# es string en TS
+  siteId: string;
+  siteName: string; // Guid en C# es string en TS
   // Auditoría y Fechas (Strings según tu modelo de C#)
   postAuthor: number;
   postDate: string;
