@@ -14,7 +14,9 @@ export default function SitePage() {
   useEffect(() => {
     getMe()
       .then((res) => {
-        setSites(res.allowedSites);
+
+        
+        setSites([...res.allowedSites,]);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -69,6 +71,3 @@ export default function SitePage() {
     </div>
   );
 }
-  
-
-

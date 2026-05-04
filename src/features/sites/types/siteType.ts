@@ -2,10 +2,11 @@ import { ReactNode } from "react";
 export type SiteStatus = "active" | "maintenance";
 
 export interface SiteType {
-  [x: string]: ReactNode;
+  [x: string]: any;
   id: string;
   name: string;
   domain: string;
+  tableName: string; // Nuevo campo para el nombre de la tabla en DB
   color: string;
   isActive: boolean;
   isMaintenance: boolean;

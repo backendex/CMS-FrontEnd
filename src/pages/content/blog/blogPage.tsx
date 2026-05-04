@@ -6,35 +6,43 @@ import { BlogPost, BlogsTableProps } from '@/features/blog/types/types';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus } from 'lucide-react';
 import { BlogsTable } from '@/features/blog/components/blogTable';
-
-interface ExtendedProps extends BlogsTableProps {
-  blogs: Blogs[];
-}
+import { useSite } from '@/features/sites/components/siteContext'; // Importamos el hook del sitio
 export function BlogPage() {
-  const { siteId, id } = useParams<{ siteId: string, id: string }>(); 
+  const { siteId } = useParams<{ siteId: string }>(); 
+  const { activeSite } = useSite(); // Obtenemos el sitio activo del contexto
   const [loading, setLoading] = useState(true);
-  const [Blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
 
   const loadBlogs = useCallback(async () => {
-        if (!siteId || siteId === "undefined") return;
-        try {
-          setLoading(true);
-          console.log(`Iniciando petición para el sitio: ${siteId}`);         
-          const response = await getBlogs(siteId);
-          setBlogs(response);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (error: any) {
-          console.error("Error en la carga:", error);
-        } finally {
-          setLoading(false);
-        }
-      }, [siteId]);
-    
-      useEffect(() => {
-        loadBlogs();
-      }, [loadBlogs]);
-    
-      if (!siteId) return <p>Cargando contexto del sitio...</p>;
+    if (!siteId || siteId === "undefined") return;
+    try {
+      setLoading(true);
+      console.log(`Iniciando petición para el sitio: ${siteId}`);
+      
+      // Usamos el nombre de la tabla que viene del objeto del sitio
+      let tableName = activeSite?.tableName || "";
+      
+      // PARCHE TEMPORAL: Si el back no envía el tableName aún, lo forzamos para este sitio
+      if (!tableName && activeSite?.name === "Snorkeling Adventure") {
+        tableName = "snorkell";
+      }
+
+      console.log(`Petición API: siteId=${siteId}, TableName=${tableName}`);
+      
+      const response = await getBlogs(siteId, tableName);
+      setBlogs(response);
+    } catch (error: any) {
+      console.error("Error en la carga:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [siteId, activeSite]);
+
+  useEffect(() => {
+    loadBlogs();
+  }, [loadBlogs]);
+
+  if (!siteId) return <p>Cargando contexto del sitio...</p>;
 
     return (
     <div className="space-y-6">
@@ -58,7 +66,7 @@ export function BlogPage() {
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (                   
-           <BlogsTable blogs ={Blogs} siteId ={siteId} />
+           <BlogsTable blogs={blogs} siteId={siteId} />
         )}
       </div>
     </div>

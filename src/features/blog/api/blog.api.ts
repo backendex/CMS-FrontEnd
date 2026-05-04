@@ -4,24 +4,23 @@ import { BlogPost } from "@/features/blog/types/types";
 
 const BASE_URL = "https://localhost:44351/api/Content";
 
-export const getBlogs = async (siteId: string, siteName: string): Promise<BlogPost[]> => {
+export const getBlogs = async (siteId: string, tableName: string): Promise<BlogPost[]> => {
   try {
     const res = await api.get(`${BASE_URL}/getPosts`, {
-      params: {siteId, siteName}
+      params: { siteId, TableName: tableName } // En GET el back pide TableName
     }); 
-    console.log("Datos crudos recicidos:", res.data)
+    console.log("Datos crudos recibidos:", res.data)
     return res.data;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     handleBlogApiError(error);
     throw error;
   }
 };
 
-export const getByIdBlogs = async (siteName: string, id: number,siteId: string): Promise<BlogPost[]> => {
+export const getByIdBlogs = async (tableName: string, id: number, siteId: string): Promise<BlogPost[]> => {
 try {
   const res = await api.get(`${BASE_URL}/getByIdPost`, {
-    params: {siteName, id, siteId}
+    params: {tableName, id, siteId}
   });
   console.log("Datos crudos recibidos:", res.data)
   return res.data;
@@ -31,11 +30,13 @@ try {
 }
 };
 
-export const createPost = async (postData: BlogPost): Promise<{ id: number; message: string }> => {
+export const createPost = async (postData: BlogPost, tableName: string): Promise<{ id: number; message: string }> => {
   try {
-    const res = await api.post(`${BASE_URL}/createPost`, postData);
+    // Enviamos el postData en el body y el siteName en los params (Query String)
+    const res = await api.post(`${BASE_URL}/createPost`, postData, {
+      params: { siteName: tableName }
+    });
     return res.data;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     handleBlogApiError(error);
     throw error;
