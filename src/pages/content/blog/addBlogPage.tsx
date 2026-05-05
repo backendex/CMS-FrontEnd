@@ -48,13 +48,8 @@ export default function AddBlogPage() {
   };
 
   return (
-    <div className="p-8">
-      <div className="max-w-3xl"> 
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">Crear nuevo blog</h1>
-        <div className="rounded-md border bg-white p-4 shadow-sm">
-          <BlogForm onSubmit={handleCreate} isLoading={loading} />
-        </div>
-      </div>
+    <div className="h-full bg-background overflow-hidden">
+      <BlogForm onSubmit={handleCreate} isLoading={loading} />
     </div>
   );
 };

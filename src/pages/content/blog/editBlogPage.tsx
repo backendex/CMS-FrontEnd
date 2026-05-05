@@ -47,17 +47,12 @@ export default function EditBlogPage() {
   if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>;
 
   return (
-    <div className="p-8">
-      <div className="max-w-3xl"> 
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">Editar Blog</h1>
-        <div className="rounded-md border bg-white p-4 shadow-sm">
-          <BlogForm 
-            onSubmit={handleUpdate} 
-            isLoading={isSaving} 
-            initialData={post} 
-          />
-        </div>
-      </div>
+    <div className="h-full bg-background overflow-hidden">
+      <BlogForm 
+        onSubmit={handleUpdate} 
+        isLoading={isSaving} 
+        initialData={post} 
+      />
     </div>
   );
 }
