@@ -7,7 +7,7 @@ const BASE_URL = "https://localhost:44351/api/Content";
 export const getBlogs = async (siteId: string, tableName: string): Promise<BlogPost[]> => {
   try {
     const res = await api.get(`${BASE_URL}/getPosts`, {
-      params: { siteId, TableName: tableName } // En GET el back pide TableName
+      params: { siteId, TableName: tableName } 
     }); 
     console.log("Datos crudos recibidos:", res.data)
     return res.data;
@@ -17,24 +17,14 @@ export const getBlogs = async (siteId: string, tableName: string): Promise<BlogP
   }
 };
 
-export const getByIdBlogs = async (tableName: string, id: number, siteId: string): Promise<BlogPost[]> => {
-try {
-  const res = await api.get(`${BASE_URL}/getByIdPost`, {
-    params: {tableName, id, siteId}
-  });
-  console.log("Datos crudos recibidos:", res.data)
-  return res.data;
-} catch (error: any) {
-  handleBlogApiError(error);
-  throw error;
-}
-};
+
 
 export const createPost = async (postData: BlogPost, tableName: string): Promise<{ id: number; message: string }> => {
   try {
-    // Enviamos el postData en el body y el siteName en los params (Query String)
+    // Enviamos el postData en el body y el TableName en los params (Query String)
+    // El backend usa TableName (PascalCase) igual que en getPosts
     const res = await api.post(`${BASE_URL}/createPost`, postData, {
-      params: { siteName: tableName }
+      params: { TableName: tableName, siteName: tableName } // Enviamos ambos por compatibilidad
     });
     return res.data;
   } catch (error: any) {
@@ -43,10 +33,10 @@ export const createPost = async (postData: BlogPost, tableName: string): Promise
   }
 };
 
-export const getPostById = async (id: string, siteId: string): Promise<BlogPost> => {
+export const getPostById = async (id: string, siteId: string, tableName: string): Promise<BlogPost> => {
   try {
-    const res = await api.get(`${BASE_URL}/getPostById`, {
-      params: { id, siteId }
+    const res = await api.get(`${BASE_URL}/getByIdPost`, {
+      params: { id, siteId, TableName: tableName }
     });
     return res.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,8 +47,21 @@ export const getPostById = async (id: string, siteId: string): Promise<BlogPost>
 };
 
 export const updatePost = async (id: string, data: BlogPost) => {
-  const response = await api.put(`${BASE_URL}/updatePost`, data);
+  const response = await api.put(`${BASE_URL}/updatePost`, data, {
+    params: { TableName: data.tableName }
+  });
   return response.data;
+};
+
+export const deletePost = async (id: number, tableName: string, siteId: string): Promise<void> => {
+  try {
+    await api.delete(`${BASE_URL}/deletePost`, {
+      params: { id, tableName, siteId }
+    });
+  } catch (error: any) {
+    handleBlogApiError(error);
+    throw error;
+  }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

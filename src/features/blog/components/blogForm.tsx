@@ -21,57 +21,86 @@ import {
   ChevronLeft,
   CheckCircle2,
   AlertCircle,
-  Link2
+  Link2,
+  ExternalLink,
+  Save,
+  Trash2,
+  Info,
+  Folder,
+  FileText,
+  ShieldCheck,
+  Type,
+  HelpCircle
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import GooglePreview from "@/features/blog/components/googlePreview";
 
 export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
   initialData,
   onSubmit,
+  onDelete,
+  previewUrl,
   isSubmitting,
-  isLoading, // Handle both names for compatibility
+  isLoading,
 }) => {
   const loading = isSubmitting || isLoading;
-  const [post, setPost] = useState<BlogPost>(
-    initialData || {
-      id: 0,
-      postTitle: "",
-      postName: "",
-      postContent: "",
-      siteId: "",
-      tableName: "",
-      postExcerpt: "",
-      postStatus: "draft",
-      postAuthor: 1,
-      postDate: new Date().toISOString(),
-      postDateGmt: new Date().toISOString(),
-      postModified: new Date().toISOString(),
-      postModifiedGmt: new Date().toISOString(),
-      commentStatus: "open",
-      pingStatus: "open",
-      postType: "post",
-      postParent: 0,
-      guid: "",
-      menuOrder: 0,
-      commentCount: 0,
-      postMimeType: "",
-      seoData: {
-        seoTitle: "",
-        metaDescription: "",
-        focusKeyword: "",
-        ogTitle: "",
-        ogDescription: "",
-        ogImage: "",
-        canonicalUrl: "",
-        robotsContent: "index, follow",
-      },
+  const defaultPost: BlogPost = {
+    id: 0,
+    postTitle: "",
+    postName: "",
+    postContent: "",
+    siteId: "",
+    tableName: "",
+    postExcerpt: "",
+    postStatus: "draft",
+    postAuthor: 1,
+    postDate: new Date().toISOString(),
+    postDateGmt: new Date().toISOString(),
+    postModified: new Date().toISOString(),
+    postModifiedGmt: new Date().toISOString(),
+    commentStatus: "open",
+    pingStatus: "open",
+    postType: "post",
+    postParent: 0,
+    guid: "",
+    menuOrder: 0,
+    commentCount: 0,
+    postMimeType: "",
+    seoData: {
+      seoTitle: "",
+      metaDescription: "",
+      focusKeyword: "",
+      ogTitle: "",
+      ogDescription: "",
+      ogImage: "",
+      canonicalUrl: "",
+      isCornerstone: false,
+      allowSearch: true,
+      followLinks: true,
+      metaRobotsAdvanced: "",
+      breadcrumbsTitle: "",
     },
+  };
+
+  const [post, setPost] = useState<BlogPost>(
+    initialData ? { ...defaultPost, ...initialData, seoData: initialData.seoData || defaultPost.seoData } : defaultPost
   );
 
   // Sync initialData if it changes (useful for edit page)
   useEffect(() => {
     if (initialData) {
-      setPost(initialData);
+      setPost({
+        ...defaultPost,
+        ...initialData,
+        seoData: initialData.seoData || defaultPost.seoData
+      });
     }
   }, [initialData]);
 
@@ -90,7 +119,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
     post.seoData,
   );
 
-  const handleSeoChange = (field: string, value: string) => {
+  const handleSeoChange = (field: string, value: any) => {
     setPost({ ...post, seoData: { ...post.seoData, [field]: value } });
   };
 
@@ -103,21 +132,55 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
         .trim()
         .replace(/\s+/g, "-")
         .replace(/[^\w-]+/g, "");
-    onSubmit({ ...post, postName: autoSlug });
+    onSubmit({ ...post, postName: autoSlug, postStatus: "publish" });
   };
 
-  const SidebarSection = ({ id, title, children }: { id: string, title: string, children: React.ReactNode }) => (
-    <div className="border-b border-border/40">
+  const handleSaveDraft = () => {
+    const autoSlug =
+      post.postName ||
+      post.postTitle
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^\w-]+/g, "");
+    onSubmit({ ...post, postName: autoSlug, postStatus: "draft" });
+  };
+
+  const handlePreview = () => {
+    if (previewUrl) {
+      window.open(previewUrl, "_blank", "noopener,noreferrer");
+    } else if (post.postName) {
+      // Fallback: open slug-based URL if no explicit previewUrl
+      window.open(`/blog/${post.postName}`, "_blank", "noopener,noreferrer");
+    } else {
+      alert("Guarda el borrador primero para poder previsualizar la entrada.");
+    }
+  };
+
+  const handleDelete = () => {
+    if (!window.confirm("¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.")) return;
+    if (onDelete) {
+      onDelete();
+    } else {
+      alert("No se puede eliminar: esta entrada todavía no ha sido guardada.");
+    }
+  };
+
+  const SidebarSection = ({ id, title, icon: Icon, children }: { id: string, title: string, icon: any, children: React.ReactNode }) => (
+    <div className="border-b border-border/40 last:border-0">
       <button 
         type="button"
         onClick={() => toggleAccordion(id)}
-        className="w-full flex items-center justify-between p-4 text-sm font-medium hover:bg-muted/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 text-[13px] font-semibold hover:bg-muted/30 transition-colors group"
       >
-        <span>{title}</span>
-        {activeAccordion.includes(id) ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <div className="flex items-center gap-2.5 text-muted-foreground group-hover:text-foreground transition-colors">
+          <Icon className="w-4 h-4" />
+          <span>{title}</span>
+        </div>
+        {activeAccordion.includes(id) ? <ChevronDown className="w-3.5 h-3.5 opacity-50" /> : <ChevronRight className="w-3.5 h-3.5 opacity-50" />}
       </button>
       {activeAccordion.includes(id) && (
-        <div className="p-4 pt-0 space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
+        <div className="p-4 pt-0 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
           {children}
         </div>
       )}
@@ -140,11 +203,12 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="hidden sm:flex">
+          <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handleSaveDraft} disabled={loading}>
+            <Save className="w-4 h-4" />
             Guardar borrador
           </Button>
-          <Button variant="ghost" size="sm" className="hidden sm:flex">
-            Vista previa <Eye className="ml-2 w-4 h-4" />
+          <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handlePreview} type="button">
+            Vista previa <ExternalLink className="ml-1 w-3.5 h-3.5" />
           </Button>
           <Separator orientation="vertical" className="h-6 mx-2 hidden sm:block" />
           <Button 
@@ -168,11 +232,11 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
       <div className="flex-1 flex overflow-hidden">
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 overflow-y-auto bg-background custom-scrollbar">
-          <div className="max-w-[850px] mx-auto py-12 px-6 lg:px-12 space-y-8">
-            <div className="space-y-4">
+          <div className="max-w-[900px] mx-auto py-16 px-8 lg:px-16 space-y-12">
+            <div className="space-y-6">
               <Input
-                className="text-5xl font-bold h-auto py-4 border-none shadow-none focus-visible:ring-0 placeholder:opacity-30 bg-transparent px-0"
-                placeholder="Añadir el título"
+                className="text-5xl font-bold h-auto py-4 border-none shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/20 bg-transparent px-0 tracking-tight"
+                placeholder="Escribe el título aquí..."
                 value={post.postTitle || ""}
                 onChange={(e) => setPost({ ...post, postTitle: e.target.value })}
               />
@@ -186,25 +250,30 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
             <div className="min-h-[400px]">
               <div
-                className="w-full min-h-[500px] text-xl leading-relaxed focus:outline-none prose prose-slate max-w-none dark:prose-invert selection:bg-primary/20"
+                className="w-full min-h-[500px] text-xl leading-relaxed focus:outline-none prose prose-slate max-w-none dark:prose-invert selection:bg-primary/20 placeholder:text-muted-foreground/30"
                 contentEditable={true}
                 suppressContentEditableWarning={true}
                 onInput={(e) => {
                   setPost({ ...post, postContent: e.currentTarget.innerHTML });
                 }}
                 dangerouslySetInnerHTML={{ __html: post.postContent || "" }}
-                data-placeholder="Empieza a escribir o teclea / para elegir un bloque"
+                data-placeholder="Empieza a escribir..."
               />
             </div>
 
-            <Separator className="my-12" />
+            <Separator className="my-20 opacity-50" />
 
             {/* YOAST SEO SECTION (At the bottom like WP) */}
-            <Card className="border shadow-sm mb-20 overflow-hidden">
-              <CardHeader className="bg-muted/30 border-b py-3 px-4 flex flex-row items-center justify-between">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Card className="border-none shadow-xl shadow-primary/5 mb-24 overflow-hidden bg-white dark:bg-slate-950">
+              <CardHeader className="bg-muted/20 border-b py-4 px-6 flex flex-row items-center justify-between">
+                <CardTitle className="text-sm font-bold flex items-center gap-2.5">
+                  <div className="bg-primary/10 p-1.5 rounded-md">
+                    <ShieldCheck className="w-4 h-4 text-primary" />
+                  </div>
                   Yoast SEO
-                  <div className={`w-2 h-2 rounded-full ${seoScore.color === 'green' ? 'bg-green-500' : seoScore.color === 'orange' ? 'bg-orange-500' : 'bg-red-500'}`} />
+                  <Badge variant="outline" className={`ml-2 px-2 py-0 h-5 text-[10px] font-bold uppercase tracking-wider ${seoScore.color === 'green' ? 'border-green-500/50 text-green-600 bg-green-50' : seoScore.color === 'orange' ? 'border-orange-500/50 text-orange-600 bg-orange-50' : 'border-red-500/50 text-red-600 bg-red-50'}`}>
+                    {seoScore.points >= 70 ? 'Bueno' : seoScore.points >= 40 ? 'Mejorable' : 'Pobre'}
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -272,6 +341,134 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                       </div>
                     </div>
 
+                    <Separator className="my-8" />
+
+                    {/* Cornerstone Content */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label className="text-base font-semibold">Contenido esencial</Label>
+                          <p className="text-xs text-muted-foreground">
+                            El contenido esencial debe ser el artículo más importante y extenso de tu sitio. <Button variant="link" className="p-0 h-auto text-xs">Leer más sobre contenido esencial.</Button>
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs font-medium text-muted-foreground">{post.seoData.isCornerstone ? 'Activado' : 'Desactivado'}</span>
+                          <Switch 
+                            checked={post.seoData.isCornerstone} 
+                            onCheckedChange={(checked) => handleSeoChange("isCornerstone", checked)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator className="my-8" />
+
+                    {/* Advanced Section */}
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <h3 className="text-lg font-bold">Avanzado</h3>
+                        <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                      </div>
+
+                      <div className="grid gap-8 max-w-2xl">
+                        <div className="space-y-3">
+                          <Label className="text-sm font-semibold flex items-center gap-2">
+                            ¿Permitir que los motores de búsqueda muestren esta entrada en los resultados?
+                            <HelpCircle className="w-3.5 h-3.5 text-muted-foreground opacity-50" />
+                          </Label>
+                          <Select 
+                            value={post.seoData.allowSearch !== false ? "yes" : "no"} 
+                            onValueChange={(val) => handleSeoChange("allowSearch", val === "yes")}
+                          >
+                            <SelectTrigger className="bg-muted/20 h-10">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="yes">Sí (por defecto)</SelectItem>
+                              <SelectItem value="no">No</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-3">
+                          <Label className="text-sm font-semibold flex items-center gap-2">
+                            ¿Deberían los motores de búsqueda seguir los enlaces de esta entrada?
+                            <HelpCircle className="w-3.5 h-3.5 text-muted-foreground opacity-50" />
+                          </Label>
+                          <div className="flex items-center gap-8 mt-1">
+                            <label className="flex items-center gap-2.5 cursor-pointer group">
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${post.seoData.followLinks !== false ? 'border-primary' : 'border-muted-foreground/30 group-hover:border-primary'}`}>
+                                {post.seoData.followLinks !== false && <div className="w-2 h-2 rounded-full bg-primary" />}
+                              </div>
+                              <input 
+                                type="radio" 
+                                className="hidden" 
+                                checked={post.seoData.followLinks !== false} 
+                                onChange={() => handleSeoChange("followLinks", true)} 
+                              />
+                              <span className="text-sm font-medium">Sí</span>
+                            </label>
+                            <label className="flex items-center gap-2.5 cursor-pointer group">
+                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${post.seoData.followLinks === false ? 'border-primary' : 'border-muted-foreground/30 group-hover:border-primary'}`}>
+                                {post.seoData.followLinks === false && <div className="w-2 h-2 rounded-full bg-primary" />}
+                              </div>
+                              <input 
+                                type="radio" 
+                                className="hidden" 
+                                checked={post.seoData.followLinks === false} 
+                                onChange={() => handleSeoChange("followLinks", false)} 
+                              />
+                              <span className="text-sm font-medium">No</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <Label className="text-sm font-semibold flex items-center gap-2">
+                            Meta robots avanzado
+                            <HelpCircle className="w-3.5 h-3.5 text-muted-foreground opacity-50" />
+                          </Label>
+                          <Select 
+                            value={post.seoData.metaRobotsAdvanced || "none"} 
+                            onValueChange={(val) => handleSeoChange("metaRobotsAdvanced", val === "none" ? "" : val)}
+                          >
+                            <SelectTrigger className="bg-muted/20 h-10">
+                              <SelectValue placeholder="Selecciona opciones..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Ninguno</SelectItem>
+                              <SelectItem value="noimageindex">Sin índice de imágenes (noimageindex)</SelectItem>
+                              <SelectItem value="noarchive">Sin archivo (noarchive)</SelectItem>
+                              <SelectItem value="nosnippet">Sin fragmento (nosnippet)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-3">
+                          <Label htmlFor="breadcrumbs" className="text-sm font-semibold">Título de migas de pan</Label>
+                          <Input
+                            id="breadcrumbs"
+                            placeholder="Título para Breadcrumbs"
+                            value={post.seoData.breadcrumbsTitle || ""}
+                            onChange={(e) => handleSeoChange("breadcrumbsTitle", e.target.value)}
+                            className="bg-muted/20 h-10"
+                          />
+                        </div>
+
+                        <div className="space-y-3">
+                          <Label htmlFor="canonical" className="text-sm font-semibold">URL Canónica</Label>
+                          <Input
+                            id="canonical"
+                            placeholder="https://ejemplo.com/pagina"
+                            value={post.seoData.canonicalUrl || ""}
+                            onChange={(e) => handleSeoChange("canonicalUrl", e.target.value)}
+                            className="bg-muted/20 h-10"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="pt-6 border-t flex items-start gap-4 bg-muted/20 p-4 rounded-lg">
                       <div className={`mt-1 flex-shrink-0 w-4 h-4 rounded-full shadow-sm animate-pulse`} style={{ backgroundColor: seoScore.color }} />
                       <div className="space-y-1">
@@ -316,74 +513,89 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="post" className="m-0 border-none">
-                <SidebarSection id="status" title="Resumen">
-                  <div className="grid grid-cols-[100px_1fr] gap-y-3 text-xs items-center">
-                    <span className="text-muted-foreground flex items-center gap-1"><Eye className="w-3 h-3" /> Visibilidad</span>
-                    <span className="font-medium text-primary cursor-pointer hover:underline">Público</span>
+              <TabsContent value="post" className="m-0 border-none pb-10">
+                <SidebarSection id="status" title="Resumen" icon={Info}>
+                  <div className="grid grid-cols-[90px_1fr] gap-y-4 text-[12px] items-center">
+                    <span className="text-muted-foreground flex items-center gap-1.5"><Eye className="w-3.5 h-3.5" /> Visibilidad</span>
+                    <span className="font-semibold text-primary cursor-pointer hover:underline underline-offset-4 decoration-primary/30">Público</span>
                     
-                    <span className="text-muted-foreground flex items-center gap-1"><Calendar className="w-3 h-3" /> Publicar</span>
-                    <span className="font-medium text-primary cursor-pointer hover:underline">Inmediatamente</span>
+                    <span className="text-muted-foreground flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> Publicar</span>
+                    <span className="font-semibold text-primary cursor-pointer hover:underline underline-offset-4 decoration-primary/30">Inmediatamente</span>
                     
-                    <span className="text-muted-foreground flex items-center gap-1"><Link2 className="w-3 h-3" /> URL</span>
-                    <span className="font-medium truncate text-primary cursor-pointer hover:underline">{post.postName || "autogenerado"}</span>
+                    <span className="text-muted-foreground flex items-center gap-1.5"><Link2 className="w-3.5 h-3.5" /> URL</span>
+                    <span className="font-mono text-[11px] truncate text-primary cursor-pointer hover:underline bg-primary/5 px-1.5 py-0.5 rounded">{post.postName || "autogenerado"}</span>
                     
-                    <span className="text-muted-foreground flex items-center gap-1"><User className="w-3 h-3" /> Autor</span>
-                    <span className="font-medium text-primary cursor-pointer hover:underline">Usuario {post.postAuthor}</span>
+                    <span className="text-muted-foreground flex items-center gap-1.5"><User className="w-3.5 h-3.5" /> Autor</span>
+                    <span className="font-semibold text-primary cursor-pointer hover:underline underline-offset-4 decoration-primary/30">Admin User</span>
 
-                    <span className="text-muted-foreground flex items-center gap-1"><Globe className="w-3 h-3" /> Estado</span>
-                    <Badge variant={post.postStatus === 'publish' ? 'default' : 'secondary'} className="w-fit scale-90 -ml-1">
+                    <span className="text-muted-foreground flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" /> Estado</span>
+                    <Badge variant={post.postStatus === 'publish' ? 'default' : 'secondary'} className="w-fit text-[10px] h-5">
                       {post.postStatus === 'publish' ? 'Publicado' : 'Borrador'}
                     </Badge>
                   </div>
                   
-                  <Button variant="outline" size="sm" className="w-full text-destructive border-destructive/20 hover:bg-destructive/5 mt-4">
-                    Mover a la papelera
+                  <Separator className="my-4 opacity-50" />
+                  
+                  <Button 
+                    type="button"
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive justify-start h-9 px-3 gap-2.5 font-medium"
+                    onClick={handleDelete}
+                    disabled={!onDelete}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    {onDelete ? "Mover a la papelera" : "Guarda primero para eliminar"}
                   </Button>
                 </SidebarSection>
 
-                <SidebarSection id="categories" title="Categorías">
-                  <div className="space-y-2 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                <SidebarSection id="categories" title="Categorías" icon={Folder}>
+                  <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar py-1">
                     {["Cancun & Riviera Maya Guide", "Eco Tourism", "Marine Life", "Snorkeling", "Tips"].map((cat) => (
-                      <label key={cat} className="flex items-center gap-2 text-sm cursor-pointer group">
-                        <div className="w-4 h-4 rounded border border-input group-hover:border-primary transition-colors" />
-                        <span className="group-hover:text-primary transition-colors">{cat}</span>
+                      <label key={cat} className="flex items-center gap-2.5 text-[13px] cursor-pointer group/label py-0.5">
+                        <div className="w-4 h-4 rounded border-2 border-muted-foreground/30 group-hover/label:border-primary transition-all flex items-center justify-center">
+                          {/* Custom checkbox simulation */}
+                        </div>
+                        <span className="text-muted-foreground group-hover/label:text-foreground transition-colors">{cat}</span>
                       </label>
                     ))}
                   </div>
-                  <Button variant="link" size="sm" className="p-0 h-auto text-xs text-primary">Añadir nueva categoría</Button>
+                  <Button variant="link" size="sm" className="p-0 h-auto text-[11px] text-primary mt-2 font-semibold">Añadir nueva categoría</Button>
                 </SidebarSection>
 
-                <SidebarSection id="image" title="Imagen destacada">
-                  <div className="aspect-video w-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group">
-                    <ImageIcon className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors mb-2" />
-                    <span className="text-xs font-medium text-muted-foreground group-hover:text-primary">Establecer la imagen destacada</span>
+                <SidebarSection id="image" title="Imagen destacada" icon={ImageIcon}>
+                  <div className="aspect-video w-full rounded-xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center bg-muted/5 hover:bg-muted/10 hover:border-primary/30 transition-all cursor-pointer group/img overflow-hidden relative">
+                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/img:opacity-100 transition-opacity" />
+                    <ImageIcon className="w-7 h-7 text-muted-foreground/50 group-hover/img:text-primary transition-colors mb-2.5" />
+                    <span className="text-[11px] font-semibold text-muted-foreground group-hover/img:text-primary transition-colors">Establecer imagen</span>
                   </div>
                 </SidebarSection>
 
-                <SidebarSection id="excerpt" title="Extracto">
+                <SidebarSection id="excerpt" title="Extracto" icon={FileText}>
                   <Textarea 
-                    placeholder="Escribe un extracto (opcional)" 
-                    className="text-xs bg-background min-h-[80px]"
+                    placeholder="Escribe un extracto breve..." 
+                    className="text-[12px] bg-background min-h-[90px] border-muted-foreground/20 focus-visible:ring-primary/30 rounded-lg resize-none"
                     value={post.postExcerpt}
                     onChange={(e) => setPost({...post, postExcerpt: e.target.value})}
                   />
-                  <p className="text-[10px] text-muted-foreground mt-1">Los extractos son descripciones cortas opcionales del contenido.</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-2 leading-relaxed">Los extractos son descripciones cortas que suelen aparecer en las listas de blogs.</p>
                 </SidebarSection>
 
-                <SidebarSection id="seo-summary" title="Estado SEO">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground flex items-center gap-1">Puntuación SEO</span>
-                      <div className="flex items-center gap-1 font-medium">
-                        {seoScore.points >= 70 ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-orange-500" />}
-                        {seoScore.points}/100
+                <SidebarSection id="seo-summary" title="Estado SEO" icon={ShieldCheck}>
+                  <div className="space-y-4 p-1">
+                    <div className="flex items-center justify-between text-[12px]">
+                      <span className="text-muted-foreground font-medium">Puntuación</span>
+                      <div className="flex items-center gap-1.5 font-bold">
+                        {seoScore.points >= 70 ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <AlertCircle className="w-3.5 h-3.5 text-orange-500" />}
+                        <span className={seoScore.points >= 70 ? 'text-green-600' : 'text-orange-600'}>{seoScore.points}/100</span>
                       </div>
                     </div>
-                    <div className="w-full bg-muted rounded-full h-1.5">
-                      <div className={`h-1.5 rounded-full`} style={{ width: `${seoScore.points}%`, backgroundColor: seoScore.color }} />
+                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden border border-muted-foreground/5">
+                      <div className={`h-full rounded-full transition-all duration-500`} style={{ width: `${seoScore.points}%`, backgroundColor: seoScore.color }} />
                     </div>
-                    <p className="text-[10px] text-muted-foreground italic">"{seoScore.message}"</p>
+                    <div className="bg-muted/30 p-2.5 rounded-lg border border-muted-foreground/5">
+                      <p className="text-[10px] text-muted-foreground italic leading-relaxed text-center">"{seoScore.message}"</p>
+                    </div>
                   </div>
                 </SidebarSection>
               </TabsContent>

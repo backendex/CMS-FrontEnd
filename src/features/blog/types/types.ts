@@ -6,6 +6,11 @@ export interface SeoMetadata {
   ogDescription: string;
   ogImage: string;
   canonicalUrl: string;
+  isCornerstone?: boolean;
+  allowSearch?: boolean;
+  followLinks?: boolean;
+  metaRobotsAdvanced?: string;
+  breadcrumbsTitle?: string;
 }
 export interface BlogPost {
   // Identificadores
@@ -46,9 +51,12 @@ export interface PreviewProps {
 export interface BlogFormProps {
   initialData?: BlogPost;
   onSubmit: (data: BlogPost) => void;
+  onDelete?: () => void;
+  previewUrl?: string;
   isSubmitting?: boolean;
 }
 export interface BlogsTableProps {
   blogs: BlogPost[];
+  siteId?: string;
   onDelete?: (id: number) => void;
 }

@@ -1,34 +1,36 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getBlogs } from '@/features/blog/api/blog.api';
-import { BlogPost, BlogsTableProps } from '@/features/blog/types/types';
+import { getBlogs, deletePost } from '@/features/blog/api/blog.api';
+import { BlogPost } from '@/features/blog/types/types';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus } from 'lucide-react';
 import { BlogsTable } from '@/features/blog/components/blogTable';
-import { useSite } from '@/features/sites/components/siteContext'; // Importamos el hook del sitio
+import { useSite } from '@/features/sites/components/siteContext';
+
 export function BlogPage() {
   const { siteId } = useParams<{ siteId: string }>(); 
-  const { activeSite } = useSite(); // Obtenemos el sitio activo del contexto
+  const { activeSite } = useSite();
   const [loading, setLoading] = useState(true);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
+
+  const getTableName = () => {
+    let tableName = activeSite?.tableName || "";
+    if (!tableName && activeSite?.name === "Snorkeling Adventure") {
+      tableName = "snorkell";
+    }
+    if (!tableName && activeSite?.name === "Cenote Adventuring") {
+      tableName = "cenote";
+    }
+    return tableName;
+  };
 
   const loadBlogs = useCallback(async () => {
     if (!siteId || siteId === "undefined") return;
     try {
       setLoading(true);
-      console.log(`Iniciando petición para el sitio: ${siteId}`);
-      
-      // Usamos el nombre de la tabla que viene del objeto del sitio
-      let tableName = activeSite?.tableName || "";
-      
-      // PARCHE TEMPORAL: Si el back no envía el tableName aún, lo forzamos para este sitio
-      if (!tableName && activeSite?.name === "Snorkeling Adventure") {
-        tableName = "snorkell";
-      }
-
+      const tableName = getTableName();
       console.log(`Petición API: siteId=${siteId}, TableName=${tableName}`);
-      
       const response = await getBlogs(siteId, tableName);
       setBlogs(response);
     } catch (error: any) {
@@ -42,9 +44,22 @@ export function BlogPage() {
     loadBlogs();
   }, [loadBlogs]);
 
+  const handleDelete = async (id: number) => {
+    if (!siteId) return;
+    try {
+      const tableName = getTableName();
+      await deletePost(id, tableName, siteId);
+      // Refresh list after deletion
+      setBlogs(prev => prev.filter(b => b.id !== id));
+    } catch (error: any) {
+      alert("No se pudo eliminar el post. Verifica tus permisos.");
+      console.error("Error al eliminar:", error);
+    }
+  };
+
   if (!siteId) return <p>Cargando contexto del sitio...</p>;
 
-    return (
+  return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -66,9 +81,9 @@ export function BlogPage() {
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         ) : (                   
-           <BlogsTable blogs={blogs} siteId={siteId} />
+           <BlogsTable blogs={blogs} siteId={siteId} onDelete={handleDelete} />
         )}
       </div>
     </div>
   );       
-}
+}
