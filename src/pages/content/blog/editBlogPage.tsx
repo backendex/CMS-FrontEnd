@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
@@ -6,6 +5,7 @@ import { getPostById, updatePost, deletePost } from "@/features/blog/api/blog.ap
 import { BlogPost } from "@/features/blog/types/types";
 import { BlogForm } from "@/features/blog/components/blogForm";
 import { useSite } from "@/features/sites/components/siteContext";
+import { StatusModal, StatusType } from "@/components/ui/status-modal";
 
 export default function EditBlogPage() {
   const { siteId, id } = useParams<{ siteId: string; id: string }>();
@@ -15,6 +15,20 @@ export default function EditBlogPage() {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Modal State
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    type: StatusType;
+    title: string;
+    description?: string;
+  }>({
+    isOpen: false,
+    type: "success",
+    title: "",
+  });
+
+  const closeModal = () => setModal(prev => ({ ...prev, isOpen: false }));
 
   const getTableName = (): string => {
     if (activeSite?.tableName) return activeSite.tableName;
@@ -29,28 +43,17 @@ export default function EditBlogPage() {
       try {
         setLoading(true);
         const tableName = getTableName();
-        
-        // Si no tenemos tableName todavía, esperamos
-        if (!tableName) {
-          console.warn("Esperando por tableName...");
-          return;
-        }
+        if (!tableName) return;
 
-        console.log(`Cargando post ${id} para sitio ${siteId} en tabla ${tableName}`);
         const data = await getPostById(id, siteId, tableName);
-        console.log("Datos recibidos del servidor:", data);
-        
-        // Si el backend devuelve un array, tomamos el primer elemento
         const finalData = Array.isArray(data) ? data[0] : data;
         
         if (finalData) {
           setPost(finalData);
         } else {
-          console.error("No se encontraron datos para este post.");
           setError("El blog no existe o no se pudo cargar.");
         }
       } catch (err: any) {
-        console.error("Error al cargar el blog:", err);
         setError("Error al cargar el blog. Verifica tus permisos.");
       } finally {
         setLoading(false);
@@ -72,9 +75,21 @@ export default function EditBlogPage() {
         tableName: tableName 
       };
       await updatePost(id, payload);
-      navigate(`/dash/${siteId}/blog`);
+      
+      setModal({
+        isOpen: true,
+        type: "success",
+        title: "¡Guardado!",
+        description: "Tus cambios se han actualizado correctamente."
+      });
+      
     } catch (err) {
-      alert("No tienes permisos para editar este post o la sesión expiró.");
+      setModal({
+        isOpen: true,
+        type: "error",
+        title: "Error al actualizar",
+        description: "No tienes permisos o la sesión ha expirado."
+      });
     } finally {
       setIsSaving(false);
     }
@@ -85,13 +100,24 @@ export default function EditBlogPage() {
     try {
       const tableName = activeSite?.tableName || post.tableName || "";
       await deletePost(post.id, tableName, siteId);
-      navigate(`/dash/${siteId}/blog`);
+      
+      setModal({
+        isOpen: true,
+        type: "success",
+        title: "Eliminado",
+        description: "La entrada ha sido movida a la papelera correctamente."
+      });
+      
     } catch (err) {
-      alert("No se pudo eliminar el post. Verifica tus permisos.");
+      setModal({
+        isOpen: true,
+        type: "error",
+        title: "Error al eliminar",
+        description: "No se pudo eliminar el post. Verifica tus permisos."
+      });
     }
   };
 
-  // Build preview URL using the active site's domain
   const previewUrl = post?.postName
     ? activeSite?.domain
       ? `https://${activeSite.domain}/blog/${post.postName}`
@@ -109,6 +135,20 @@ export default function EditBlogPage() {
         initialData={post}
         onDelete={handleDelete}
         previewUrl={previewUrl}
+      />
+      
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        description={modal.description}
+        onAction={() => {
+          closeModal();
+          if (modal.type === "success") {
+            navigate(`/dash/${siteId}/blog`);
+          }
+        }}
       />
     </div>
   );

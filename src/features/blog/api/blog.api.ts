@@ -48,7 +48,10 @@ export const getPostById = async (id: string, siteId: string, tableName: string)
 
 export const updatePost = async (id: string, data: BlogPost) => {
   const response = await api.put(`${BASE_URL}/updatePost`, data, {
-    params: { TableName: data.tableName }
+    params: { 
+      TableName: data.tableName, 
+      id: id                     
+    }
   });
   return response.data;
 };

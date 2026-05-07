@@ -1,15 +1,30 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { TourForm } from "@/features/tours/components/tourForm";
 import { getTourById, updateTour } from "@/features/tours/api/tour.api";
 import { Loader2 } from "lucide-react";
+import { StatusModal, StatusType } from "@/components/ui/status-modal";
 
 export default function EditTourPage() {
-  const { siteId, id } = useParams(); // 'id' es el UUID del tour
+  const { siteId, id } = useParams(); 
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [tourData, setTourData] = useState(null);
+
+  // Modal State
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    type: StatusType;
+    title: string;
+    description?: string;
+  }>({
+    isOpen: false,
+    type: "success",
+    title: "",
+  });
+
+  const closeModal = () => setModal(prev => ({ ...prev, isOpen: false }));
 
   useEffect(() => {
     const loadTour = async () => {
@@ -19,8 +34,12 @@ export default function EditTourPage() {
         const data = await getTourById(id);
         setTourData(data);
       } catch (error) {
-        console.error("Error al cargar el tour:", error);
-        alert("No se pudo cargar la información del tour.");
+        setModal({
+          isOpen: true,
+          type: "error",
+          title: "Error de carga",
+          description: "No se pudo cargar la información del tour."
+        });
       } finally {
         setLoading(false);
       }
@@ -33,11 +52,21 @@ export default function EditTourPage() {
     setUpdating(true);
     try {
       await updateTour(id, { ...data, siteId });
-      alert("¡Tour actualizado exitosamente!");
-      navigate(`/dash/${siteId}/tours`);
+      
+      setModal({
+        isOpen: true,
+        type: "success",
+        title: "¡Actualizado!",
+        description: "Los cambios del tour se han guardado con éxito."
+      });
+      
     } catch (error: any) {
-      console.error("Error al actualizar:", error);
-      alert("Error al actualizar: " + (error.response?.data?.message || "Error desconocido"));
+      setModal({
+        isOpen: true,
+        type: "error",
+        title: "Error al actualizar",
+        description: error.response?.data?.message || "Ocurrió un error inesperado."
+      });
     } finally {
       setUpdating(false);
     }
@@ -59,6 +88,20 @@ export default function EditTourPage() {
         initialData={tourData} 
         siteId={siteId} 
         isLoading={updating} 
+      />
+
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        description={modal.description}
+        onAction={() => {
+          closeModal();
+          if (modal.type === "success") {
+            navigate(`/dash/${siteId}/tour`);
+          }
+        }}
       />
     </div>
   );

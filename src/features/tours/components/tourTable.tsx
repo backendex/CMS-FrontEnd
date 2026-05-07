@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
-import { Link } from "react-router-dom"; // Importante para la navegación
+import { Link } from "react-router-dom";
 import { deleteTour } from "@/features/tours/api/tour.api";
 import { Tour, ToursTableProps } from "@/features/tours/types/tourType"; 
+import { StatusModal, StatusType } from "@/components/ui/status-modal";
 import {
   Table,
   TableBody,
@@ -21,19 +21,52 @@ interface ExtendedProps extends ToursTableProps {
 
 export function ToursTable({ siteId, tours }: ExtendedProps) {
   const [list, setList] = useState<Tour[]>(tours);
+  
+  // Modal State
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    type: StatusType;
+    title: string;
+    description?: string;
+    onAction?: () => void;
+  }>({
+    isOpen: false,
+    type: "success",
+    title: "",
+  });
+
+  const closeModal = () => setModal(prev => ({ ...prev, isOpen: false }));
 
   useEffect(() => {
     setList(tours);
   }, [tours]);
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("¿Estás seguro de eliminar este tour?")) return;
-    try {
-      await deleteTour(id);
-      setList(prev => prev.filter((t) => t.id !== id));
-    } catch (error) {
-      alert("No se pudo eliminar el tour.");
-    }
+    setModal({
+      isOpen: true,
+      type: "warning",
+      title: "¿Eliminar tour?",
+      description: "Esta acción borrará permanentemente el tour del sistema.",
+      onAction: async () => {
+        try {
+          await deleteTour(id);
+          setList(prev => prev.filter((t) => t.id !== id));
+          setModal({
+            isOpen: true,
+            type: "success",
+            title: "Eliminado",
+            description: "El tour ha sido borrado con éxito."
+          });
+        } catch (error) {
+          setModal({
+            isOpen: true,
+            type: "error",
+            title: "Error",
+            description: "No se pudo eliminar el tour."
+          });
+        }
+      }
+    });
   };
 
   return (
@@ -73,8 +106,6 @@ export function ToursTable({ siteId, tours }: ExtendedProps) {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    
-                    {/* --- BOTÓN EDITAR FUNCIONAL --- */}
                     <Button
                       variant="ghost"
                       size="icon"
@@ -101,6 +132,15 @@ export function ToursTable({ siteId, tours }: ExtendedProps) {
           )}
         </TableBody>
       </Table>
+
+      <StatusModal
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        type={modal.type}
+        title={modal.title}
+        description={modal.description}
+        onAction={modal.onAction}
+      />
     </div>
   );
 }

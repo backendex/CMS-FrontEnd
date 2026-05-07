@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { 
   ChevronRight, 
   ChevronDown, 
@@ -30,7 +31,9 @@ import {
   FileText,
   ShieldCheck,
   Type,
-  HelpCircle
+  HelpCircle,
+  Smile,
+  Frown
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { 
@@ -40,7 +43,43 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 import GooglePreview from "@/features/blog/components/googlePreview";
+
+const SidebarSection = ({ 
+  id, 
+  title, 
+  icon: Icon, 
+  children, 
+  activeAccordion, 
+  toggleAccordion 
+}: { 
+  id: string, 
+  title: string, 
+  icon: any, 
+  children: React.ReactNode,
+  activeAccordion: string[],
+  toggleAccordion: (id: string) => void
+}) => (
+  <div className="border-b border-border/40 last:border-0">
+    <button 
+      type="button"
+      onClick={() => toggleAccordion(id)}
+      className="w-full flex items-center justify-between p-4 text-[13px] font-semibold hover:bg-muted/30 transition-colors group"
+    >
+      <div className="flex items-center gap-2.5 text-muted-foreground group-hover:text-foreground transition-colors">
+        <Icon className="w-4 h-4" />
+        <span>{title}</span>
+      </div>
+      {activeAccordion.includes(id) ? <ChevronDown className="w-3.5 h-3.5 opacity-50" /> : <ChevronRight className="w-3.5 h-3.5 opacity-50" />}
+    </button>
+    {activeAccordion.includes(id) && (
+      <div className="p-4 pt-0 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+        {children}
+      </div>
+    )}
+  </div>
+);
 
 export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
   initialData,
@@ -50,6 +89,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
   isSubmitting,
   isLoading,
 }) => {
+  const { toast } = useToast();
   const loading = isSubmitting || isLoading;
   const defaultPost: BlogPost = {
     id: 0,
@@ -93,16 +133,25 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
     initialData ? { ...defaultPost, ...initialData, seoData: initialData.seoData || defaultPost.seoData } : defaultPost
   );
 
+  const editorRef = React.useRef<HTMLDivElement>(null);
+  const isInternalUpdate = React.useRef(false);
+
   // Sync initialData if it changes (useful for edit page)
   useEffect(() => {
     if (initialData) {
-      setPost({
+      const updatedPost = {
         ...defaultPost,
         ...initialData,
         seoData: initialData.seoData || defaultPost.seoData
-      });
+      };
+      setPost(updatedPost);
+      
+      // Update editor content only when data is loaded from outside
+      if (editorRef.current) {
+        editorRef.current.innerHTML = updatedPost.postContent || "";
+      }
     }
-  }, [initialData]);
+  }, [initialData?.id]); // Only sync when the ID changes to avoid loops during typing
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeAccordion, setActiveAccordion] = useState<string[]>(["status", "categories", "image"]);
@@ -150,10 +199,13 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
     if (previewUrl) {
       window.open(previewUrl, "_blank", "noopener,noreferrer");
     } else if (post.postName) {
-      // Fallback: open slug-based URL if no explicit previewUrl
       window.open(`/blog/${post.postName}`, "_blank", "noopener,noreferrer");
     } else {
-      alert("Guarda el borrador primero para poder previsualizar la entrada.");
+      toast({
+        title: "Vista previa no disponible",
+        description: "Guarda el borrador primero para poder previsualizar la entrada.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -162,34 +214,16 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
     if (onDelete) {
       onDelete();
     } else {
-      alert("No se puede eliminar: esta entrada todavía no ha sido guardada.");
+      toast({
+        title: "Error al eliminar",
+        description: "No se puede eliminar: esta entrada todavía no ha sido guardada.",
+        variant: "destructive",
+      });
     }
   };
 
-  const SidebarSection = ({ id, title, icon: Icon, children }: { id: string, title: string, icon: any, children: React.ReactNode }) => (
-    <div className="border-b border-border/40 last:border-0">
-      <button 
-        type="button"
-        onClick={() => toggleAccordion(id)}
-        className="w-full flex items-center justify-between p-4 text-[13px] font-semibold hover:bg-muted/30 transition-colors group"
-      >
-        <div className="flex items-center gap-2.5 text-muted-foreground group-hover:text-foreground transition-colors">
-          <Icon className="w-4 h-4" />
-          <span>{title}</span>
-        </div>
-        {activeAccordion.includes(id) ? <ChevronDown className="w-3.5 h-3.5 opacity-50" /> : <ChevronRight className="w-3.5 h-3.5 opacity-50" />}
-      </button>
-      {activeAccordion.includes(id) && (
-        <div className="p-4 pt-0 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] bg-background">
-      {/* TOP BAR */}
       <header className="h-14 border-b flex items-center justify-between px-4 bg-background sticky top-0 z-10">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" className="md:hidden">
@@ -230,7 +264,6 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* MAIN CONTENT AREA */}
         <main className="flex-1 overflow-y-auto bg-background custom-scrollbar">
           <div className="max-w-[900px] mx-auto py-16 px-8 lg:px-16 space-y-12">
             <div className="space-y-6">
@@ -250,20 +283,21 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
             <div className="min-h-[400px]">
               <div
+                ref={editorRef}
                 className="w-full min-h-[500px] text-xl leading-relaxed focus:outline-none prose prose-slate max-w-none dark:prose-invert selection:bg-primary/20 placeholder:text-muted-foreground/30"
                 contentEditable={true}
                 suppressContentEditableWarning={true}
                 onInput={(e) => {
-                  setPost({ ...post, postContent: e.currentTarget.innerHTML });
+                  const newContent = e.currentTarget.innerHTML;
+                  isInternalUpdate.current = true;
+                  setPost(prev => ({ ...prev, postContent: newContent }));
                 }}
-                dangerouslySetInnerHTML={{ __html: post.postContent || "" }}
                 data-placeholder="Empieza a escribir..."
               />
             </div>
 
             <Separator className="my-20 opacity-50" />
 
-            {/* YOAST SEO SECTION (At the bottom like WP) */}
             <Card className="border-none shadow-xl shadow-primary/5 mb-24 overflow-hidden bg-white dark:bg-slate-950">
               <CardHeader className="bg-muted/20 border-b py-4 px-6 flex flex-row items-center justify-between">
                 <CardTitle className="text-sm font-bold flex items-center gap-2.5">
@@ -271,9 +305,19 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     <ShieldCheck className="w-4 h-4 text-primary" />
                   </div>
                   Yoast SEO
-                  <Badge variant="outline" className={`ml-2 px-2 py-0 h-5 text-[10px] font-bold uppercase tracking-wider ${seoScore.color === 'green' ? 'border-green-500/50 text-green-600 bg-green-50' : seoScore.color === 'orange' ? 'border-orange-500/50 text-orange-600 bg-orange-50' : 'border-red-500/50 text-red-600 bg-red-50'}`}>
-                    {seoScore.points >= 70 ? 'Bueno' : seoScore.points >= 40 ? 'Mejorable' : 'Pobre'}
-                  </Badge>
+                      <Badge 
+      variant="outline" 
+      className={cn(
+        "ml-2 px-2 py-0 h-5 text-[10px] font-bold uppercase tracking-wider",
+        seoScore.points >= 70 
+          ? 'border-green-500/50 text-green-600 bg-green-50' 
+          : seoScore.points >= 40 
+            ? 'border-orange-500/50 text-orange-600 bg-orange-50' 
+            : 'border-red-500/50 text-red-600 bg-red-50'
+      )}
+    >
+      {seoScore.points >= 70 ? 'Bueno' : seoScore.points >= 40 ? 'Mejorable' : 'Pobre'}
+    </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -281,14 +325,34 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-auto p-0">
                     <TabsTrigger
                       value="seo"
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 text-sm font-medium"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 text-sm font-medium flex items-center gap-2"
                     >
+                      {seoScore.points >= 70 ? (
+                        <Smile className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <Frown className="w-4 h-4 text-red-500" />
+                      )}
                       SEO
                     </TabsTrigger>
                     <TabsTrigger
-                      value="social"
-                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 text-sm font-medium"
+                      value="readability"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 text-sm font-medium flex items-center gap-2"
                     >
+                      <Smile className="w-4 h-4 text-green-500" />
+                      Legibilidad
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="schema"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 text-sm font-medium flex items-center gap-2"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      Esquema
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="social"
+                      className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 text-sm font-medium flex items-center gap-2"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
                       Social
                     </TabsTrigger>
                   </TabsList>
@@ -343,7 +407,6 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
                     <Separator className="my-8" />
 
-                    {/* Cornerstone Content */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
@@ -364,7 +427,6 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
                     <Separator className="my-8" />
 
-                    {/* Advanced Section */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-2 mb-4">
                         <h3 className="text-lg font-bold">Avanzado</h3>
@@ -476,6 +538,125 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                         <p className="text-xs text-muted-foreground">Puntuación actual: <span className="font-bold text-foreground">{seoScore.points}/100</span></p>
                       </div>
                     </div>
+
+                    {/* DETAILED ANALYSIS RESULTS */}
+                    <div className="space-y-6 pt-6">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-base font-bold">Resultados del análisis</h3>
+                        <Badge variant="outline" className="text-[10px]">{seoScore.checks.length} resultados</Badge>
+                      </div>
+
+                      <div className="space-y-6">
+                        {/* Problems */}
+                        {seoScore.checks.filter(c => c.status === 'problem').length > 0 && (
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-sm font-bold text-red-600">
+                              <ChevronDown className="w-4 h-4" />
+                              Problemas ({seoScore.checks.filter(c => c.status === 'problem').length})
+                            </div>
+                            <div className="space-y-3 pl-6">
+                              {seoScore.checks.filter(c => c.status === 'problem').map(check => (
+                                <div key={check.id} className="flex gap-3">
+                                  <div className="mt-1.5 w-2.5 h-2.5 rounded-full bg-red-500 flex-shrink-0" />
+                                  <div className="text-sm">
+                                    <span className="font-bold border-b border-muted-foreground/30 mr-1">{check.label}:</span>
+                                    <span className="text-muted-foreground">{check.description}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Improvements / OK */}
+                        {seoScore.checks.filter(c => c.status === 'ok').length > 0 && (
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-sm font-bold text-orange-600">
+                              <ChevronDown className="w-4 h-4" />
+                              Mejoras ({seoScore.checks.filter(c => c.status === 'ok').length})
+                            </div>
+                            <div className="space-y-3 pl-6">
+                              {seoScore.checks.filter(c => c.status === 'ok').map(check => (
+                                <div key={check.id} className="flex gap-3">
+                                  <div className="mt-1.5 w-2.5 h-2.5 rounded-full bg-orange-400 flex-shrink-0" />
+                                  <div className="text-sm">
+                                    <span className="font-bold border-b border-muted-foreground/30 mr-1">{check.label}:</span>
+                                    <span className="text-muted-foreground">{check.description}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Good Results */}
+                        {seoScore.checks.filter(c => c.status === 'good').length > 0 && (
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-sm font-bold text-green-600">
+                              <ChevronDown className="w-4 h-4" />
+                              Resultados buenos ({seoScore.checks.filter(c => c.status === 'good').length})
+                            </div>
+                            <div className="space-y-3 pl-6">
+                              {seoScore.checks.filter(c => c.status === 'good').map(check => (
+                                <div key={check.id} className="flex gap-3">
+                                  <div className="mt-1.5 w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0" />
+                                  <div className="text-sm">
+                                    <span className="font-bold border-b border-muted-foreground/30 mr-1">{check.label}:</span>
+                                    <span className="text-muted-foreground">{check.description}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="readability" className="p-6 space-y-6">
+                    <div className="bg-green-50/50 p-4 rounded-lg border border-green-100 flex gap-3">
+                      <div className="bg-green-500 w-3 h-3 rounded-full mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="text-sm font-bold text-green-800">¡Legibilidad Excelente!</h4>
+                        <p className="text-xs text-green-700">Tu texto es fácil de leer y sigue las mejores prácticas de redacción.</p>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-sm font-bold">
+                        <ChevronDown className="w-4 h-4" />
+                        Resultados buenos (6)
+                      </div>
+                      <div className="space-y-3 pl-6">
+                        {[
+                          { label: 'Voz pasiva', desc: '¡No estás usando demasiada voz pasiva! ¡Eso es genial!' },
+                          { label: 'Frases consecutivas', desc: 'No hay repeticiones al inicio de las frases. ¡Genial!' },
+                          { label: 'Distribución de subtítulos', desc: 'Estás usando subtítulos correctamente para dividir el texto.' },
+                          { label: 'Longitud de párrafos', desc: '¡No hay párrafos demasiado largos! ¡Buen trabajo!' },
+                          { label: 'Longitud de frases', desc: '¡Genial!' },
+                          { label: 'Palabras de transición', desc: '¡Estás usando suficientes palabras de transición!' },
+                        ].map((item, i) => (
+                          <div key={i} className="flex gap-3">
+                            <div className="mt-1.5 w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0" />
+                            <div className="text-sm">
+                              <span className="font-bold border-b border-muted-foreground/30 mr-1">{item.label}:</span>
+                              <span className="text-muted-foreground">{item.desc}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="schema" className="p-6 space-y-6">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-bold">Configuración de esquema</h4>
+                      <p className="text-xs text-muted-foreground">Define cómo se describe tu página a los motores de búsqueda usando Schema.org.</p>
+                    </div>
+                    <div className="bg-muted/30 p-4 rounded-lg border border-dashed text-center space-y-2">
+                      <FileText className="w-8 h-8 mx-auto opacity-20" />
+                      <p className="text-sm font-medium">Esquema predeterminado: Artículo</p>
+                      <Button variant="outline" size="sm">Cambiar tipo de esquema</Button>
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="social" className="p-6 space-y-6">
@@ -500,7 +681,6 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
           </div>
         </main>
 
-        {/* SIDEBAR */}
         {sidebarOpen && (
           <aside className="w-[300px] lg:w-[350px] border-l bg-muted/10 overflow-y-auto hidden md:block">
             <Tabs defaultValue="post" className="w-full">
@@ -514,7 +694,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
               </TabsList>
 
               <TabsContent value="post" className="m-0 border-none pb-10">
-                <SidebarSection id="status" title="Resumen" icon={Info}>
+                <SidebarSection id="status" title="Resumen" icon={Info} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <div className="grid grid-cols-[90px_1fr] gap-y-4 text-[12px] items-center">
                     <span className="text-muted-foreground flex items-center gap-1.5"><Eye className="w-3.5 h-3.5" /> Visibilidad</span>
                     <span className="font-semibold text-primary cursor-pointer hover:underline underline-offset-4 decoration-primary/30">Público</span>
@@ -549,12 +729,11 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   </Button>
                 </SidebarSection>
 
-                <SidebarSection id="categories" title="Categorías" icon={Folder}>
+                <SidebarSection id="categories" title="Categorías" icon={Folder} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar py-1">
                     {["Cancun & Riviera Maya Guide", "Eco Tourism", "Marine Life", "Snorkeling", "Tips"].map((cat) => (
                       <label key={cat} className="flex items-center gap-2.5 text-[13px] cursor-pointer group/label py-0.5">
                         <div className="w-4 h-4 rounded border-2 border-muted-foreground/30 group-hover/label:border-primary transition-all flex items-center justify-center">
-                          {/* Custom checkbox simulation */}
                         </div>
                         <span className="text-muted-foreground group-hover/label:text-foreground transition-colors">{cat}</span>
                       </label>
@@ -563,7 +742,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   <Button variant="link" size="sm" className="p-0 h-auto text-[11px] text-primary mt-2 font-semibold">Añadir nueva categoría</Button>
                 </SidebarSection>
 
-                <SidebarSection id="image" title="Imagen destacada" icon={ImageIcon}>
+                <SidebarSection id="image" title="Imagen destacada" icon={ImageIcon} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <div className="aspect-video w-full rounded-xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center bg-muted/5 hover:bg-muted/10 hover:border-primary/30 transition-all cursor-pointer group/img overflow-hidden relative">
                     <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/img:opacity-100 transition-opacity" />
                     <ImageIcon className="w-7 h-7 text-muted-foreground/50 group-hover/img:text-primary transition-colors mb-2.5" />
@@ -571,7 +750,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   </div>
                 </SidebarSection>
 
-                <SidebarSection id="excerpt" title="Extracto" icon={FileText}>
+                <SidebarSection id="excerpt" title="Extracto" icon={FileText} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <Textarea 
                     placeholder="Escribe un extracto breve..." 
                     className="text-[12px] bg-background min-h-[90px] border-muted-foreground/20 focus-visible:ring-primary/30 rounded-lg resize-none"
@@ -581,7 +760,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   <p className="text-[10px] text-muted-foreground/60 mt-2 leading-relaxed">Los extractos son descripciones cortas que suelen aparecer en las listas de blogs.</p>
                 </SidebarSection>
 
-                <SidebarSection id="seo-summary" title="Estado SEO" icon={ShieldCheck}>
+                <SidebarSection id="seo-summary" title="Estado SEO" icon={ShieldCheck} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <div className="space-y-4 p-1">
                     <div className="flex items-center justify-between text-[12px]">
                       <span className="text-muted-foreground font-medium">Puntuación</span>
