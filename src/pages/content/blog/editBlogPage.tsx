@@ -49,6 +49,7 @@ export default function EditBlogPage() {
         const finalData = Array.isArray(data) ? data[0] : data;
         
         if (finalData) {
+          console.log("✅ Post cargado:", { id: finalData.id, postName: finalData.postName, postStatus: finalData.postStatus, tableName: finalData.tableName });
           setPost(finalData);
         } else {
           setError("El blog no existe o no se pudo cargar.");
@@ -118,11 +119,19 @@ export default function EditBlogPage() {
     }
   };
 
-  const previewUrl = post?.postName
-    ? activeSite?.domain
-      ? `https://${activeSite.domain}/blog/${post.postName}`
-      : `http://localhost:4321/blog/${post.postName}` // fallback al servidor Astro local
+  const astroBase = activeSite?.domain
+    ? `https://${activeSite.domain}`
+    : `http://localhost:4321`;
+
+  // postName puede venir vacío del backend — lo generamos igual que el formulario
+  const effectiveSlug = post?.postName ||
+    post?.postTitle?.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^\w-]+/g, "");
+
+  const previewUrl = effectiveSlug
+    ? `${astroBase}/blog/${effectiveSlug}?preview=true`
     : undefined;
+
+  console.log("🔍 previewUrl:", previewUrl, "| postName:", post?.postName, "| effectiveSlug:", effectiveSlug);
 
   if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>;
   if (error) return <div className="p-10 text-destructive">{error}</div>;
