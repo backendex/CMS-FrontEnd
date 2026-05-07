@@ -16,9 +16,6 @@ export const getBlogs = async (siteId: string, tableName: string): Promise<BlogP
     throw error;
   }
 };
-
-
-
 export const createPost = async (postData: BlogPost, tableName: string): Promise<{ id: number; message: string }> => {
   try {
     // Enviamos el postData en el body y el TableName en los params (Query String)
@@ -46,14 +43,16 @@ export const getPostById = async (id: string, siteId: string, tableName: string)
   }
 };
 
-export const updatePost = async (id: string, data: BlogPost) => {
-  const response = await api.put(`${BASE_URL}/updatePost`, data, {
-    params: { 
-      TableName: data.tableName, 
-      id: id                     
-    }
-  });
-  return response.data;
+export const updatePost = async (id: string, data: BlogPost): Promise<{ message: string }> => {
+  try {
+    // El backend espera: PUT /{siteName}/updatePost/{id}
+    const siteName = data.tableName;
+    const response = await api.put(`${BASE_URL}/${siteName}/updatePost/${id}`, data);
+    return response.data;
+  } catch (error: any) {
+    handleBlogApiError(error);
+    throw error;
+  }
 };
 
 export const deletePost = async (id: number, tableName: string, siteId: string): Promise<void> => {

@@ -121,7 +121,7 @@ export default function EditBlogPage() {
   const previewUrl = post?.postName
     ? activeSite?.domain
       ? `https://${activeSite.domain}/blog/${post.postName}`
-      : undefined
+      : `http://localhost:4321/blog/${post.postName}` // fallback al servidor Astro local
     : undefined;
 
   if (loading) return <div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div>;
