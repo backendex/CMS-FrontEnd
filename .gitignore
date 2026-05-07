@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Frontend (Astro / React / Next.js)
+node_modules/
+.DS_Store
+dist/
+.astro/
+out/
+.next/
+
+# Tailwind CSS v4 cache
+.cache/
