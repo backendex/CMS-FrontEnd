@@ -2,7 +2,7 @@
 import api from "@/lib/api";
 import { Tour } from "@/features/tours/types/tourType";
 
-const BASE_URL = "https://localhost:44351/api/tour";
+const BASE_URL = "/tour";
 
 export const getTour = async (siteId: string): Promise<Tour[]> => {
   try {

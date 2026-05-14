@@ -22,14 +22,8 @@ export function BlogsTable({ blogs, onDelete, siteId }: BlogsTableProps) {
   }, [blogs]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleDelete = async (id: any) => {
-    if (!window.confirm("¿Estás seguro de eliminar este post?")) return;
-    try {
-      if (onDelete) onDelete(id);
-      setList((prev) => prev.filter((b) => b.id !== id));
-    } catch (error) {
-      alert("No se pudo eliminar el post.");
-    }
+  const handleDelete = (id: number) => {
+    if (onDelete) onDelete(id);
   };
 
   const getSeoColor = (score: number) => {

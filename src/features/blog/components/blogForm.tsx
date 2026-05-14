@@ -10,14 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { 
-  ChevronRight, 
-  ChevronDown, 
-  Settings2, 
-  Eye, 
-  Globe, 
-  Calendar, 
-  User, 
+import {
+  ChevronRight,
+  ChevronDown,
+  Settings2,
+  Eye,
+  Globe,
+  Calendar,
+  User,
   Image as ImageIcon,
   ChevronLeft,
   CheckCircle2,
@@ -36,45 +36,53 @@ import {
   Frown
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import GooglePreview from "@/features/blog/components/googlePreview";
 
-const SidebarSection = ({ 
-  id, 
-  title, 
-  icon: Icon, 
-  children, 
-  activeAccordion, 
-  toggleAccordion 
-}: { 
-  id: string, 
-  title: string, 
-  icon: any, 
+const SidebarSection = ({
+  id,
+  title,
+  icon: Icon,
+  children,
+  activeAccordion,
+  toggleAccordion
+}: {
+  id: string,
+  title: string,
+  icon: any,
   children: React.ReactNode,
   activeAccordion: string[],
   toggleAccordion: (id: string) => void
 }) => (
   <div className="border-b border-border/40 last:border-0">
-    <button 
+    <button
       type="button"
       onClick={() => toggleAccordion(id)}
-      className="w-full flex items-center justify-between p-4 text-[13px] font-semibold hover:bg-muted/30 transition-colors group"
+      className="w-full flex items-center justify-between px-6 py-6 text-[15px] font-bold hover:bg-muted/50 transition-all group"
     >
-      <div className="flex items-center gap-2.5 text-muted-foreground group-hover:text-foreground transition-colors">
-        <Icon className="w-4 h-4" />
-        <span>{title}</span>
+      <div className="flex items-center gap-4 text-muted-foreground group-hover:text-foreground transition-colors">
+        <div className="bg-muted p-2 rounded-xl group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-sm">
+          <Icon className="w-4 h-4" />
+        </div>
+        <span className="tracking-tight">{title}</span>
       </div>
-      {activeAccordion.includes(id) ? <ChevronDown className="w-3.5 h-3.5 opacity-50" /> : <ChevronRight className="w-3.5 h-3.5 opacity-50" />}
+      <div className="bg-muted/30 p-1 rounded-full group-hover:bg-primary/10 transition-colors">
+        {activeAccordion.includes(id) ? (
+          <ChevronDown className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+        ) : (
+          <ChevronRight className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+        )}
+      </div>
     </button>
     {activeAccordion.includes(id) && (
-      <div className="p-4 pt-0 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+      <div className="px-6 pb-8 space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
         {children}
       </div>
     )}
@@ -145,7 +153,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
         seoData: initialData.seoData || defaultPost.seoData
       };
       setPost(updatedPost);
-      
+
       // Update editor content only when data is loaded from outside
       if (editorRef.current) {
         editorRef.current.innerHTML = updatedPost.postContent || "";
@@ -157,7 +165,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
   const [activeAccordion, setActiveAccordion] = useState<string[]>(["status", "categories", "image"]);
 
   const toggleAccordion = (id: string) => {
-    setActiveAccordion(prev => 
+    setActiveAccordion(prev =>
       prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
     );
   };
@@ -245,16 +253,16 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
             Vista previa <ExternalLink className="ml-1 w-3.5 h-3.5" />
           </Button>
           <Separator orientation="vertical" className="h-6 mx-2 hidden sm:block" />
-          <Button 
-            onClick={handleSubmit} 
+          <Button
+            onClick={handleSubmit}
             disabled={loading}
             className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm px-6"
           >
             {loading ? "Guardando..." : (post.id ? "Actualizar" : "Publicar")}
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className={sidebarOpen ? "text-primary bg-primary/10" : ""}
           >
@@ -273,7 +281,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                 value={post.postTitle || ""}
                 onChange={(e) => setPost({ ...post, postTitle: e.target.value })}
               />
-              
+
               <div className="flex items-center gap-2 text-xs text-muted-foreground group cursor-pointer hover:text-foreground transition-colors">
                 <Link2 className="w-3 h-3" />
                 <span>Enlace permanente:</span>
@@ -305,19 +313,19 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     <ShieldCheck className="w-4 h-4 text-primary" />
                   </div>
                   Yoast SEO
-                      <Badge 
-      variant="outline" 
-      className={cn(
-        "ml-2 px-2 py-0 h-5 text-[10px] font-bold uppercase tracking-wider",
-        seoScore.points >= 70 
-          ? 'border-green-500/50 text-green-600 bg-green-50' 
-          : seoScore.points >= 40 
-            ? 'border-orange-500/50 text-orange-600 bg-orange-50' 
-            : 'border-red-500/50 text-red-600 bg-red-50'
-      )}
-    >
-      {seoScore.points >= 70 ? 'Bueno' : seoScore.points >= 40 ? 'Mejorable' : 'Pobre'}
-    </Badge>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "ml-2 px-2 py-0 h-5 text-[10px] font-bold uppercase tracking-wider",
+                      seoScore.points >= 70
+                        ? 'border-green-500/50 text-green-600 bg-green-50'
+                        : seoScore.points >= 40
+                          ? 'border-orange-500/50 text-orange-600 bg-orange-50'
+                          : 'border-red-500/50 text-red-600 bg-red-50'
+                    )}
+                  >
+                    {seoScore.points >= 70 ? 'Bueno' : seoScore.points >= 40 ? 'Mejorable' : 'Pobre'}
+                  </Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -404,141 +412,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                         />
                       </div>
                     </div>
-
-                    <Separator className="my-8" />
-
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label className="text-base font-semibold">Contenido esencial</Label>
-                          <p className="text-xs text-muted-foreground">
-                            El contenido esencial debe ser el artículo más importante y extenso de tu sitio. <Button variant="link" className="p-0 h-auto text-xs">Leer más sobre contenido esencial.</Button>
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs font-medium text-muted-foreground">{post.seoData.isCornerstone ? 'Activado' : 'Desactivado'}</span>
-                          <Switch 
-                            checked={post.seoData.isCornerstone} 
-                            onCheckedChange={(checked) => handleSeoChange("isCornerstone", checked)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <Separator className="my-8" />
-
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2 mb-4">
-                        <h3 className="text-lg font-bold">Avanzado</h3>
-                        <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
-                      </div>
-
-                      <div className="grid gap-8 max-w-2xl">
-                        <div className="space-y-3">
-                          <Label className="text-sm font-semibold flex items-center gap-2">
-                            ¿Permitir que los motores de búsqueda muestren esta entrada en los resultados?
-                            <HelpCircle className="w-3.5 h-3.5 text-muted-foreground opacity-50" />
-                          </Label>
-                          <Select 
-                            value={post.seoData.allowSearch !== false ? "yes" : "no"} 
-                            onValueChange={(val) => handleSeoChange("allowSearch", val === "yes")}
-                          >
-                            <SelectTrigger className="bg-muted/20 h-10">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="yes">Sí (por defecto)</SelectItem>
-                              <SelectItem value="no">No</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="space-y-3">
-                          <Label className="text-sm font-semibold flex items-center gap-2">
-                            ¿Deberían los motores de búsqueda seguir los enlaces de esta entrada?
-                            <HelpCircle className="w-3.5 h-3.5 text-muted-foreground opacity-50" />
-                          </Label>
-                          <div className="flex items-center gap-8 mt-1">
-                            <label className="flex items-center gap-2.5 cursor-pointer group">
-                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${post.seoData.followLinks !== false ? 'border-primary' : 'border-muted-foreground/30 group-hover:border-primary'}`}>
-                                {post.seoData.followLinks !== false && <div className="w-2 h-2 rounded-full bg-primary" />}
-                              </div>
-                              <input 
-                                type="radio" 
-                                className="hidden" 
-                                checked={post.seoData.followLinks !== false} 
-                                onChange={() => handleSeoChange("followLinks", true)} 
-                              />
-                              <span className="text-sm font-medium">Sí</span>
-                            </label>
-                            <label className="flex items-center gap-2.5 cursor-pointer group">
-                              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${post.seoData.followLinks === false ? 'border-primary' : 'border-muted-foreground/30 group-hover:border-primary'}`}>
-                                {post.seoData.followLinks === false && <div className="w-2 h-2 rounded-full bg-primary" />}
-                              </div>
-                              <input 
-                                type="radio" 
-                                className="hidden" 
-                                checked={post.seoData.followLinks === false} 
-                                onChange={() => handleSeoChange("followLinks", false)} 
-                              />
-                              <span className="text-sm font-medium">No</span>
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="space-y-3">
-                          <Label className="text-sm font-semibold flex items-center gap-2">
-                            Meta robots avanzado
-                            <HelpCircle className="w-3.5 h-3.5 text-muted-foreground opacity-50" />
-                          </Label>
-                          <Select 
-                            value={post.seoData.metaRobotsAdvanced || "none"} 
-                            onValueChange={(val) => handleSeoChange("metaRobotsAdvanced", val === "none" ? "" : val)}
-                          >
-                            <SelectTrigger className="bg-muted/20 h-10">
-                              <SelectValue placeholder="Selecciona opciones..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">Ninguno</SelectItem>
-                              <SelectItem value="noimageindex">Sin índice de imágenes (noimageindex)</SelectItem>
-                              <SelectItem value="noarchive">Sin archivo (noarchive)</SelectItem>
-                              <SelectItem value="nosnippet">Sin fragmento (nosnippet)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="space-y-3">
-                          <Label htmlFor="breadcrumbs" className="text-sm font-semibold">Título de migas de pan</Label>
-                          <Input
-                            id="breadcrumbs"
-                            placeholder="Título para Breadcrumbs"
-                            value={post.seoData.breadcrumbsTitle || ""}
-                            onChange={(e) => handleSeoChange("breadcrumbsTitle", e.target.value)}
-                            className="bg-muted/20 h-10"
-                          />
-                        </div>
-
-                        <div className="space-y-3">
-                          <Label htmlFor="canonical" className="text-sm font-semibold">URL Canónica</Label>
-                          <Input
-                            id="canonical"
-                            placeholder="https://ejemplo.com/pagina"
-                            value={post.seoData.canonicalUrl || ""}
-                            onChange={(e) => handleSeoChange("canonicalUrl", e.target.value)}
-                            className="bg-muted/20 h-10"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-6 border-t flex items-start gap-4 bg-muted/20 p-4 rounded-lg">
-                      <div className={`mt-1 flex-shrink-0 w-4 h-4 rounded-full shadow-sm animate-pulse`} style={{ backgroundColor: seoScore.color }} />
-                      <div className="space-y-1">
-                        <h4 className="text-sm font-bold">Análisis SEO: {seoScore.message}</h4>
-                        <p className="text-xs text-muted-foreground">Puntuación actual: <span className="font-bold text-foreground">{seoScore.points}/100</span></p>
-                      </div>
-                    </div>
-
+                    
                     {/* DETAILED ANALYSIS RESULTS */}
                     <div className="space-y-6 pt-6">
                       <div className="flex items-center gap-2">
@@ -682,45 +556,72 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
         </main>
 
         {sidebarOpen && (
-          <aside className="w-[300px] lg:w-[350px] border-l bg-muted/10 overflow-y-auto hidden md:block">
+          <aside className="w-[350px] lg:w-[400px] border-l bg-background overflow-y-auto hidden md:block shadow-xl">
             <Tabs defaultValue="post" className="w-full">
-              <TabsList className="w-full justify-start rounded-none border-b bg-background h-12 p-0 px-2">
-                <TabsTrigger value="post" className="rounded-none h-12 data-[state=active]:border-b-2 data-[state=active]:border-primary bg-transparent shadow-none">
+              <TabsList className="w-full justify-start rounded-none border-b bg-background h-14 p-0 px-4 gap-6">
+                <TabsTrigger value="post" className="rounded-none h-14 data-[state=active]:border-b-2 data-[state=active]:border-primary bg-transparent shadow-none px-0 text-[14px] font-bold">
                   Entrada
                 </TabsTrigger>
-                <TabsTrigger value="block" className="rounded-none h-12 data-[state=active]:border-b-2 data-[state=active]:border-primary bg-transparent shadow-none">
+                <TabsTrigger value="block" className="rounded-none h-14 data-[state=active]:border-b-2 data-[state=active]:border-primary bg-transparent shadow-none px-0 text-[14px] font-medium opacity-60 data-[state=active]:opacity-100">
                   Bloque
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="post" className="m-0 border-none pb-10">
                 <SidebarSection id="status" title="Resumen" icon={Info} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
-                  <div className="grid grid-cols-[90px_1fr] gap-y-4 text-[12px] items-center">
-                    <span className="text-muted-foreground flex items-center gap-1.5"><Eye className="w-3.5 h-3.5" /> Visibilidad</span>
-                    <span className="font-semibold text-primary cursor-pointer hover:underline underline-offset-4 decoration-primary/30">Público</span>
-                    
-                    <span className="text-muted-foreground flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> Publicar</span>
-                    <span className="font-semibold text-primary cursor-pointer hover:underline underline-offset-4 decoration-primary/30">Inmediatamente</span>
-                    
-                    <span className="text-muted-foreground flex items-center gap-1.5"><Link2 className="w-3.5 h-3.5" /> URL</span>
-                    <span className="font-mono text-[11px] truncate text-primary cursor-pointer hover:underline bg-primary/5 px-1.5 py-0.5 rounded">{post.postName || "autogenerado"}</span>
-                    
-                    <span className="text-muted-foreground flex items-center gap-1.5"><User className="w-3.5 h-3.5" /> Autor</span>
-                    <span className="font-semibold text-primary cursor-pointer hover:underline underline-offset-4 decoration-primary/30">Admin User</span>
+                  <div className="space-y-5 text-[13px]">
+                    <div className="flex items-center justify-between py-1">
+                      <div className="text-muted-foreground flex items-center gap-3">
+                        <Eye className="w-4 h-4 opacity-60" />
+                        <span className="font-medium">Visibilidad</span>
+                      </div>
+                      <span className="font-bold text-foreground bg-muted/50 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-primary/10 hover:text-primary transition-all shadow-sm">Público</span>
+                    </div>
 
-                    <span className="text-muted-foreground flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" /> Estado</span>
-                    <Badge variant={post.postStatus === 'publish' ? 'default' : 'secondary'} className="w-fit text-[10px] h-5">
-                      {post.postStatus === 'publish' ? 'Publicado' : 'Borrador'}
-                    </Badge>
+                    <div className="flex items-center justify-between py-1">
+                      <div className="text-muted-foreground flex items-center gap-3">
+                        <Calendar className="w-4 h-4 opacity-60" />
+                        <span className="font-medium">Publicar</span>
+                      </div>
+                      <span className="font-bold text-foreground bg-muted/50 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-primary/10 hover:text-primary transition-all shadow-sm">Inmediatamente</span>
+                    </div>
+
+                    <div className="flex flex-col gap-3 py-1">
+                      <div className="text-muted-foreground flex items-center gap-3">
+                        <Link2 className="w-4 h-4 opacity-60" />
+                        <span className="font-medium">Enlace permanente</span>
+                      </div>
+                      <div className="font-mono text-[11px] break-all text-primary cursor-pointer hover:underline bg-primary/[0.03] px-4 py-3 rounded-xl border border-primary/10 shadow-inner">
+                        {post.postName || "autogenerado"}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between py-1">
+                      <div className="text-muted-foreground flex items-center gap-3">
+                        <User className="w-4 h-4 opacity-60" />
+                        <span className="font-medium">Autor</span>
+                      </div>
+                      <span className="font-bold text-foreground bg-muted/50 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-primary/10 hover:text-primary transition-all shadow-sm">Admin User</span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-1">
+                      <div className="text-muted-foreground flex items-center gap-3">
+                        <Globe className="w-4 h-4 opacity-60" />
+                        <span className="font-medium">Estado</span>
+                      </div>
+                      <Badge variant={post.postStatus === 'publish' ? 'default' : 'secondary'} className="px-4 py-1 font-black uppercase tracking-widest text-[9px] rounded-full shadow-sm">
+                        {post.postStatus === 'publish' ? 'Publicado' : 'Borrador'}
+                      </Badge>
+                    </div>
                   </div>
-                  
+
                   <Separator className="my-4 opacity-50" />
-                  
-                  <Button 
+
+                  <Button
                     type="button"
-                    variant="ghost" 
-                    size="sm" 
-                    className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive justify-start h-9 px-3 gap-2.5 font-medium"
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-destructive hover:bg-destructive/5 hover:text-destructive justify-start h-11 px-4 gap-3 font-semibold border border-transparent hover:border-destructive/20 transition-all rounded-xl mt-2"
                     onClick={handleDelete}
                     disabled={!onDelete}
                   >
@@ -730,32 +631,37 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                 </SidebarSection>
 
                 <SidebarSection id="categories" title="Categorías" icon={Folder} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
-                  <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar py-1">
+                  <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar py-1">
                     {["Cancun & Riviera Maya Guide", "Eco Tourism", "Marine Life", "Snorkeling", "Tips"].map((cat) => (
-                      <label key={cat} className="flex items-center gap-2.5 text-[13px] cursor-pointer group/label py-0.5">
-                        <div className="w-4 h-4 rounded border-2 border-muted-foreground/30 group-hover/label:border-primary transition-all flex items-center justify-center">
+                      <label key={cat} className="flex items-center gap-3 text-[13px] cursor-pointer group/label py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="w-4 h-4 rounded border-2 border-muted-foreground/30 group-hover/label:border-primary transition-all flex items-center justify-center bg-background">
                         </div>
-                        <span className="text-muted-foreground group-hover/label:text-foreground transition-colors">{cat}</span>
+                        <span className="text-muted-foreground group-hover/label:text-foreground font-medium transition-colors">{cat}</span>
                       </label>
                     ))}
                   </div>
-                  <Button variant="link" size="sm" className="p-0 h-auto text-[11px] text-primary mt-2 font-semibold">Añadir nueva categoría</Button>
+                  <Button variant="outline" size="sm" className="w-full text-[12px] text-primary mt-6 font-bold hover:bg-primary/5 border-primary/20 h-10 rounded-xl">
+                    + Añadir nueva categoría
+                  </Button>
                 </SidebarSection>
 
                 <SidebarSection id="image" title="Imagen destacada" icon={ImageIcon} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
-                  <div className="aspect-video w-full rounded-xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center bg-muted/5 hover:bg-muted/10 hover:border-primary/30 transition-all cursor-pointer group/img overflow-hidden relative">
+                  <div className="aspect-video w-full rounded-2xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center bg-muted/10 hover:bg-primary/[0.03] hover:border-primary/40 transition-all duration-300 cursor-pointer group/img overflow-hidden relative shadow-inner">
                     <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/img:opacity-100 transition-opacity" />
-                    <ImageIcon className="w-7 h-7 text-muted-foreground/50 group-hover/img:text-primary transition-colors mb-2.5" />
-                    <span className="text-[11px] font-semibold text-muted-foreground group-hover/img:text-primary transition-colors">Establecer imagen</span>
+                    <div className="bg-background p-4 rounded-full shadow-sm mb-3 group-hover/img:scale-110 transition-transform duration-300">
+                      <ImageIcon className="w-6 h-6 text-muted-foreground/50 group-hover/img:text-primary transition-colors" />
+                    </div>
+                    <span className="text-[12px] font-bold text-muted-foreground group-hover/img:text-primary transition-colors">Establecer imagen</span>
+                    <p className="text-[10px] text-muted-foreground/50 mt-1">Suelte aquí o haga clic para subir</p>
                   </div>
                 </SidebarSection>
 
                 <SidebarSection id="excerpt" title="Extracto" icon={FileText} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
-                  <Textarea 
-                    placeholder="Escribe un extracto breve..." 
+                  <Textarea
+                    placeholder="Escribe un extracto breve..."
                     className="text-[12px] bg-background min-h-[90px] border-muted-foreground/20 focus-visible:ring-primary/30 rounded-lg resize-none"
                     value={post.postExcerpt}
-                    onChange={(e) => setPost({...post, postExcerpt: e.target.value})}
+                    onChange={(e) => setPost({ ...post, postExcerpt: e.target.value })}
                   />
                   <p className="text-[10px] text-muted-foreground/60 mt-2 leading-relaxed">Los extractos son descripciones cortas que suelen aparecer en las listas de blogs.</p>
                 </SidebarSection>

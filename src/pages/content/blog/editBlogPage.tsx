@@ -98,25 +98,37 @@ export default function EditBlogPage() {
 
   const handleDelete = async () => {
     if (!id || !siteId || !post) return;
-    try {
-      const tableName = activeSite?.tableName || post.tableName || "";
-      await deletePost(post.id, tableName, siteId);
-      
-      setModal({
-        isOpen: true,
-        type: "success",
-        title: "Eliminado",
-        description: "La entrada ha sido movida a la papelera correctamente."
-      });
-      
-    } catch (err) {
-      setModal({
-        isOpen: true,
-        type: "error",
-        title: "Error al eliminar",
-        description: "No se pudo eliminar el post. Verifica tus permisos."
-      });
-    }
+
+    setModal({
+      isOpen: true,
+      type: "warning",
+      title: "¿Eliminar blog?",
+      description: "Esta entrada se borrará permanentemente. Esta acción no se puede deshacer.",
+      // @ts-ignore - onAction is supported but type might be strict
+      onAction: async () => {
+        try {
+          const tableName = getTableName();
+          if (!tableName) throw new Error("No se pudo determinar la tabla.");
+
+          await deletePost(post.id, tableName, siteId);
+          
+          setModal({
+            isOpen: true,
+            type: "success",
+            title: "¡Eliminado!",
+            description: "La entrada ha sido eliminada correctamente."
+          });
+        } catch (err) {
+          console.error("Error al eliminar:", err);
+          setModal({
+            isOpen: true,
+            type: "error",
+            title: "Error al eliminar",
+            description: "No se pudo eliminar el post. Verifica tus permisos."
+          });
+        }
+      }
+    });
   };
 
   const astroBase = activeSite?.domain

@@ -59,7 +59,11 @@ export function LoginForm({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("ERROR EN LOGIN:", err);
-      setError(err.response?.data?.message || "Credenciales inválidas o cuenta deshabilitada");
+      if (err.code === "ERR_NETWORK") {
+        setError("Error de conexión: El servidor no responde.");
+      } else {
+        setError(err.response?.data?.message || "Credenciales inválidas o cuenta deshabilitada");
+      }
     } finally {
       setLoading(false);
     }

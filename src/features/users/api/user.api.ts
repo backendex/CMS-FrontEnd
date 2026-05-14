@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import api from "@/lib/api"
 import {User} from "@/features/users/types/userType"
-const BASE_URL = "https://localhost:44351/api/auth";
+const BASE_URL = "/auth";
 
 export const getUsers = async (siteId: string): Promise<User[]> => {
   try {

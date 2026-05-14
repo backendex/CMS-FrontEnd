@@ -1,7 +1,7 @@
 import api from "@/lib/api"
 import {LoginRequest, LoginResponse} from "@/features/auth/types/authType"
 
-const BASE_URL = "https://localhost:44351/api/auth";
+const BASE_URL = "/auth";
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
   const res = await api.post(`${BASE_URL}/login`, credentials);

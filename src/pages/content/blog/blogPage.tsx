@@ -31,25 +31,41 @@ export function BlogPage() {
   const closeModal = () => setModal(prev => ({ ...prev, isOpen: false }));
 
   const getTableName = () => {
-    let tableName = activeSite?.tableName || "";
-    if (!tableName && activeSite?.name === "Snorkeling Adventure") {
-      tableName = "snorkell";
-    }
-    if (!tableName && activeSite?.name === "Cenote Adventuring") {
-      tableName = "cenote";
-    }
-    return tableName;
+    // Priorizamos el tableName del contexto del sitio activo
+    if (activeSite?.tableName) return activeSite.tableName;
+    
+    // Fallbacks si no está definido el tableName explícitamente
+    const name = activeSite?.name?.toLowerCase() || "";
+    if (name.includes("snorkeling")) return "snorkell";
+    if (name.includes("cenote")) return "cenote";
+    
+    return "";
   };
 
   const loadBlogs = useCallback(async () => {
+    // Verificamos que tengamos siteId válido
     if (!siteId || siteId === "undefined") return;
+    
+    // Verificamos que el siteId de la URL coincida con el sitio activo para evitar cargas erróneas
+    if (activeSite && String(activeSite.id) !== String(siteId)) {
+      console.warn("Mismatch de siteId entre URL y Contexto. Esperando sincronización...");
+      return;
+    }
+
     try {
       setLoading(true);
       const tableName = getTableName();
+      
+      if (!tableName) {
+        console.warn("No se pudo determinar el tableName para el sitio:", siteId);
+        return;
+      }
+
+      console.log(`Cargando blogs para siteId: ${siteId}, TableName: ${tableName}`);
       const response = await getBlogs(siteId, tableName);
       setBlogs(response);
     } catch (error: any) {
-      console.error("Error en la carga:", error);
+      console.error("Error cargando blogs:", error);
     } finally {
       setLoading(false);
     }
@@ -66,24 +82,29 @@ export function BlogPage() {
       isOpen: true,
       type: "warning",
       title: "¿Eliminar entrada?",
-      description: "Esta acción no se puede deshacer. La entrada se borrará permanentemente.",
+      description: "Esta acción no se puede deshacer. La entrada se borrará permanentemente de la base de datos.",
       onAction: async () => {
         try {
           const tableName = getTableName();
           await deletePost(id, tableName, siteId);
+          
+          // Actualizar la lista local
           setBlogs(prev => prev.filter(b => b.id !== id));
+          
+          // Mostrar éxito
           setModal({
             isOpen: true,
             type: "success",
-            title: "Eliminado",
-            description: "La entrada ha sido eliminada correctamente."
+            title: "¡Eliminado!",
+            description: "La entrada ha sido eliminada correctamente de este sitio."
           });
         } catch (error: any) {
+          console.error("Error al eliminar:", error);
           setModal({
             isOpen: true,
             type: "error",
             title: "Error",
-            description: "No se pudo eliminar el post."
+            description: "No se pudo eliminar el post. Verifica la consola para más detalles."
           });
         }
       }

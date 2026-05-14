@@ -2,7 +2,7 @@
 import api from "@/lib/api";
 import { BlogPost } from "@/features/blog/types/types";
 
-const BASE_URL = "https://localhost:44351/api/Content";
+const BASE_URL = "/Content";
 
 export const getBlogs = async (siteId: string, tableName: string): Promise<BlogPost[]> => {
   try {
@@ -45,9 +45,13 @@ export const getPostById = async (id: string, siteId: string, tableName: string)
 
 export const updatePost = async (id: string, data: BlogPost): Promise<{ message: string }> => {
   try {
-    // El backend espera: PUT /{siteName}/updatePost/{id}
-    const siteName = data.tableName;
-    const response = await api.put(`${BASE_URL}/${siteName}/updatePost/${id}`, data);
+    // El backend espera: PUT /updatePost?TableName=...&id=...
+    const response = await api.put(`${BASE_URL}/updatePost`, data, {
+      params: { 
+        TableName: data.tableName, 
+        id: id 
+      }
+    });
     return response.data;
   } catch (error: any) {
     handleBlogApiError(error);
@@ -57,8 +61,13 @@ export const updatePost = async (id: string, data: BlogPost): Promise<{ message:
 
 export const deletePost = async (id: number, tableName: string, siteId: string): Promise<void> => {
   try {
+    // El backend espera: DELETE /deletePost?TableName=...&id=...
     await api.delete(`${BASE_URL}/deletePost`, {
-      params: { id, tableName, siteId }
+      params: { 
+        id, 
+        TableName: tableName, 
+        siteId // Aunque el backend no lo pida explícitamente en el código mostrado, se mantiene por contexto si el controlador lo requiere.
+      }
     });
   } catch (error: any) {
     handleBlogApiError(error);
