@@ -14,6 +14,7 @@ declare global {
   }
 }
 
+
 export const CloudinaryUpload = ({ onSuccess }: CloudinaryUploadProps) => {
   const { toast } = useToast()
 

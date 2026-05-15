@@ -44,7 +44,9 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import GooglePreview from "@/features/blog/components/googlePreview";
+import { GooglePreview } from "@/features/blog/components/googlePreview";
+import { MediaLibraryDialog } from "@/features/blog/components/mediaLibraryDialog";
+import { RichTextEditor } from "@/components/shared/richTextEditor";
 
 const SidebarSection = ({
   id,
@@ -65,24 +67,22 @@ const SidebarSection = ({
     <button
       type="button"
       onClick={() => toggleAccordion(id)}
-      className="w-full flex items-center justify-between px-6 py-6 text-[15px] font-bold hover:bg-muted/50 transition-all group"
+      className="w-full flex items-center justify-between px-4 py-4 text-sm font-bold hover:bg-muted/50 transition-all group"
     >
-      <div className="flex items-center gap-4 text-muted-foreground group-hover:text-foreground transition-colors">
-        <div className="bg-muted p-2 rounded-xl group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-sm">
-          <Icon className="w-4 h-4" />
-        </div>
+      <div className="flex items-center gap-3 text-muted-foreground group-hover:text-foreground transition-colors">
+        <Icon className="w-4 h-4" />
         <span className="tracking-tight">{title}</span>
       </div>
-      <div className="bg-muted/30 p-1 rounded-full group-hover:bg-primary/10 transition-colors">
+      <div className="text-muted-foreground/50">
         {activeAccordion.includes(id) ? (
-          <ChevronDown className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+          <ChevronDown className="w-4 h-4" />
         ) : (
-          <ChevronRight className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+          <ChevronRight className="w-4 h-4" />
         )}
       </div>
     </button>
     {activeAccordion.includes(id) && (
-      <div className="px-6 pb-8 space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+      <div className="px-4 pb-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
         {children}
       </div>
     )}
@@ -232,14 +232,14 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)] bg-background">
-      <header className="h-14 border-b flex items-center justify-between px-4 bg-background sticky top-0 z-10">
+      <header className="h-14 border-b flex items-center justify-between px-4 bg-background sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" className="md:hidden">
             <ChevronLeft className="w-5 h-5" />
           </Button>
           <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
             <span className="font-medium text-foreground">Entradas</span>
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 opacity-50" />
             <span className="truncate max-w-[200px]">{post.postTitle || "Nueva entrada"}</span>
           </div>
         </div>
@@ -258,15 +258,18 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
             disabled={loading}
             className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm px-6"
           >
-            {loading ? "Guardando..." : (post.id ? "Actualizar" : "Publicar")}
+            {loading ? "..." : (post.id ? "Actualizar" : "Publicar")}
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className={sidebarOpen ? "text-primary bg-primary/10" : ""}
+            className={cn(
+              "h-9 w-9 rounded-md",
+              sidebarOpen ? "text-primary bg-primary/10" : ""
+            )}
           >
-            <Settings2 className="w-5 h-5" />
+            <Settings2 className="w-4 h-4" />
           </Button>
         </div>
       </header>
@@ -275,6 +278,22 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
         <main className="flex-1 overflow-y-auto bg-background custom-scrollbar">
           <div className="max-w-[900px] mx-auto py-16 px-8 lg:px-16 space-y-12">
             <div className="space-y-6">
+              <div className="flex items-center gap-2 mb-4">
+                <MediaLibraryDialog 
+                  onSelect={(url) => {
+                    if (editorRef.current) {
+                      editorRef.current.chain().focus().setImage({ src: url }).run();
+                    }
+                  }}
+                  trigger={
+                    <Button variant="outline" size="sm" className="h-8 text-xs gap-2">
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      Insertar desde Biblioteca
+                    </Button>
+                  }
+                />
+                <span className="text-[10px] text-muted-foreground italic">Selecciona archivos de tu biblioteca de medios</span>
+              </div>
               <Input
                 className="text-5xl font-bold h-auto py-4 border-none shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/20 bg-transparent px-0 tracking-tight"
                 placeholder="Escribe el título aquí..."
@@ -289,18 +308,14 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
               </div>
             </div>
 
-            <div className="min-h-[400px]">
-              <div
-                ref={editorRef}
-                className="w-full min-h-[500px] text-xl leading-relaxed focus:outline-none prose prose-slate max-w-none dark:prose-invert selection:bg-primary/20 placeholder:text-muted-foreground/30"
-                contentEditable={true}
-                suppressContentEditableWarning={true}
-                onInput={(e) => {
-                  const newContent = e.currentTarget.innerHTML;
+            <div className="min-h-[500px]">
+              <RichTextEditor
+                content={post.postContent}
+                onChange={(content) => {
                   isInternalUpdate.current = true;
-                  setPost(prev => ({ ...prev, postContent: newContent }));
+                  setPost(prev => ({ ...prev, postContent: content }));
                 }}
-                data-placeholder="Empieza a escribir..."
+                editorRef={editorRef}
               />
             </div>
 
@@ -558,58 +573,58 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
         {sidebarOpen && (
           <aside className="w-[350px] lg:w-[400px] border-l bg-background overflow-y-auto hidden md:block shadow-xl">
             <Tabs defaultValue="post" className="w-full">
-              <TabsList className="w-full justify-start rounded-none border-b bg-background h-14 p-0 px-4 gap-6">
-                <TabsTrigger value="post" className="rounded-none h-14 data-[state=active]:border-b-2 data-[state=active]:border-primary bg-transparent shadow-none px-0 text-[14px] font-bold">
+              <TabsList className="w-full justify-start rounded-none border-b bg-background h-12 p-0 px-4 gap-6" variant="line">
+                <TabsTrigger value="post" className="rounded-none h-12 px-0 text-xs font-bold uppercase tracking-wider">
                   Entrada
                 </TabsTrigger>
-                <TabsTrigger value="block" className="rounded-none h-14 data-[state=active]:border-b-2 data-[state=active]:border-primary bg-transparent shadow-none px-0 text-[14px] font-medium opacity-60 data-[state=active]:opacity-100">
+                <TabsTrigger value="block" className="rounded-none h-12 px-0 text-xs font-bold uppercase tracking-wider opacity-50 data-[state=active]:opacity-100">
                   Bloque
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="post" className="m-0 border-none pb-10">
                 <SidebarSection id="status" title="Resumen" icon={Info} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
-                  <div className="space-y-5 text-[13px]">
-                    <div className="flex items-center justify-between py-1">
-                      <div className="text-muted-foreground flex items-center gap-3">
-                        <Eye className="w-4 h-4 opacity-60" />
-                        <span className="font-medium">Visibilidad</span>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
+                      <div className="text-muted-foreground flex items-center gap-2">
+                        <Eye className="w-4 h-4" />
+                        <span>Visibilidad</span>
                       </div>
-                      <span className="font-bold text-foreground bg-muted/50 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-primary/10 hover:text-primary transition-all shadow-sm">Público</span>
+                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Público</span>
                     </div>
 
-                    <div className="flex items-center justify-between py-1">
-                      <div className="text-muted-foreground flex items-center gap-3">
-                        <Calendar className="w-4 h-4 opacity-60" />
-                        <span className="font-medium">Publicar</span>
+                    <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
+                      <div className="text-muted-foreground flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>Publicar</span>
                       </div>
-                      <span className="font-bold text-foreground bg-muted/50 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-primary/10 hover:text-primary transition-all shadow-sm">Inmediatamente</span>
+                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Inmediatamente</span>
                     </div>
 
-                    <div className="flex flex-col gap-3 py-1">
-                      <div className="text-muted-foreground flex items-center gap-3">
-                        <Link2 className="w-4 h-4 opacity-60" />
-                        <span className="font-medium">Enlace permanente</span>
+                    <div className="flex flex-col gap-2 py-3">
+                      <div className="text-muted-foreground flex items-center gap-2">
+                        <Link2 className="w-4 h-4" />
+                        <span className="font-semibold text-xs">Enlace permanente</span>
                       </div>
-                      <div className="font-mono text-[11px] break-all text-primary cursor-pointer hover:underline bg-primary/[0.03] px-4 py-3 rounded-xl border border-primary/10 shadow-inner">
+                      <div className="font-mono text-[11px] break-all text-primary bg-muted/30 p-2 rounded-md border border-border/50">
                         {post.postName || "autogenerado"}
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between py-1">
-                      <div className="text-muted-foreground flex items-center gap-3">
-                        <User className="w-4 h-4 opacity-60" />
-                        <span className="font-medium">Autor</span>
+                    <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
+                      <div className="text-muted-foreground flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        <span>Autor</span>
                       </div>
-                      <span className="font-bold text-foreground bg-muted/50 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-primary/10 hover:text-primary transition-all shadow-sm">Admin User</span>
+                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Admin User</span>
                     </div>
 
-                    <div className="flex items-center justify-between py-1">
-                      <div className="text-muted-foreground flex items-center gap-3">
-                        <Globe className="w-4 h-4 opacity-60" />
-                        <span className="font-medium">Estado</span>
+                    <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
+                      <div className="text-muted-foreground flex items-center gap-2">
+                        <Globe className="w-4 h-4" />
+                        <span>Estado</span>
                       </div>
-                      <Badge variant={post.postStatus === 'publish' ? 'default' : 'secondary'} className="px-4 py-1 font-black uppercase tracking-widest text-[9px] rounded-full shadow-sm">
+                      <Badge variant={post.postStatus === 'publish' ? 'default' : 'secondary'} className="rounded-md px-2 py-0.5 text-[10px] font-bold">
                         {post.postStatus === 'publish' ? 'Publicado' : 'Borrador'}
                       </Badge>
                     </div>
@@ -621,7 +636,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="w-full text-destructive hover:bg-destructive/5 hover:text-destructive justify-start h-11 px-4 gap-3 font-semibold border border-transparent hover:border-destructive/20 transition-all rounded-xl mt-2"
+                    className="w-full text-destructive hover:bg-destructive/5 hover:text-destructive justify-start h-12 px-4 gap-3 font-bold border border-destructive/10 hover:border-destructive/30 transition-all rounded-xl mt-2 shadow-sm bg-destructive/[0.02]"
                     onClick={handleDelete}
                     disabled={!onDelete}
                   >
@@ -631,56 +646,100 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                 </SidebarSection>
 
                 <SidebarSection id="categories" title="Categorías" icon={Folder} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
-                  <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar py-1">
+                  <div className="space-y-1 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
                     {["Cancun & Riviera Maya Guide", "Eco Tourism", "Marine Life", "Snorkeling", "Tips"].map((cat) => (
-                      <label key={cat} className="flex items-center gap-3 text-[13px] cursor-pointer group/label py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="w-4 h-4 rounded border-2 border-muted-foreground/30 group-hover/label:border-primary transition-all flex items-center justify-center bg-background">
-                        </div>
-                        <span className="text-muted-foreground group-hover/label:text-foreground font-medium transition-colors">{cat}</span>
+                      <label key={cat} className="flex items-center gap-2.5 py-1.5 px-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors group">
+                        <div className="w-3.5 h-3.5 rounded border border-border group-hover:border-primary transition-colors bg-background" />
+                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{cat}</span>
                       </label>
                     ))}
                   </div>
-                  <Button variant="outline" size="sm" className="w-full text-[12px] text-primary mt-6 font-bold hover:bg-primary/5 border-primary/20 h-10 rounded-xl">
+                  <Button variant="outline" size="sm" className="w-full mt-4 h-8 text-[11px] font-bold uppercase tracking-wider">
                     + Añadir nueva categoría
                   </Button>
                 </SidebarSection>
 
                 <SidebarSection id="image" title="Imagen destacada" icon={ImageIcon} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
-                  <div className="aspect-video w-full rounded-2xl border-2 border-dashed border-muted-foreground/20 flex flex-col items-center justify-center bg-muted/10 hover:bg-primary/[0.03] hover:border-primary/40 transition-all duration-300 cursor-pointer group/img overflow-hidden relative shadow-inner">
-                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover/img:opacity-100 transition-opacity" />
-                    <div className="bg-background p-4 rounded-full shadow-sm mb-3 group-hover/img:scale-110 transition-transform duration-300">
-                      <ImageIcon className="w-6 h-6 text-muted-foreground/50 group-hover/img:text-primary transition-colors" />
+                  {post.seoData?.ogImage ? (
+                    <div className="space-y-4">
+                      <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-border group/img">
+                        <img 
+                          src={post.seoData.ogImage} 
+                          alt="Destacada" 
+                          className="w-full h-full object-cover transition-transform group-hover/img:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <MediaLibraryDialog 
+                            onSelect={(url) => setPost(prev => ({
+                              ...prev,
+                              seoData: { ...prev.seoData, ogImage: url }
+                            }))}
+                            trigger={
+                              <Button size="sm" className="h-8 px-3">Cambiar</Button>
+                            }
+                          />
+                          <Button 
+                            variant="destructive" 
+                            size="sm" 
+                            className="h-8 px-3"
+                            onClick={() => setPost(prev => ({
+                              ...prev,
+                              seoData: { ...prev.seoData, ogImage: "" }
+                            }))}
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    <span className="text-[12px] font-bold text-muted-foreground group-hover/img:text-primary transition-colors">Establecer imagen</span>
-                    <p className="text-[10px] text-muted-foreground/50 mt-1">Suelte aquí o haga clic para subir</p>
-                  </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="aspect-video w-full rounded-lg border border-dashed border-border flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group">
+                        <MediaLibraryDialog 
+                          onSelect={(url) => setPost(prev => ({
+                            ...prev,
+                            seoData: { ...prev.seoData, ogImage: url }
+                          }))}
+                          trigger={
+                            <div className="flex flex-col items-center">
+                              <ImageIcon className="w-5 h-5 text-muted-foreground mb-2" />
+                              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Seleccionar de la Biblioteca</span>
+                            </div>
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
                 </SidebarSection>
 
                 <SidebarSection id="excerpt" title="Extracto" icon={FileText} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <Textarea
                     placeholder="Escribe un extracto breve..."
-                    className="text-[12px] bg-background min-h-[90px] border-muted-foreground/20 focus-visible:ring-primary/30 rounded-lg resize-none"
+                    className="text-xs bg-background min-h-[100px] border-border focus-visible:ring-primary/20 rounded-md resize-none leading-relaxed"
                     value={post.postExcerpt}
                     onChange={(e) => setPost({ ...post, postExcerpt: e.target.value })}
                   />
-                  <p className="text-[10px] text-muted-foreground/60 mt-2 leading-relaxed">Los extractos son descripciones cortas que suelen aparecer en las listas de blogs.</p>
+                  <p className="text-[10px] text-muted-foreground/70 mt-2 italic leading-relaxed">Los extractos son resúmenes opcionales hechos a mano.</p>
                 </SidebarSection>
 
                 <SidebarSection id="seo-summary" title="Estado SEO" icon={ShieldCheck} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
-                  <div className="space-y-4 p-1">
-                    <div className="flex items-center justify-between text-[12px]">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between text-xs">
                       <span className="text-muted-foreground font-medium">Puntuación</span>
                       <div className="flex items-center gap-1.5 font-bold">
                         {seoScore.points >= 70 ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <AlertCircle className="w-3.5 h-3.5 text-orange-500" />}
                         <span className={seoScore.points >= 70 ? 'text-green-600' : 'text-orange-600'}>{seoScore.points}/100</span>
                       </div>
                     </div>
-                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden border border-muted-foreground/5">
-                      <div className={`h-full rounded-full transition-all duration-500`} style={{ width: `${seoScore.points}%`, backgroundColor: seoScore.color }} />
+                    <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all duration-500" 
+                        style={{ width: `${seoScore.points}%`, backgroundColor: seoScore.color }} 
+                      />
                     </div>
-                    <div className="bg-muted/30 p-2.5 rounded-lg border border-muted-foreground/5">
-                      <p className="text-[10px] text-muted-foreground italic leading-relaxed text-center">"{seoScore.message}"</p>
-                    </div>
+                    <p className="text-[11px] text-muted-foreground italic leading-relaxed text-center opacity-70">
+                      "{seoScore.message}"
+                    </p>
                   </div>
                 </SidebarSection>
               </TabsContent>

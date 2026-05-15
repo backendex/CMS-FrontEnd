@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { getContentTypes } from "@/features/tours/api/tour.api";
+import { RichTextEditor } from "@/components/shared/richTextEditor";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function TourForm({ onSubmit, initialData, siteId }: any) {
@@ -95,8 +96,10 @@ export function TourForm({ onSubmit, initialData, siteId }: any) {
 
           <div className="grid gap-2">
             <Label htmlFor="description">Descripción</Label>
-            <Textarea id="description" name="description" value={formData.description}
-              onChange={handleChange} className="h-32" />
+            <RichTextEditor 
+              content={formData.description} 
+              onChange={(content) => setFormData({ ...formData, description: content })}
+            />
           </div>
           
           {/* Campos adicionales de Dynamic Data que ya tenías */}

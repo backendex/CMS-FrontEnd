@@ -1,4 +1,4 @@
-import SiteSelector from "@/features/sites/components/siteSelector";
+import { SiteSelector } from "@/features/sites";
 import { SiteType } from "@/features/sites/types/siteType";
 import { useEffect, useState } from "react";
 import { getMe } from "@/features/sites/api/site.api";

@@ -1,7 +1,7 @@
 import { ExternalLink, Globe } from "lucide-react";
 import { Props } from "@/features/sites/types/siteType";
 
-export default function SiteSelector({ site, onManage }: Props) {
+export function SiteSelector({ site, onManage }: Props) {
   const isDisabled = !site.isActive;
   const isMaintenance = site.isActive && site.isMaintenance;
 
