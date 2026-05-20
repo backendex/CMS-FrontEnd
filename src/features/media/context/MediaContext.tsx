@@ -1,54 +1,57 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-
-interface MediaItem {
-  id: string | number;
-  url: string;
-  name: string;
-  size: string;
-  format: string;
-}
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { MediaItem } from "../types/media.types";
+import { getMediaBySite, deleteMedia } from "../api/media.api";
+import { useSite } from "@/features/sites";
 
 interface MediaContextType {
   mediaItems: MediaItem[];
+  isLoading: boolean;
+  error: string | null;
   addMedia: (item: MediaItem) => void;
-  removeMedia: (id: string | number) => void;
+  removeMedia: (id: number) => Promise<void>;
+  refreshMedia: () => void;
 }
 
 const MediaContext = createContext<MediaContextType | undefined>(undefined);
 
 export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [mediaItems, setMediaItems] = useState<MediaItem[]>(() => {
-    // Intentar cargar desde localStorage al iniciar
-    const saved = localStorage.getItem("cms_media_library");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return [];
-      }
-    }
-    // Mock data inicial si no hay nada guardado
-    return [
-      { id: 1, url: "https://picsum.photos/seed/51/400/400", name: "hero-banner-v2.jpg", size: "1.2 MB", format: "JPG" },
-      { id: 2, url: "https://picsum.photos/seed/52/400/400", name: "footer-logo.png", size: "0.5 MB", format: "PNG" },
-    ];
-  });
+  const { activeSite } = useSite();
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Persistir en localStorage cada vez que cambie
+  const fetchMedia = useCallback(async () => {
+    if (!activeSite?.id) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const items = await getMediaBySite(activeSite.id);
+      setMediaItems(items);
+    } catch (err) {
+      console.error("Error al cargar medios:", err);
+      setError("No se pudieron cargar los archivos de medios.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeSite?.id]);
+
   useEffect(() => {
-    localStorage.setItem("cms_media_library", JSON.stringify(mediaItems));
-  }, [mediaItems]);
+    fetchMedia();
+  }, [fetchMedia]);
 
   const addMedia = (item: MediaItem) => {
     setMediaItems((prev) => [item, ...prev]);
   };
 
-  const removeMedia = (id: string | number) => {
+  const removeMedia = async (id: number) => {
+    await deleteMedia(id);
     setMediaItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   return (
-    <MediaContext.Provider value={{ mediaItems, addMedia, removeMedia }}>
+    <MediaContext.Provider
+      value={{ mediaItems, isLoading, error, addMedia, removeMedia, refreshMedia: fetchMedia }}
+    >
       {children}
     </MediaContext.Provider>
   );

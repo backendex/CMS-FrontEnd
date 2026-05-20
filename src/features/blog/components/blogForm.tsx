@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useYoastAnalysis } from "@/features/blog/hooks/useYoastAnalyst";
 import { BlogPost, BlogFormProps } from "@/features/blog/types/types";
 import { Button } from "@/components/ui/button";
@@ -135,13 +136,15 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
       metaRobotsAdvanced: "",
       breadcrumbsTitle: "",
     },
+    schemaMarkup: "",
   };
 
   const [post, setPost] = useState<BlogPost>(
     initialData ? { ...defaultPost, ...initialData, seoData: initialData.seoData || defaultPost.seoData } : defaultPost
   );
 
-  const editorRef = React.useRef<HTMLDivElement>(null);
+  // editorRef holds the TipTap editor instance (set by RichTextEditor via its editorRef prop)
+  const editorRef = React.useRef<any>(null);
   const isInternalUpdate = React.useRef(false);
 
   // Sync initialData if it changes (useful for edit page)
@@ -154,9 +157,9 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
       };
       setPost(updatedPost);
 
-      // Update editor content only when data is loaded from outside
+      // Update TipTap editor content when data is loaded from outside
       if (editorRef.current) {
-        editorRef.current.innerHTML = updatedPost.postContent || "";
+        editorRef.current.commands.setContent(updatedPost.postContent || "");
       }
     }
   }, [initialData?.id]); // Only sync when the ID changes to avoid loops during typing
@@ -230,60 +233,71 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
     }
   };
 
+  const ActionButtons = (
+    <div className="flex items-center gap-2">
+      <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handleSaveDraft} disabled={loading}>
+        <Save className="w-4 h-4" />
+        Guardar borrador
+      </Button>
+      <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handlePreview} type="button">
+        Vista previa <ExternalLink className="ml-1 w-3.5 h-3.5" />
+      </Button>
+      <Separator orientation="vertical" className="h-6 mx-2 hidden sm:block" />
+      <Button
+        onClick={handleSubmit}
+        disabled={loading}
+        className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm px-6 font-bold"
+      >
+        {loading ? "..." : (post.id ? "Actualizar" : "Publicar")}
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className={cn(
+          "h-9 w-9 rounded-md",
+          sidebarOpen ? "text-primary bg-primary/10" : ""
+        )}
+      >
+        <Settings2 className="w-4 h-4" />
+      </Button>
+    </div>
+  );
+
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] bg-background">
-      <header className="h-14 border-b flex items-center justify-between px-4 bg-background sticky top-0 z-50">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">Entradas</span>
-            <ChevronRight className="w-4 h-4 opacity-50" />
-            <span className="truncate max-w-[200px]">{post.postTitle || "Nueva entrada"}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handleSaveDraft} disabled={loading}>
-            <Save className="w-4 h-4" />
-            Guardar borrador
-          </Button>
-          <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handlePreview} type="button">
-            Vista previa <ExternalLink className="ml-1 w-3.5 h-3.5" />
-          </Button>
-          <Separator orientation="vertical" className="h-6 mx-2 hidden sm:block" />
-          <Button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm px-6"
-          >
-            {loading ? "..." : (post.id ? "Actualizar" : "Publicar")}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className={cn(
-              "h-9 w-9 rounded-md",
-              sidebarOpen ? "text-primary bg-primary/10" : ""
-            )}
-          >
-            <Settings2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </header>
-
+    <div className="flex flex-col bg-background h-full">
       <div className="flex-1 flex overflow-hidden">
         <main className="flex-1 overflow-y-auto bg-background custom-scrollbar">
-          <div className="max-w-[900px] mx-auto py-16 px-8 lg:px-16 space-y-12">
+          <div className="max-w-[900px] mx-auto py-12 px-8 lg:px-16 space-y-12">
+            {/* Action Bar Inline */}
+            <div className="flex items-center justify-between pb-6 border-b">
+              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                Editor de Contenido
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground" onClick={handleSaveDraft} disabled={loading}>
+                  <Save className="w-4 h-4" />
+                  Borrador
+                </Button>
+                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground" onClick={handlePreview} type="button">
+                  Vista previa <ExternalLink className="ml-1 w-3.5 h-3.5" />
+                </Button>
+                <Separator orientation="vertical" className="h-6 mx-2" />
+                <Button
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="bg-black text-white hover:bg-black/90 shadow-md px-8 font-bold"
+                >
+                  {loading ? "..." : (post.id ? "Actualizar" : "Publicar")}
+                </Button>
+              </div>
+            </div>
+
             <div className="space-y-6">
               <div className="flex items-center gap-2 mb-4">
                 <MediaLibraryDialog 
                   onSelect={(url) => {
-                    if (editorRef.current) {
-                      editorRef.current.chain().focus().setImage({ src: url }).run();
-                    }
+                      editorRef.current && (editorRef.current as any).chain().focus().setImage({ src: url }).run();
                   }}
                   trigger={
                     <Button variant="outline" size="sm" className="h-8 text-xs gap-2">
@@ -538,13 +552,80 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
                   <TabsContent value="schema" className="p-6 space-y-6">
                     <div className="space-y-2">
-                      <h4 className="text-sm font-bold">Configuración de esquema</h4>
-                      <p className="text-xs text-muted-foreground">Define cómo se describe tu página a los motores de búsqueda usando Schema.org.</p>
+                      <h4 className="text-sm font-bold">Schema Markup (JSON-LD)</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Agrega datos estructurados para mejorar la apariencia en los resultados de búsqueda.
+                        Pega tu código <code className="bg-muted px-1 py-0.5 rounded text-[11px]">&lt;script type="application/ld+json"&gt;</code> aquí.
+                      </p>
                     </div>
-                    <div className="bg-muted/30 p-4 rounded-lg border border-dashed text-center space-y-2">
-                      <FileText className="w-8 h-8 mx-auto opacity-20" />
-                      <p className="text-sm font-medium">Esquema predeterminado: Artículo</p>
-                      <Button variant="outline" size="sm">Cambiar tipo de esquema</Button>
+
+                    {/* Code editor area */}
+                    <div className="rounded-lg border overflow-hidden bg-slate-950">
+                      {/* Toolbar like WordPress HTML block */}
+                      <div className="flex items-center gap-1 px-3 py-2 bg-slate-900 border-b border-slate-700">
+                        <span className="text-[11px] font-bold text-white bg-slate-700 px-2 py-0.5 rounded">HTML</span>
+                        <div className="flex-1" />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-[10px] text-slate-400 hover:text-white hover:bg-slate-700"
+                          onClick={() => {
+                            // Auto-format JSON inside script tag
+                            try {
+                              const raw = post.schemaMarkup || '';
+                              const jsonMatch = raw.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+                              if (jsonMatch) {
+                                const formatted = JSON.stringify(JSON.parse(jsonMatch[1]), null, 2);
+                                setPost({ ...post, schemaMarkup: `<script type="application/ld+json">\n${formatted}\n</script>` });
+                              }
+                            } catch { /* ignore parse errors */ }
+                          }}
+                        >
+                          Formatear
+                        </Button>
+                      </div>
+
+                      {/* Code textarea */}
+                      <textarea
+                        value={post.schemaMarkup || ''}
+                        onChange={(e) => setPost({ ...post, schemaMarkup: e.target.value })}
+                        placeholder={`<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "headline": "Título del artículo",\n  "author": {\n    "@type": "Person",\n    "name": "Autor"\n  }\n}\n</script>`}
+                        className="w-full min-h-[300px] p-4 bg-slate-950 text-green-400 font-mono text-sm leading-relaxed resize-y focus:outline-none placeholder:text-slate-600"
+                        spellCheck={false}
+                      />
+                    </div>
+
+                    {/* Quick templates */}
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Plantillas rápidas</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { label: 'Artículo', type: 'Article' },
+                          { label: 'FAQ', type: 'FAQPage' },
+                          { label: 'HowTo', type: 'HowTo' },
+                          { label: 'Producto', type: 'Product' },
+                        ].map((tpl) => (
+                          <Button
+                            key={tpl.type}
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs"
+                            onClick={() => {
+                              const templates: Record<string, string> = {
+                                Article: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "headline": "${post.postTitle || 'Título'}",\n  "author": {\n    "@type": "Person",\n    "name": "Admin"\n  },\n  "datePublished": "${new Date().toISOString().split('T')[0]}",\n  "description": "${post.seoData?.metaDescription || ''}"\n}\n</script>`,
+                                FAQPage: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [\n    {\n      "@type": "Question",\n      "name": "¿Pregunta de ejemplo?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Respuesta de ejemplo."\n      }\n    }\n  ]\n}\n</script>`,
+                                HowTo: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "HowTo",\n  "name": "${post.postTitle || 'Guía'}",\n  "step": [\n    {\n      "@type": "HowToStep",\n      "name": "Paso 1",\n      "text": "Descripción del paso 1"\n    }\n  ]\n}\n</script>`,
+                                Product: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Product",\n  "name": "${post.postTitle || 'Producto'}",\n  "description": "${post.seoData?.metaDescription || ''}",\n  "offers": {\n    "@type": "Offer",\n    "price": "0",\n    "priceCurrency": "USD"\n  }\n}\n</script>`
+                              };
+                              setPost({ ...post, schemaMarkup: templates[tpl.type] || '' });
+                            }}
+                          >
+                            {tpl.label}
+                          </Button>
+                        ))}
+                      </div>
                     </div>
                   </TabsContent>
 

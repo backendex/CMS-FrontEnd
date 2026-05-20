@@ -4,4 +4,4 @@ export { BlogForm } from './components/blogForm';
 export { BlogsTable } from './components/blogTable';
 export { MediaLibraryDialog } from './components/mediaLibraryDialog';
 export { GooglePreview } from './components/googlePreview';
-export { SEOAnalyst } from './components/seoAnalyst';
+export { SeoAnalysis } from './components/seoAnalyst';

@@ -51,10 +51,15 @@ export default function ChangePasswordPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
   setLoading(true);
   try {
-    await changePasswordPage({
-      newPassword: values.newPassword,
-      confirmPassword: values.confirmPassword,
+    // Llamada directa a la API sin función auxiliar
+    const token = localStorage.getItem("token");
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const res = await fetch(`${apiUrl}/auth/change-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ newPassword: values.newPassword }),
     });
+    if (!res.ok) throw await res.json();
     
     localStorage.removeItem("token");
     localStorage.removeItem("mustChangePassword");

@@ -41,6 +41,7 @@ export interface BlogPost {
   postMimeType?: string;
   commentCount: number;
   seoData: SeoMetadata; 
+  schemaMarkup?: string; // JSON-LD schema code
 }
 export interface PreviewProps {
   title: string;

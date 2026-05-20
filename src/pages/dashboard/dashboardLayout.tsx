@@ -8,6 +8,7 @@ import { AppSidebar } from "@/pages/sidebar";
 import { useSite } from "@/features/sites/components/siteContext";
 
 export default function DashboardLayout() {
+  console.log("DashboardLayout render - Force Refresh");
   const location = useLocation();
   const { siteId } = useParams<{ siteId: string }>();
   const { activeSite } = useSite();
@@ -31,21 +32,43 @@ export default function DashboardLayout() {
     return <Navigate to="/site" replace />;
   }
  
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+  const breadcrumbs = pathSegments.map((segment, index) => {
+    const url = `/${pathSegments.slice(0, index + 1).join("/")}`;
+    // Skip UUID-like segments (site IDs)
+    if (segment.length > 20) return null;
+    
+    const label = routeTitles[url] || segment.charAt(0).toUpperCase() + segment.slice(1);
+    return { label, url };
+  }).filter(Boolean);
+
   return (
-      <SidebarProvider defaultOpen>
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-14 items-center gap-4 border-b px-4">
-            <SidebarTrigger />
-            <span className="text-sm font-medium text-muted-foreground">
-              {currentTitle}
-            </span>
-          </header>
-          <main className="flex flex-1 flex-col gap-6 p-4 lg:p-6 bg-background">
-            <Outlet />
-          </main>
-        </SidebarInset>
-      </SidebarProvider>
+    <div className="flex h-screen w-full overflow-hidden bg-background">
+      <AppSidebar />
+      <main className="flex-1 overflow-auto flex flex-col">
+        {/* Header con Migas de Pan y Acciones */}
+        <header className="px-6 lg:px-10 py-3 border-b bg-white/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between">
+          <nav className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+            <span className="hover:text-foreground cursor-pointer transition-colors">Admin</span>
+            {breadcrumbs.map((crumb, i) => (
+              <div key={crumb?.url} className="flex items-center gap-2">
+                <span className="text-[10px] opacity-40">/</span>
+                <a 
+                  href={crumb?.url} 
+                  className={`transition-colors ${i === breadcrumbs.length - 1 ? 'text-foreground font-bold' : 'hover:text-foreground'}`}
+                >
+                  {crumb?.label}
+                </a>
+              </div>
+            ))}
+          </nav>
+        </header>
+
+        <div className="flex-1 p-6 lg:p-10">
+          <Outlet />
+        </div>
+      </main>
+    </div>
   );
 }
 

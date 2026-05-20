@@ -30,7 +30,7 @@ export const EditTourForm = () => {
       if (!id) return;
       try {
         setLoading(true);
-        const data = await getTourById(id);
+        const data = await getTourById(id, siteId ?? "");
         setTourData(data);
       } catch (error) {
         setModal({

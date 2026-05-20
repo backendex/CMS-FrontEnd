@@ -15,11 +15,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface ExtendedProps extends ToursTableProps {
-  tours: Tour[];
-}
 
-export function ToursTable({ siteId, tours }: ExtendedProps) {
+export function ToursTable({ siteId, tours }: ToursTableProps) {
   const [list, setList] = useState<Tour[]>(tours);
   
   // Modal State

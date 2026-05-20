@@ -27,9 +27,7 @@ export default function App() {
 
   return (
     <ImageKitProvider 
-      publicKey={publicKey} 
-      urlEndpoint={urlEndpoint} 
-      authenticationEndpoint={authenticationEndpoint}
+      urlEndpoint={urlEndpoint}
     >
       <BrowserRouter>
       <SiteProvider>

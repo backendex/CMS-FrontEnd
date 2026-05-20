@@ -19,8 +19,8 @@ export interface Tour {
   dynamic_data: any;
 }
 export interface ToursTableProps {
-  tours: Tour;
-  siteId?: Tour;
+  tours: Tour[];
+  siteId?: string;
 }
 export interface ContentType {
   id: string;
