@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { useYoastAnalysis } from "@/features/blog/hooks/useYoastAnalyst";
 import { BlogPost, BlogFormProps } from "@/features/blog/types/types";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,6 @@ import {
   Calendar,
   User,
   Image as ImageIcon,
-  ChevronLeft,
   CheckCircle2,
   AlertCircle,
   Link2,
@@ -31,19 +29,9 @@ import {
   Folder,
   FileText,
   ShieldCheck,
-  Type,
-  HelpCircle,
   Smile,
   Frown
 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { GooglePreview } from "@/features/blog/components/googlePreview";
 import { MediaLibraryDialog } from "@/features/blog/components/mediaLibraryDialog";
