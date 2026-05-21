@@ -117,7 +117,7 @@ export const MediaManager = () => {
       {!isLoading && !error && filtered.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {filtered.map((item) => (
-            <Card key={item.id} className="overflow-hidden group cursor-pointer border-muted">
+            <Card key={item.id} className="overflow-hidden group cursor-pointer border-none shadow-sm">
               <CardContent className="p-0 relative aspect-square bg-muted flex items-center justify-center">
                 <img
                   src={item.url}
@@ -172,7 +172,7 @@ export const MediaManager = () => {
                   </DropdownMenu>
                 </div>
               </CardContent>
-              <div className="p-2 border-t">
+              <div className="p-2">
                 <p className="text-[11px] font-medium truncate">{item.fileName}</p>
                 <p className="text-[9px] text-muted-foreground uppercase tracking-wider">
                   {item.fileType}

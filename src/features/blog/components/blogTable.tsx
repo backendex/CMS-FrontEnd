@@ -39,12 +39,12 @@ export function BlogsTable({ blogs, onDelete, siteId }: BlogsTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[350px]">Título del Post</TableHead>
-            <TableHead>Sitio</TableHead>
-            <TableHead>Keyword Principal</TableHead>
+            <TableHead className="w-[350px]">Post Title</TableHead>
+            <TableHead>Site</TableHead>
+            <TableHead>Main Keyword</TableHead>
             <TableHead>SEO</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -54,7 +54,7 @@ export function BlogsTable({ blogs, onDelete, siteId }: BlogsTableProps) {
                 colSpan={6}
                 className="h-24 text-center text-muted-foreground"
               >
-                No hay artículos de blog publicados.
+                No blog posts published.
               </TableCell>
             </TableRow>
           ) : (
@@ -88,12 +88,12 @@ export function BlogsTable({ blogs, onDelete, siteId }: BlogsTableProps) {
                     <div
                       className={`h-3 w-3 rounded-full ${getSeoColor(80)}`}
                     />
-                    <span className="text-xs font-medium">Buena</span>
+                    <span className="text-xs font-medium">Good</span>
                   </div>
                 </TableCell>
                 <TableCell>
                   <Badge variant={blog.postStatus ? "default" : "secondary"}>
-                    <span>{blog.postStatus === 'publish' ? 'Publicado' : 'Borrador'}</span>
+                    <span>{blog.postStatus === 'publish' ? 'Published' : 'Draft'}</span>
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">

@@ -18,7 +18,7 @@ export interface YoastScore {
 export const useYoastAnalysis = (content: string, title: string, seoData: SeoMetadata) => {
   const [score, setScore] = useState<YoastScore>({
     color: 'gray',
-    message: 'Esperando contenido...',
+    message: 'Waiting for content...',
     points: 0,
     checks: []
   });
@@ -27,16 +27,16 @@ export const useYoastAnalysis = (content: string, title: string, seoData: SeoMet
     const { focusKeyword, seoTitle, metaDescription } = seoData;
     const checks: SeoCheck[] = [];
 
-    // 1. Palabra clave
+    // 1. Focus keyword
     if (!focusKeyword || focusKeyword.length < 3) {
       setScore({ 
         color: '#d3d3d3', 
-        message: 'Escribe una palabra clave para analizar', 
+        message: 'Enter a focus keyword to analyze', 
         points: 0,
         checks: [{
           id: 'keyword-missing',
-          label: 'Palabra clave objetivo',
-          description: 'No se ha establecido ninguna palabra clave objetivo para esta entrada.',
+          label: 'Focus keyword',
+          description: 'No focus keyword has been set for this post.',
           status: 'problem'
         }]
       });
@@ -48,39 +48,39 @@ export const useYoastAnalysis = (content: string, title: string, seoData: SeoMet
     const contentLower = content.toLowerCase();
     const titleToAnalyze = (seoTitle || title).toLowerCase();
 
-    // --- ANÁLISIS DE TÍTULO ---
+    // --- TITLE ANALYSIS ---
     if (titleToAnalyze.includes(keywordLower)) {
       currentPoints += 30;
       checks.push({
         id: 'title-keyword',
-        label: 'Palabra clave en el título',
-        description: '¡Buen trabajo! La palabra clave aparece en el título SEO.',
+        label: 'Focus keyword in title',
+        description: 'Good job! The focus keyword appears in the SEO title.',
         status: 'good'
       });
     } else {
       checks.push({
         id: 'title-keyword',
-        label: 'Palabra clave en el título',
-        description: 'La palabra clave objetivo no aparece en el título SEO.',
+        label: 'Focus keyword in title',
+        description: 'The focus keyword does not appear in the SEO title.',
         status: 'problem'
       });
     }
 
-    // --- ANÁLISIS DE META DESCRIPCIÓN ---
+    // --- META DESCRIPTION ANALYSIS ---
     if (metaDescription) {
       if (metaDescription.toLowerCase().includes(keywordLower)) {
         currentPoints += 30;
         checks.push({
           id: 'meta-keyword',
-          label: 'Frase clave en la meta descripción',
-          description: 'La frase clave o sus sinónimos aparecen en la meta descripción.',
+          label: 'Focus keyword in meta description',
+          description: 'The focus keyword or its synonyms appear in the meta description.',
           status: 'good'
         });
       } else {
         checks.push({
           id: 'meta-keyword',
-          label: 'Frase clave en la meta descripción',
-          description: 'Se ha especificado una meta descripción, pero no contiene la frase clave.',
+          label: 'Focus keyword in meta description',
+          description: 'A meta description has been specified, but it does not contain the focus keyword.',
           status: 'problem'
         });
       }
@@ -89,42 +89,42 @@ export const useYoastAnalysis = (content: string, title: string, seoData: SeoMet
         currentPoints += 10;
         checks.push({
           id: 'meta-length',
-          label: 'Longitud de la meta descripción',
-          description: '¡Bien hecho! La meta descripción tiene una longitud óptima.',
+          label: 'Meta description length',
+          description: 'Well done! The meta description has an optimal length.',
           status: 'good'
         });
       } else {
         checks.push({
           id: 'meta-length',
-          label: 'Longitud de la meta descripción',
-          description: `La meta descripción es muy ${metaDescription.length < 120 ? 'corta' : 'larga'} (${metaDescription.length} caracteres). El máximo es 160.`,
+          label: 'Meta description length',
+          description: `The meta description is too ${metaDescription.length < 120 ? 'short' : 'long'} (${metaDescription.length} characters). The maximum is 160.`,
           status: 'ok'
         });
       }
     } else {
       checks.push({
         id: 'meta-missing',
-        label: 'Meta descripción',
-        description: 'No se ha especificado ninguna meta descripción. Los buscadores mostrarán texto del contenido en su lugar.',
+        label: 'Meta description',
+        description: 'No meta description has been specified. Search engines will display text from the content instead.',
         status: 'problem'
       });
     }
 
-    // --- ANÁLISIS DE CONTENIDO ---
+    // --- CONTENT ANALYSIS ---
     const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
     if (wordCount >= 300) {
       currentPoints += 10;
       checks.push({
         id: 'word-count',
-        label: 'Longitud del texto',
-        description: `El texto contiene ${wordCount} palabras. Esto es mayor o igual al mínimo recomendado de 300 palabras.`,
+        label: 'Text length',
+        description: `The text contains ${wordCount} words. This is more than or equal to the recommended minimum of 300 words.`,
         status: 'good'
       });
     } else {
       checks.push({
         id: 'word-count',
-        label: 'Longitud del texto',
-        description: `El texto contiene ${wordCount} palabras. Es muy poco, intenta llegar al menos a 300.`,
+        label: 'Text length',
+        description: `The text contains ${wordCount} words. This is very little, try to reach at least 300.`,
         status: 'problem'
       });
     }
@@ -134,29 +134,29 @@ export const useYoastAnalysis = (content: string, title: string, seoData: SeoMet
       const count = (contentLower.match(new RegExp(keywordLower, 'g')) || []).length;
       checks.push({
         id: 'content-keyword',
-        label: 'Densidad de la frase clave',
-        description: `Se ha encontrado la frase clave ${count} veces. ¡Excelente!`,
+        label: 'Focus keyword density',
+        description: `The focus keyword was found ${count} times. Excellent!`,
         status: 'good'
       });
     } else {
       checks.push({
         id: 'content-keyword',
-        label: 'Densidad de la frase clave',
-        description: 'La frase clave objetivo no se encontró en el contenido.',
+        label: 'Focus keyword density',
+        description: 'The focus keyword was not found in the content.',
         status: 'problem'
       });
     }
 
-    // 5. Determinar color final (Semáforo)
+    // 5. Determine final color (Traffic light)
     let color = '#ff4d4d';
-    let message = 'SEO Pobre';
+    let message = 'Poor SEO';
 
     if (currentPoints >= 70) {
       color = '#4caf50';
-      message = '¡SEO Excelente!';
+      message = 'Excellent SEO!';
     } else if (currentPoints >= 40) {
       color = '#ffa500';
-      message = 'SEO Aceptable';
+      message = 'Acceptable SEO';
     }
 
     setScore({ color, message, points: currentPoints, checks });

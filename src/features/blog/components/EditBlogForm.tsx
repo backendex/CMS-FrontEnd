@@ -62,15 +62,15 @@ export const EditBlogForm = () => {
       setModal({
         isOpen: true,
         type: "success",
-        title: "¡Actualizado!",
-        description: "Los cambios se han guardado correctamente."
+        title: "Updated!",
+        description: "The changes have been saved successfully."
       });
     } catch (error: any) {
       setModal({
         isOpen: true,
         type: "error",
-        title: "Error al actualizar",
-        description: error.response?.data?.message || "Ocurrió un error."
+        title: "Update Error",
+        description: error.response?.data?.message || "An error occurred."
       });
     } finally {
       setSaving(false);

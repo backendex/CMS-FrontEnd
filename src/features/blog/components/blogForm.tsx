@@ -11,6 +11,13 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ChevronRight,
   ChevronDown,
   Settings2,
@@ -30,12 +37,19 @@ import {
   FileText,
   ShieldCheck,
   Smile,
-  Frown
+  Frown,
+  Monitor,
+  Tablet,
+  Smartphone,
+  Check,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { GooglePreview } from "@/features/blog/components/googlePreview";
 import { MediaLibraryDialog } from "@/features/blog/components/mediaLibraryDialog";
 import { RichTextEditor } from "@/components/shared/richTextEditor";
+import { PostPreviewModal } from "@/features/blog/components/postPreviewModal";
+
+type PreviewDevice = "desktop" | "tablet" | "mobile";
 
 const SidebarSection = ({
   id,
@@ -171,51 +185,83 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
     setPost({ ...post, seoData: { ...post.seoData, [field]: value } });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const autoSlug =
-      post.postName ||
-      post.postTitle
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/[^\w-]+/g, "");
-    onSubmit({ ...post, postName: autoSlug, postStatus: "publish" });
+  const buildSlug = () =>
+    post.postName ||
+    post.postTitle
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]+/g, "");
+
+  const handleSubmit = () => {
+    onSubmit({ ...post, postName: buildSlug(), postStatus: "publish" });
   };
 
   const handleSaveDraft = () => {
-    const autoSlug =
-      post.postName ||
-      post.postTitle
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/[^\w-]+/g, "");
-    onSubmit({ ...post, postName: autoSlug, postStatus: "draft" });
+    onSubmit({ ...post, postName: buildSlug(), postStatus: "draft" });
   };
 
-  const handlePreview = () => {
+  const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop");
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const handlePreviewInNewTab = () => {
     if (previewUrl) {
       window.open(previewUrl, "_blank", "noopener,noreferrer");
     } else if (post.postName) {
       window.open(`/blog/${post.postName}`, "_blank", "noopener,noreferrer");
     } else {
       toast({
-        title: "Vista previa no disponible",
-        description: "Guarda el borrador primero para poder previsualizar la entrada.",
+        title: "Preview not available",
+        description: "Save the draft first to preview the post.",
         variant: "destructive",
       });
     }
   };
 
+  const deviceOptions: { value: PreviewDevice; label: string; icon: React.ReactNode }[] = [
+    { value: "desktop", label: "Desktop",  icon: <Monitor className="w-4 h-4" /> },
+    { value: "tablet",  label: "Tablet",   icon: <Tablet className="w-4 h-4" /> },
+    { value: "mobile", label: "Mobile",   icon: <Smartphone className="w-4 h-4" /> },
+  ];
+
+  const PreviewDropdown = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+          <Monitor className="w-4 h-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        {deviceOptions.map((opt) => (
+          <DropdownMenuItem
+            key={opt.value}
+            onClick={() => { setPreviewDevice(opt.value); setPreviewOpen(true); }}
+            className="flex items-center justify-between"
+          >
+            <span className="flex items-center gap-2">
+              {opt.icon}
+              {opt.label}
+            </span>
+            {previewDevice === opt.value && <Check className="w-4 h-4 text-primary" />}
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handlePreviewInNewTab} className="text-primary flex items-center gap-2">
+          <ExternalLink className="w-4 h-4" />
+          Preview in new tab
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   const handleDelete = () => {
-    if (!window.confirm("¿Estás seguro de que quieres eliminar esta entrada? Esta acción no se puede deshacer.")) return;
+    if (!window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) return;
     if (onDelete) {
       onDelete();
     } else {
       toast({
-        title: "Error al eliminar",
-        description: "No se puede eliminar: esta entrada todavía no ha sido guardada.",
+        title: "Error deleting",
+        description: "Cannot delete: this post has not been saved yet.",
         variant: "destructive",
       });
     }
@@ -223,22 +269,22 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
   const ActionButtons = (
     <div className="flex items-center gap-2">
-      <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handleSaveDraft} disabled={loading}>
+      <Button type="button" variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handleSaveDraft} disabled={loading}>
         <Save className="w-4 h-4" />
-        Guardar borrador
+        Save draft
       </Button>
-      <Button variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handlePreview} type="button">
-        Vista previa <ExternalLink className="ml-1 w-3.5 h-3.5" />
-      </Button>
+      {PreviewDropdown}
       <Separator orientation="vertical" className="h-6 mx-2 hidden sm:block" />
       <Button
+        type="button"
         onClick={handleSubmit}
         disabled={loading}
         className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm px-6 font-bold"
       >
-        {loading ? "..." : (post.id ? "Actualizar" : "Publicar")}
+        {loading ? "..." : (post.id ? "Update" : "Publish")}
       </Button>
       <Button
+        type="button"
         variant="ghost"
         size="icon"
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -253,6 +299,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
   );
 
   return (
+    <>
     <div className="flex flex-col bg-background h-full">
       <div className="flex-1 flex overflow-hidden">
         <main className="flex-1 overflow-y-auto bg-background custom-scrollbar">
@@ -260,23 +307,22 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
             {/* Action Bar Inline */}
             <div className="flex items-center justify-between pb-6 border-b">
               <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
-                Editor de Contenido
+                Content Editor
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground" onClick={handleSaveDraft} disabled={loading}>
+                <Button type="button" variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground" onClick={handleSaveDraft} disabled={loading}>
                   <Save className="w-4 h-4" />
-                  Borrador
+                  Draft
                 </Button>
-                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground" onClick={handlePreview} type="button">
-                  Vista previa <ExternalLink className="ml-1 w-3.5 h-3.5" />
-                </Button>
+                {PreviewDropdown}
                 <Separator orientation="vertical" className="h-6 mx-2" />
                 <Button
+                  type="button"
                   onClick={handleSubmit}
                   disabled={loading}
                   className="bg-black text-white hover:bg-black/90 shadow-md px-8 font-bold"
                 >
-                  {loading ? "..." : (post.id ? "Actualizar" : "Publicar")}
+                  {loading ? "..." : (post.id ? "Update" : "Publish")}
                 </Button>
               </div>
             </div>
@@ -290,23 +336,23 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   trigger={
                     <Button variant="outline" size="sm" className="h-8 text-xs gap-2">
                       <ImageIcon className="w-3.5 h-3.5" />
-                      Insertar desde Biblioteca
+                      Insert from Library
                     </Button>
                   }
                 />
-                <span className="text-[10px] text-muted-foreground italic">Selecciona archivos de tu biblioteca de medios</span>
+                <span className="text-[10px] text-muted-foreground italic">Select files from your media library</span>
               </div>
               <Input
                 className="text-5xl font-bold h-auto py-4 border-none shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/20 bg-transparent px-0 tracking-tight"
-                placeholder="Escribe el título aquí..."
+                placeholder="Write the title here..."
                 value={post.postTitle || ""}
                 onChange={(e) => setPost({ ...post, postTitle: e.target.value })}
               />
 
               <div className="flex items-center gap-2 text-xs text-muted-foreground group cursor-pointer hover:text-foreground transition-colors">
                 <Link2 className="w-3 h-3" />
-                <span>Enlace permanente:</span>
-                <span className="font-mono bg-muted/50 px-1 rounded">{post.postName || "autogenerado"}</span>
+                <span>Permalink:</span>
+                <span className="font-mono bg-muted/50 px-1 rounded">{post.postName || "auto-generated"}</span>
               </div>
             </div>
 
@@ -341,7 +387,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                           : 'border-red-500/50 text-red-600 bg-red-50'
                     )}
                   >
-                    {seoScore.points >= 70 ? 'Bueno' : seoScore.points >= 40 ? 'Mejorable' : 'Pobre'}
+                    {seoScore.points >= 70 ? 'Good' : seoScore.points >= 40 ? 'Needs Improvement' : 'Poor'}
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -364,14 +410,14 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                       className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 text-sm font-medium flex items-center gap-2"
                     >
                       <Smile className="w-4 h-4 text-green-500" />
-                      Legibilidad
+                      Readability
                     </TabsTrigger>
                     <TabsTrigger
                       value="schema"
                       className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3 text-sm font-medium flex items-center gap-2"
                     >
                       <FileText className="w-3.5 h-3.5" />
-                      Esquema
+                      Schema
                     </TabsTrigger>
                     <TabsTrigger
                       value="social"
@@ -384,32 +430,32 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
                   <TabsContent value="seo" className="p-6 space-y-8">
                     <div className="space-y-4">
-                      <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Vista previa de Google</Label>
+                      <Label className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Google Preview</Label>
                       <div className="bg-white dark:bg-slate-900 border rounded-lg p-6 shadow-sm">
                         <GooglePreview
                           title={post.seoData.seoTitle || post.postTitle}
                           slug={post.postName}
                           description={post.seoData.metaDescription}
-                          siteDomain="tusitio.com"
+                          siteDomain="yoursite.com"
                         />
                       </div>
                     </div>
 
                     <div className="grid gap-6 max-w-2xl">
                       <div className="space-y-2">
-                        <Label htmlFor="keyword" className="text-sm font-medium">Frase clave objetivo</Label>
+                        <Label htmlFor="keyword" className="text-sm font-medium">Focus keyword</Label>
                         <Input
                           id="keyword"
-                          placeholder="Introduce tu palabra clave..."
+                          placeholder="Enter your focus keyword..."
                           value={post.seoData.focusKeyword}
                           onChange={(e) => handleSeoChange("focusKeyword", e.target.value)}
                           className="bg-muted/20"
                         />
-                        <p className="text-[11px] text-muted-foreground">Ayuda a optimizar tu contenido para esta palabra específica.</p>
+                        <p className="text-[11px] text-muted-foreground">Helps optimize your content for this specific word.</p>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="seoTitle" className="text-sm font-medium">Título SEO</Label>
+                        <Label htmlFor="seoTitle" className="text-sm font-medium">SEO Title</Label>
                         <Input
                           id="seoTitle"
                           value={post.seoData.seoTitle}
@@ -419,7 +465,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="meta" className="text-sm font-medium">Metadescripción</Label>
+                        <Label htmlFor="meta" className="text-sm font-medium">Meta description</Label>
                         <Textarea
                           id="meta"
                           rows={3}
@@ -433,8 +479,8 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     {/* DETAILED ANALYSIS RESULTS */}
                     <div className="space-y-6 pt-6">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-base font-bold">Resultados del análisis</h3>
-                        <Badge variant="outline" className="text-[10px]">{seoScore.checks.length} resultados</Badge>
+                        <h3 className="text-base font-bold">Analysis results</h3>
+                        <Badge variant="outline" className="text-[10px]">{seoScore.checks.length} results</Badge>
                       </div>
 
                       <div className="space-y-6">
@@ -443,7 +489,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                           <div className="space-y-3">
                             <div className="flex items-center gap-2 text-sm font-bold text-red-600">
                               <ChevronDown className="w-4 h-4" />
-                              Problemas ({seoScore.checks.filter(c => c.status === 'problem').length})
+                              Problems ({seoScore.checks.filter(c => c.status === 'problem').length})
                             </div>
                             <div className="space-y-3 pl-6">
                               {seoScore.checks.filter(c => c.status === 'problem').map(check => (
@@ -464,7 +510,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                           <div className="space-y-3">
                             <div className="flex items-center gap-2 text-sm font-bold text-orange-600">
                               <ChevronDown className="w-4 h-4" />
-                              Mejoras ({seoScore.checks.filter(c => c.status === 'ok').length})
+                              Improvements ({seoScore.checks.filter(c => c.status === 'ok').length})
                             </div>
                             <div className="space-y-3 pl-6">
                               {seoScore.checks.filter(c => c.status === 'ok').map(check => (
@@ -485,7 +531,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                           <div className="space-y-3">
                             <div className="flex items-center gap-2 text-sm font-bold text-green-600">
                               <ChevronDown className="w-4 h-4" />
-                              Resultados buenos ({seoScore.checks.filter(c => c.status === 'good').length})
+                              Good results ({seoScore.checks.filter(c => c.status === 'good').length})
                             </div>
                             <div className="space-y-3 pl-6">
                               {seoScore.checks.filter(c => c.status === 'good').map(check => (
@@ -508,23 +554,23 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     <div className="bg-green-50/50 p-4 rounded-lg border border-green-100 flex gap-3">
                       <div className="bg-green-500 w-3 h-3 rounded-full mt-1 flex-shrink-0" />
                       <div>
-                        <h4 className="text-sm font-bold text-green-800">¡Legibilidad Excelente!</h4>
-                        <p className="text-xs text-green-700">Tu texto es fácil de leer y sigue las mejores prácticas de redacción.</p>
+                        <h4 className="text-sm font-bold text-green-800">Excellent Readability!</h4>
+                        <p className="text-xs text-green-700">Your text is easy to read and follows writing best practices.</p>
                       </div>
                     </div>
                     <div className="space-y-4">
                       <div className="flex items-center gap-2 text-sm font-bold">
                         <ChevronDown className="w-4 h-4" />
-                        Resultados buenos (6)
+                        Good results (6)
                       </div>
                       <div className="space-y-3 pl-6">
                         {[
-                          { label: 'Voz pasiva', desc: '¡No estás usando demasiada voz pasiva! ¡Eso es genial!' },
-                          { label: 'Frases consecutivas', desc: 'No hay repeticiones al inicio de las frases. ¡Genial!' },
-                          { label: 'Distribución de subtítulos', desc: 'Estás usando subtítulos correctamente para dividir el texto.' },
-                          { label: 'Longitud de párrafos', desc: '¡No hay párrafos demasiado largos! ¡Buen trabajo!' },
-                          { label: 'Longitud de frases', desc: '¡Genial!' },
-                          { label: 'Palabras de transición', desc: '¡Estás usando suficientes palabras de transición!' },
+                          { label: 'Passive voice', desc: 'You are not using too much passive voice! That is great!' },
+                          { label: 'Consecutive sentences', desc: 'There are no repetitions at the start of sentences. Great!' },
+                          { label: 'Subheading distribution', desc: 'You are using subheadings correctly to break up the text.' },
+                          { label: 'Paragraph length', desc: 'No paragraphs are too long! Good job!' },
+                          { label: 'Sentence length', desc: 'Great!' },
+                          { label: 'Transition words', desc: 'You are using enough transition words!' },
                         ].map((item, i) => (
                           <div key={i} className="flex gap-3">
                             <div className="mt-1.5 w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0" />
@@ -542,8 +588,8 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     <div className="space-y-2">
                       <h4 className="text-sm font-bold">Schema Markup (JSON-LD)</h4>
                       <p className="text-xs text-muted-foreground">
-                        Agrega datos estructurados para mejorar la apariencia en los resultados de búsqueda.
-                        Pega tu código <code className="bg-muted px-1 py-0.5 rounded text-[11px]">&lt;script type="application/ld+json"&gt;</code> aquí.
+                        Add structured data to improve appearance in search results.
+                        Paste your <code className="bg-muted px-1 py-0.5 rounded text-[11px]">&lt;script type="application/ld+json"&gt;</code> code here.
                       </p>
                     </div>
 
@@ -570,7 +616,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                             } catch { /* ignore parse errors */ }
                           }}
                         >
-                          Formatear
+                          Format
                         </Button>
                       </div>
 
@@ -578,7 +624,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                       <textarea
                         value={post.schemaMarkup || ''}
                         onChange={(e) => setPost({ ...post, schemaMarkup: e.target.value })}
-                        placeholder={`<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "headline": "Título del artículo",\n  "author": {\n    "@type": "Person",\n    "name": "Autor"\n  }\n}\n</script>`}
+                        placeholder={`<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "headline": "Article Title",\n  "author": {\n    "@type": "Person",\n    "name": "Author"\n  }\n}\n</script>`}
                         className="w-full min-h-[300px] p-4 bg-slate-950 text-green-400 font-mono text-sm leading-relaxed resize-y focus:outline-none placeholder:text-slate-600"
                         spellCheck={false}
                       />
@@ -586,13 +632,13 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
                     {/* Quick templates */}
                     <div className="space-y-2">
-                      <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Plantillas rápidas</Label>
+                      <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Quick templates</Label>
                       <div className="flex flex-wrap gap-2">
                         {[
-                          { label: 'Artículo', type: 'Article' },
+                          { label: 'Article', type: 'Article' },
                           { label: 'FAQ', type: 'FAQPage' },
                           { label: 'HowTo', type: 'HowTo' },
-                          { label: 'Producto', type: 'Product' },
+                          { label: 'Product', type: 'Product' },
                         ].map((tpl) => (
                           <Button
                             key={tpl.type}
@@ -602,10 +648,10 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                             className="h-7 text-xs"
                             onClick={() => {
                               const templates: Record<string, string> = {
-                                Article: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "headline": "${post.postTitle || 'Título'}",\n  "author": {\n    "@type": "Person",\n    "name": "Admin"\n  },\n  "datePublished": "${new Date().toISOString().split('T')[0]}",\n  "description": "${post.seoData?.metaDescription || ''}"\n}\n</script>`,
-                                FAQPage: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [\n    {\n      "@type": "Question",\n      "name": "¿Pregunta de ejemplo?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Respuesta de ejemplo."\n      }\n    }\n  ]\n}\n</script>`,
-                                HowTo: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "HowTo",\n  "name": "${post.postTitle || 'Guía'}",\n  "step": [\n    {\n      "@type": "HowToStep",\n      "name": "Paso 1",\n      "text": "Descripción del paso 1"\n    }\n  ]\n}\n</script>`,
-                                Product: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Product",\n  "name": "${post.postTitle || 'Producto'}",\n  "description": "${post.seoData?.metaDescription || ''}",\n  "offers": {\n    "@type": "Offer",\n    "price": "0",\n    "priceCurrency": "USD"\n  }\n}\n</script>`
+                                Article: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "headline": "${post.postTitle || 'Title'}",\n  "author": {\n    "@type": "Person",\n    "name": "Admin"\n  },\n  "datePublished": "${new Date().toISOString().split('T')[0]}",\n  "description": "${post.seoData?.metaDescription || ''}"\n}\n</script>`,
+                                FAQPage: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [\n    {\n      "@type": "Question",\n      "name": "Example question?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Example answer."\n      }\n    }\n  ]\n}\n</script>`,
+                                HowTo: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "HowTo",\n  "name": "${post.postTitle || 'Guide'}",\n  "step": [\n    {\n      "@type": "HowToStep",\n      "name": "Step 1",\n      "text": "Description of step 1"\n    }\n  ]\n}\n</script>`,
+                                Product: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Product",\n  "name": "${post.postTitle || 'Product'}",\n  "description": "${post.seoData?.metaDescription || ''}",\n  "offers": {\n    "@type": "Offer",\n    "price": "0",\n    "priceCurrency": "USD"\n  }\n}\n</script>`
                               };
                               setPost({ ...post, schemaMarkup: templates[tpl.type] || '' });
                             }}
@@ -620,15 +666,15 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   <TabsContent value="social" className="p-6 space-y-6">
                     <div className="space-y-4 max-w-2xl">
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Imagen para redes sociales</Label>
+                        <Label className="text-sm font-medium">Social image</Label>
                         <div className="flex gap-2">
                           <Input
-                            placeholder="https://ejemplo.com/imagen.jpg"
+                            placeholder="https://example.com/image.jpg"
                             value={post.postMimeType}
                             onChange={(e) => setPost({ ...post, postMimeType: e.target.value })}
                             className="bg-muted/20"
                           />
-                          <Button variant="secondary">Elegir</Button>
+                          <Button variant="secondary">Choose</Button>
                         </div>
                       </div>
                     </div>
@@ -644,46 +690,46 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
             <Tabs defaultValue="post" className="w-full">
               <TabsList className="w-full justify-start rounded-none border-b bg-background h-12 p-0 px-4 gap-6" variant="line">
                 <TabsTrigger value="post" className="rounded-none h-12 px-0 text-xs font-bold uppercase tracking-wider">
-                  Entrada
+                  Post
                 </TabsTrigger>
                 <TabsTrigger value="block" className="rounded-none h-12 px-0 text-xs font-bold uppercase tracking-wider opacity-50 data-[state=active]:opacity-100">
-                  Bloque
+                  Block
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="post" className="m-0 border-none pb-10">
-                <SidebarSection id="status" title="Resumen" icon={Info} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                <SidebarSection id="status" title="Summary" icon={Info} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <Eye className="w-4 h-4" />
-                        <span>Visibilidad</span>
+                        <span>Visibility</span>
                       </div>
-                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Público</span>
+                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Public</span>
                     </div>
 
                     <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        <span>Publicar</span>
+                        <span>Publish</span>
                       </div>
-                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Inmediatamente</span>
+                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Immediately</span>
                     </div>
 
                     <div className="flex flex-col gap-2 py-3">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <Link2 className="w-4 h-4" />
-                        <span className="font-semibold text-xs">Enlace permanente</span>
+                        <span className="font-semibold text-xs">Permalink</span>
                       </div>
                       <div className="font-mono text-[11px] break-all text-primary bg-muted/30 p-2 rounded-md border border-border/50">
-                        {post.postName || "autogenerado"}
+                        {post.postName || "auto-generated"}
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <User className="w-4 h-4" />
-                        <span>Autor</span>
+                        <span>Author</span>
                       </div>
                       <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Admin User</span>
                     </div>
@@ -691,10 +737,10 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <Globe className="w-4 h-4" />
-                        <span>Estado</span>
+                        <span>Status</span>
                       </div>
                       <Badge variant={post.postStatus === 'publish' ? 'default' : 'secondary'} className="rounded-md px-2 py-0.5 text-[10px] font-bold">
-                        {post.postStatus === 'publish' ? 'Publicado' : 'Borrador'}
+                        {post.postStatus === 'publish' ? 'Published' : 'Draft'}
                       </Badge>
                     </div>
                   </div>
@@ -710,11 +756,11 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     disabled={!onDelete}
                   >
                     <Trash2 className="w-4 h-4" />
-                    {onDelete ? "Mover a la papelera" : "Guarda primero para eliminar"}
+                    {onDelete ? "Move to trash" : "Save first to delete"}
                   </Button>
                 </SidebarSection>
 
-                <SidebarSection id="categories" title="Categorías" icon={Folder} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                <SidebarSection id="categories" title="Categories" icon={Folder} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <div className="space-y-1 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
                     {["Cancun & Riviera Maya Guide", "Eco Tourism", "Marine Life", "Snorkeling", "Tips"].map((cat) => (
                       <label key={cat} className="flex items-center gap-2.5 py-1.5 px-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors group">
@@ -724,17 +770,17 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     ))}
                   </div>
                   <Button variant="outline" size="sm" className="w-full mt-4 h-8 text-[11px] font-bold uppercase tracking-wider">
-                    + Añadir nueva categoría
+                    + Add new category
                   </Button>
                 </SidebarSection>
 
-                <SidebarSection id="image" title="Imagen destacada" icon={ImageIcon} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                <SidebarSection id="image" title="Featured image" icon={ImageIcon} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   {post.seoData?.ogImage ? (
                     <div className="space-y-4">
                       <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-border group/img">
                         <img 
                           src={post.seoData.ogImage} 
-                          alt="Destacada" 
+                          alt="Featured" 
                           className="w-full h-full object-cover transition-transform group-hover/img:scale-105"
                         />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -744,7 +790,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                               seoData: { ...prev.seoData, ogImage: url }
                             }))}
                             trigger={
-                              <Button size="sm" className="h-8 px-3">Cambiar</Button>
+                              <Button size="sm" className="h-8 px-3">Change</Button>
                             }
                           />
                           <Button 
@@ -756,7 +802,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                               seoData: { ...prev.seoData, ogImage: "" }
                             }))}
                           >
-                            Eliminar
+                            Remove
                           </Button>
                         </div>
                       </div>
@@ -772,7 +818,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                           trigger={
                             <div className="flex flex-col items-center">
                               <ImageIcon className="w-5 h-5 text-muted-foreground mb-2" />
-                              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Seleccionar de la Biblioteca</span>
+                              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select from Library</span>
                             </div>
                           }
                         />
@@ -781,20 +827,20 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   )}
                 </SidebarSection>
 
-                <SidebarSection id="excerpt" title="Extracto" icon={FileText} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                <SidebarSection id="excerpt" title="Excerpt" icon={FileText} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <Textarea
-                    placeholder="Escribe un extracto breve..."
+                    placeholder="Write a brief excerpt..."
                     className="text-xs bg-background min-h-[100px] border-border focus-visible:ring-primary/20 rounded-md resize-none leading-relaxed"
                     value={post.postExcerpt}
                     onChange={(e) => setPost({ ...post, postExcerpt: e.target.value })}
                   />
-                  <p className="text-[10px] text-muted-foreground/70 mt-2 italic leading-relaxed">Los extractos son resúmenes opcionales hechos a mano.</p>
+                  <p className="text-[10px] text-muted-foreground/70 mt-2 italic leading-relaxed">Excerpts are optional hand-crafted summaries.</p>
                 </SidebarSection>
 
-                <SidebarSection id="seo-summary" title="Estado SEO" icon={ShieldCheck} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                <SidebarSection id="seo-summary" title="SEO Status" icon={ShieldCheck} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground font-medium">Puntuación</span>
+                      <span className="text-muted-foreground font-medium">Score</span>
                       <div className="flex items-center gap-1.5 font-bold">
                         {seoScore.points >= 70 ? <CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> : <AlertCircle className="w-3.5 h-3.5 text-orange-500" />}
                         <span className={seoScore.points >= 70 ? 'text-green-600' : 'text-orange-600'}>{seoScore.points}/100</span>
@@ -814,12 +860,22 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
               </TabsContent>
 
               <TabsContent value="block" className="m-0 p-6 text-center text-sm text-muted-foreground">
-                No hay ningún bloque seleccionado.
+                No block selected.
               </TabsContent>
             </Tabs>
           </aside>
         )}
       </div>
     </div>
+
+    {previewOpen && (
+      <PostPreviewModal
+        post={post}
+        device={previewDevice}
+        onDeviceChange={setPreviewDevice}
+        onClose={() => setPreviewOpen(false)}
+      />
+    )}
+    </>
   );
 };

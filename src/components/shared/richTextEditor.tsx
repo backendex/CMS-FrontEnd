@@ -244,7 +244,7 @@ export const RichTextEditor = ({ content, onChange, placeholder, editorRef }: Ri
     extensions: [
       StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
       Image.configure({
-        HTMLAttributes: { class: 'rounded-2xl shadow-lg my-8 mx-auto max-w-full' },
+        HTMLAttributes: { class: 'my-8 mx-auto max-w-full' },
       }),
       Link.configure({
         openOnClick: false,

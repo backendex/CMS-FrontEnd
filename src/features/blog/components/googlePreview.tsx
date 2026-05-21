@@ -2,10 +2,10 @@ import React from 'react';
 import { PreviewProps } from '@/features/blog/types/types';
 
 export const GooglePreview: React.FC<PreviewProps> = ({ title, slug, description, siteDomain }) => {
-  // Valores por defecto para que no se vea vacío
-  const displayTitle = title || "Título de tu post - Nombre del Sitio";
-  const displayUrl = `https://${siteDomain}/${slug || 'tu-url-amigable'}`;
-  const displayDesc = description || "Escribe una meta descripción para ver cómo aparecerá este artículo en los resultados de búsqueda de Google...";
+  // Default values so it doesn't look empty
+  const displayTitle = title || "Your post title - Site Name";
+  const displayUrl = `https://${siteDomain}/${slug || 'your-friendly-url'}`;
+  const displayDesc = description || "Write a meta description to see how this post will appear in Google search results...";
 
   return (
     <div className="bg-white dark:bg-slate-950 p-5 rounded-lg border border-slate-200 dark:border-slate-800 font-sans max-w-[600px] mt-4 shadow-sm group">

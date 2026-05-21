@@ -65,8 +65,8 @@ export const BlogList = () => {
     setModal({
       isOpen: true,
       type: "warning",
-      title: "¿Eliminar entrada?",
-      description: "Esta acción no se puede deshacer. La entrada se borrará permanentemente de la base de datos.",
+      title: "Delete post?",
+      description: "This action cannot be undone. The post will be permanently deleted from the database.",
       onAction: async () => {
         try {
           const tableName = getTableName();
@@ -75,23 +75,23 @@ export const BlogList = () => {
           setModal({
             isOpen: true,
             type: "success",
-            title: "¡Eliminado!",
-            description: "La entrada ha sido eliminada correctamente de este sitio."
+            title: "Deleted!",
+            description: "The post has been successfully deleted from this site."
           });
         } catch (error: any) {
-          console.error("Error al eliminar:", error);
+          console.error("Error deleting post:", error);
           setModal({
             isOpen: true,
             type: "error",
             title: "Error",
-            description: "No se pudo eliminar el post."
+            description: "Could not delete the post."
           });
         }
       }
     });
   };
 
-  if (!siteId) return <p>Cargando contexto del sitio...</p>;
+  if (!siteId) return <p>Loading site context...</p>;
 
   return (
     <div className="space-y-6">
@@ -99,13 +99,13 @@ export const BlogList = () => {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Blog</h1>
           <p className="text-muted-foreground">
-            Gestiona la información del blog.
+            Manage blog information.
           </p>
         </div>
         <Button asChild>
           <Link to={`/dash/${siteId}/blog/new`} className="flex items-center">
             <Plus className="mr-2 h-4 w-4" />
-            Nuevo blog
+            New blog
           </Link>
         </Button>
       </div>
