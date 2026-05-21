@@ -203,6 +203,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
 
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [mediaLibraryOpen, setMediaLibraryOpen] = useState(false);
 
   const handlePreviewInNewTab = () => {
     if (previewUrl) {
@@ -784,16 +785,16 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                           className="w-full h-full object-cover transition-transform group-hover/img:scale-105"
                         />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                          <MediaLibraryDialog 
-                            onSelect={(url) => setPost(prev => ({
-                              ...prev,
-                              seoData: { ...prev.seoData, ogImage: url }
-                            }))}
-                            trigger={
-                              <Button size="sm" className="h-8 px-3">Change</Button>
-                            }
-                          />
                           <Button 
+                            type="button"
+                            size="sm" 
+                            className="h-8 px-3"
+                            onClick={() => setMediaLibraryOpen(true)}
+                          >
+                            Change
+                          </Button>
+                          <Button 
+                            type="button"
                             variant="destructive" 
                             size="sm" 
                             className="h-8 px-3"
@@ -809,22 +810,29 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <div className="aspect-video w-full rounded-lg border border-dashed border-border flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group">
-                        <MediaLibraryDialog 
-                          onSelect={(url) => setPost(prev => ({
-                            ...prev,
-                            seoData: { ...prev.seoData, ogImage: url }
-                          }))}
-                          trigger={
-                            <div className="flex flex-col items-center">
-                              <ImageIcon className="w-5 h-5 text-muted-foreground mb-2" />
-                              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select from Library</span>
-                            </div>
-                          }
-                        />
+                      <div 
+                        className="aspect-video w-full rounded-lg border border-dashed border-border flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
+                        onClick={() => setMediaLibraryOpen(true)}
+                      >
+                        <div className="flex flex-col items-center">
+                          <ImageIcon className="w-5 h-5 text-muted-foreground mb-2" />
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select from Library</span>
+                        </div>
                       </div>
                     </div>
                   )}
+
+                  <MediaLibraryDialog 
+                    open={mediaLibraryOpen}
+                    onOpenChange={setMediaLibraryOpen}
+                    onSelect={(url) => {
+                      setPost(prev => ({
+                        ...prev,
+                        seoData: { ...prev.seoData, ogImage: url }
+                      }));
+                      setMediaLibraryOpen(false);
+                    }}
+                  />
                 </SidebarSection>
 
                 <SidebarSection id="excerpt" title="Excerpt" icon={FileText} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>

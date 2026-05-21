@@ -19,10 +19,20 @@ import { MediaItem } from "@/features/media/types/media.types";
 interface MediaLibraryDialogProps {
   onSelect: (url: string) => void;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const MediaLibraryDialog = ({ onSelect, trigger }: MediaLibraryDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const MediaLibraryDialog = ({ 
+  onSelect, 
+  trigger,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange
+}: MediaLibraryDialogProps) => {
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : localOpen;
+  const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setLocalOpen;
+  
   const [search, setSearch] = useState("");
   const { mediaItems, isLoading, addMedia } = useMedia();
   const { activeSite } = useSite();
@@ -42,14 +52,11 @@ export const MediaLibraryDialog = ({ onSelect, trigger }: MediaLibraryDialogProp
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="outline" size="sm" className="gap-2">
-            <ImageIcon className="w-4 h-4" />
-            Media Library
-          </Button>
-        )}
-      </DialogTrigger>
+      {trigger && (
+        <DialogTrigger asChild>
+          {trigger}
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="p-6 pb-2 flex flex-row items-center justify-between space-y-0">
           <DialogTitle className="text-xl font-bold">Media Library</DialogTitle>
