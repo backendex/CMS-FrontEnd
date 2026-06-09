@@ -39,8 +39,8 @@ export const AddBlogForm = () => {
       setModal({
         isOpen: true,
         type: "error",
-        title: "Configuration Error",
-        description: "Could not determine the active site."
+        title: "Error de Configuración",
+        description: "No se pudo determinar el sitio activo."
       });
       return;
     }
@@ -58,16 +58,16 @@ export const AddBlogForm = () => {
       setModal({
         isOpen: true,
         type: "success",
-        title: "Published!",
-        description: "Your new post has been successfully created."
+        title: "¡Publicado!",
+        description: "Tu nueva entrada se ha creado con éxito."
       });
 
     } catch (error: any) {
       setModal({
         isOpen: true,
         type: "error",
-        title: "Error saving",
-        description: error.response?.data?.message || "An error occurred."
+        title: "Error al guardar",
+        description: error.response?.data?.message || "Ocurrió un error."
       });
     } finally {
       setLoading(false);

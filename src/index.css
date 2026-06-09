@@ -149,3 +149,30 @@
   font-size: 0.875em;
   font-family: monospace;
 }
+.dark .tiptap code {
+  background: #1e293b;
+  color: #f8fafc;
+}
+.tiptap pre {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  overflow-x: auto;
+  font-family: monospace;
+}
+.dark .tiptap pre {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.tiptap pre code {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-size: 0.875rem;
+  color: #0f172a;
+}
+.dark .tiptap pre code {
+  color: #cbd5e1;
+}

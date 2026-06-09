@@ -1,7 +1,7 @@
-import { ExternalLink, Globe } from "lucide-react";
+import { ExternalLink, Globe, Pencil, Trash2 } from "lucide-react";
 import { Props } from "@/features/sites/types/siteType";
 
-export function SiteSelector({ site, onManage }: Props) {
+export function SiteSelector({ site, onManage, onEdit, onDelete }: Props) {
   const isDisabled = !site.isActive;
   const isMaintenance = site.isActive && site.isMaintenance;
 
@@ -47,7 +47,7 @@ export function SiteSelector({ site, onManage }: Props) {
 
         {/* Stats */}
         <p className="text-sm text-gray-600">
-          ↗ {site.toursCount} Tours / Actividades
+          ↗ {site.toursCount ?? 0} Tours / Actividades
         </p>
 
         {/* Actions */}
@@ -62,15 +62,43 @@ export function SiteSelector({ site, onManage }: Props) {
                   : "bg-black text-white hover:bg-gray-900"
               }
             `}
-                    >
+          >
             Gestionar →
           </button>
+          
+          {onEdit && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition"
+              title="Editar"
+            >
+              <Pencil size={14} />
+            </button>
+          )}
+
+          {onDelete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="p-2 rounded-lg border border-gray-200 hover:bg-red-50 text-red-600 transition"
+              title="Eliminar"
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
+
           <a
             href={`https://${site.domain}`}
             target="_blank"
             rel="noopener noreferrer"
+            className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition"
           >
-            <ExternalLink size={16} />
+            <ExternalLink size={14} />
           </a>
         </div>
       </div>

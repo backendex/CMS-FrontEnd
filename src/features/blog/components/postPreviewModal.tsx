@@ -13,9 +13,9 @@ interface PostPreviewModalProps {
 }
 
 const DEVICE_CONFIG: Record<PreviewDevice, { width: string; label: string; icon: React.ReactNode }> = {
-  desktop: { width: "100%",   label: "Desktop", icon: <Monitor    className="w-4 h-4" /> },
+  desktop: { width: "100%",   label: "Escritorio", icon: <Monitor    className="w-4 h-4" /> },
   tablet:  { width: "768px",  label: "Tablet",  icon: <Tablet     className="w-4 h-4" /> },
-  mobile:  { width: "390px",  label: "Mobile",  icon: <Smartphone className="w-4 h-4" /> },
+  mobile:  { width: "390px",  label: "Móvil",  icon: <Smartphone className="w-4 h-4" /> },
 };
 
 export const PostPreviewModal: React.FC<PostPreviewModalProps> = ({

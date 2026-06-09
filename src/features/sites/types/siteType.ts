@@ -18,6 +18,8 @@ export interface SiteContextType {
 export interface Props {
   site: SiteType;
   onManage: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 export interface MeResponse {
   userId: number;

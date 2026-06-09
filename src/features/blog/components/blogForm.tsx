@@ -42,6 +42,7 @@ import {
   Tablet,
   Smartphone,
   Check,
+  Code2,
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { GooglePreview } from "@/features/blog/components/googlePreview";
@@ -167,7 +168,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
   }, [initialData?.id]); // Only sync when the ID changes to avoid loops during typing
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeAccordion, setActiveAccordion] = useState<string[]>(["status", "categories", "image"]);
+  const [activeAccordion, setActiveAccordion] = useState<string[]>(["status", "categories", "image", "schema"]);
 
   const toggleAccordion = (id: string) => {
     setActiveAccordion(prev =>
@@ -212,17 +213,17 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
       window.open(`/blog/${post.postName}`, "_blank", "noopener,noreferrer");
     } else {
       toast({
-        title: "Preview not available",
-        description: "Save the draft first to preview the post.",
+        title: "Vista previa no disponible",
+        description: "Guarda el borrador primero para ver la vista previa de la entrada.",
         variant: "destructive",
       });
     }
   };
 
   const deviceOptions: { value: PreviewDevice; label: string; icon: React.ReactNode }[] = [
-    { value: "desktop", label: "Desktop",  icon: <Monitor className="w-4 h-4" /> },
-    { value: "tablet",  label: "Tablet",   icon: <Tablet className="w-4 h-4" /> },
-    { value: "mobile", label: "Mobile",   icon: <Smartphone className="w-4 h-4" /> },
+    { value: "desktop", label: "Escritorio",  icon: <Monitor className="w-4 h-4" /> },
+    { value: "tablet",  label: "Tablet",      icon: <Tablet className="w-4 h-4" /> },
+    { value: "mobile",  label: "Móvil",       icon: <Smartphone className="w-4 h-4" /> },
   ];
 
   const PreviewDropdown = (
@@ -249,20 +250,20 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handlePreviewInNewTab} className="text-primary flex items-center gap-2">
           <ExternalLink className="w-4 h-4" />
-          Preview in new tab
+          Vista previa en una nueva pestaña
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 
   const handleDelete = () => {
-    if (!window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) return;
+    if (!window.confirm("¿Estás seguro de que deseas eliminar esta entrada? Esta acción no se puede deshacer.")) return;
     if (onDelete) {
       onDelete();
     } else {
       toast({
-        title: "Error deleting",
-        description: "Cannot delete: this post has not been saved yet.",
+        title: "Error al eliminar",
+        description: "No se puede eliminar: esta entrada aún no se ha guardado.",
         variant: "destructive",
       });
     }
@@ -272,7 +273,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
     <div className="flex items-center gap-2">
       <Button type="button" variant="ghost" size="sm" className="hidden sm:flex gap-1.5" onClick={handleSaveDraft} disabled={loading}>
         <Save className="w-4 h-4" />
-        Save draft
+        Guardar borrador
       </Button>
       {PreviewDropdown}
       <Separator orientation="vertical" className="h-6 mx-2 hidden sm:block" />
@@ -282,7 +283,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
         disabled={loading}
         className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm px-6 font-bold"
       >
-        {loading ? "..." : (post.id ? "Update" : "Publish")}
+        {loading ? "..." : (post.id ? "Actualizar" : "Publicar")}
       </Button>
       <Button
         type="button"
@@ -308,12 +309,12 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
             {/* Action Bar Inline */}
             <div className="flex items-center justify-between pb-6 border-b">
               <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
-                Content Editor
+                Editor de Contenido
               </div>
               <div className="flex items-center gap-2">
                 <Button type="button" variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground" onClick={handleSaveDraft} disabled={loading}>
                   <Save className="w-4 h-4" />
-                  Draft
+                  Guardar borrador
                 </Button>
                 {PreviewDropdown}
                 <Separator orientation="vertical" className="h-6 mx-2" />
@@ -323,7 +324,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   disabled={loading}
                   className="bg-black text-white hover:bg-black/90 shadow-md px-8 font-bold"
                 >
-                  {loading ? "..." : (post.id ? "Update" : "Publish")}
+                  {loading ? "..." : (post.id ? "Actualizar" : "Publicar")}
                 </Button>
               </div>
             </div>
@@ -337,23 +338,23 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   trigger={
                     <Button variant="outline" size="sm" className="h-8 text-xs gap-2">
                       <ImageIcon className="w-3.5 h-3.5" />
-                      Insert from Library
+                      Insertar desde la Biblioteca
                     </Button>
                   }
                 />
-                <span className="text-[10px] text-muted-foreground italic">Select files from your media library</span>
+                <span className="text-[10px] text-muted-foreground italic">Selecciona archivos de tu biblioteca de medios</span>
               </div>
               <Input
                 className="text-5xl font-bold h-auto py-4 border-none shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/20 bg-transparent px-0 tracking-tight"
-                placeholder="Write the title here..."
+                placeholder="Escribe el título aquí..."
                 value={post.postTitle || ""}
                 onChange={(e) => setPost({ ...post, postTitle: e.target.value })}
               />
 
               <div className="flex items-center gap-2 text-xs text-muted-foreground group cursor-pointer hover:text-foreground transition-colors">
                 <Link2 className="w-3 h-3" />
-                <span>Permalink:</span>
-                <span className="font-mono bg-muted/50 px-1 rounded">{post.postName || "auto-generated"}</span>
+                <span>Enlace permanente:</span>
+                <span className="font-mono bg-muted/50 px-1 rounded">{post.postName || "auto-generado"}</span>
               </div>
             </div>
 
@@ -638,7 +639,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                         {[
                           { label: 'Article', type: 'Article' },
                           { label: 'FAQ', type: 'FAQPage' },
-                          { label: 'HowTo', type: 'HowTo' },
+                          { label: 'How-To', type: 'HowTo' },
                           { label: 'Product', type: 'Product' },
                         ].map((tpl) => (
                           <Button
@@ -650,8 +651,8 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                             onClick={() => {
                               const templates: Record<string, string> = {
                                 Article: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Article",\n  "headline": "${post.postTitle || 'Title'}",\n  "author": {\n    "@type": "Person",\n    "name": "Admin"\n  },\n  "datePublished": "${new Date().toISOString().split('T')[0]}",\n  "description": "${post.seoData?.metaDescription || ''}"\n}\n</script>`,
-                                FAQPage: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [\n    {\n      "@type": "Question",\n      "name": "Example question?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Example answer."\n      }\n    }\n  ]\n}\n</script>`,
-                                HowTo: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "HowTo",\n  "name": "${post.postTitle || 'Guide'}",\n  "step": [\n    {\n      "@type": "HowToStep",\n      "name": "Step 1",\n      "text": "Description of step 1"\n    }\n  ]\n}\n</script>`,
+                                FAQPage: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "FAQPage",\n  "mainEntity": [\n    {\n      "@type": "Question",\n      "name": "Example Question?",\n      "acceptedAnswer": {\n        "@type": "Answer",\n        "text": "Example Answer."\n      }\n    }\n  ]\n}\n</script>`,
+                                HowTo: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "HowTo",\n  "name": "${post.postTitle || 'Guide'}",\n  "step": [\n    {\n      "@type": "HowToStep",\n      "name": "Step 1",\n      "text": "Step 1 description"\n    }\n  ]\n}\n</script>`,
                                 Product: `<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Product",\n  "name": "${post.postTitle || 'Product'}",\n  "description": "${post.seoData?.metaDescription || ''}",\n  "offers": {\n    "@type": "Offer",\n    "price": "0",\n    "priceCurrency": "USD"\n  }\n}\n</script>`
                               };
                               setPost({ ...post, schemaMarkup: templates[tpl.type] || '' });
@@ -691,57 +692,57 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
             <Tabs defaultValue="post" className="w-full">
               <TabsList className="w-full justify-start rounded-none border-b bg-background h-12 p-0 px-4 gap-6" variant="line">
                 <TabsTrigger value="post" className="rounded-none h-12 px-0 text-xs font-bold uppercase tracking-wider">
-                  Post
+                  Entrada
                 </TabsTrigger>
                 <TabsTrigger value="block" className="rounded-none h-12 px-0 text-xs font-bold uppercase tracking-wider opacity-50 data-[state=active]:opacity-100">
-                  Block
+                  Bloque
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="post" className="m-0 border-none pb-10">
-                <SidebarSection id="status" title="Summary" icon={Info} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                <SidebarSection id="status" title="Resumen" icon={Info} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <Eye className="w-4 h-4" />
-                        <span>Visibility</span>
+                        <span>Visibilidad</span>
                       </div>
-                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Public</span>
+                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Público</span>
                     </div>
 
                     <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        <span>Publish</span>
+                        <span>Publicar</span>
                       </div>
-                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Immediately</span>
+                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Inmediatamente</span>
                     </div>
 
                     <div className="flex flex-col gap-2 py-3">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <Link2 className="w-4 h-4" />
-                        <span className="font-semibold text-xs">Permalink</span>
+                        <span className="font-semibold text-xs">Enlace permanente</span>
                       </div>
                       <div className="font-mono text-[11px] break-all text-primary bg-muted/30 p-2 rounded-md border border-border/50">
-                        {post.postName || "auto-generated"}
+                        {post.postName || "auto-generado"}
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <User className="w-4 h-4" />
-                        <span>Author</span>
+                        <span>Autor</span>
                       </div>
-                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Admin User</span>
+                      <span className="font-semibold text-foreground cursor-pointer hover:text-primary transition-colors">Usuario Administrador</span>
                     </div>
 
                     <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <Globe className="w-4 h-4" />
-                        <span>Status</span>
+                        <span>Estado</span>
                       </div>
                       <Badge variant={post.postStatus === 'publish' ? 'default' : 'secondary'} className="rounded-md px-2 py-0.5 text-[10px] font-bold">
-                        {post.postStatus === 'publish' ? 'Published' : 'Draft'}
+                        {post.postStatus === 'publish' ? 'Publicado' : 'Borrador'}
                       </Badge>
                     </div>
                   </div>
@@ -757,13 +758,13 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     disabled={!onDelete}
                   >
                     <Trash2 className="w-4 h-4" />
-                    {onDelete ? "Move to trash" : "Save first to delete"}
+                    {onDelete ? "Mover a la papelera" : "Guarda primero para eliminar"}
                   </Button>
                 </SidebarSection>
 
-                <SidebarSection id="categories" title="Categories" icon={Folder} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                <SidebarSection id="categories" title="Categorías" icon={Folder} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <div className="space-y-1 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
-                    {["Cancun & Riviera Maya Guide", "Eco Tourism", "Marine Life", "Snorkeling", "Tips"].map((cat) => (
+                    {["Guía de Cancún y Riviera Maya", "Ecoturismo", "Vida Marina", "Esnórquel", "Consejos"].map((cat) => (
                       <label key={cat} className="flex items-center gap-2.5 py-1.5 px-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors group">
                         <div className="w-3.5 h-3.5 rounded border border-border group-hover:border-primary transition-colors bg-background" />
                         <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">{cat}</span>
@@ -771,11 +772,11 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                     ))}
                   </div>
                   <Button variant="outline" size="sm" className="w-full mt-4 h-8 text-[11px] font-bold uppercase tracking-wider">
-                    + Add new category
+                    + Añadir nueva categoría
                   </Button>
                 </SidebarSection>
 
-                <SidebarSection id="image" title="Featured image" icon={ImageIcon} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                <SidebarSection id="image" title="Imagen destacada" icon={ImageIcon} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   {post.seoData?.ogImage ? (
                     <div className="space-y-4">
                       <div className="relative aspect-video w-full rounded-lg overflow-hidden border border-border group/img">
@@ -791,7 +792,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                             className="h-8 px-3"
                             onClick={() => setMediaLibraryOpen(true)}
                           >
-                            Change
+                            Cambiar
                           </Button>
                           <Button 
                             type="button"
@@ -803,7 +804,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                               seoData: { ...prev.seoData, ogImage: "" }
                             }))}
                           >
-                            Remove
+                            Eliminar
                           </Button>
                         </div>
                       </div>
@@ -816,7 +817,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                       >
                         <div className="flex flex-col items-center">
                           <ImageIcon className="w-5 h-5 text-muted-foreground mb-2" />
-                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select from Library</span>
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Seleccionar de la Biblioteca</span>
                         </div>
                       </div>
                     </div>
@@ -835,14 +836,31 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
                   />
                 </SidebarSection>
 
-                <SidebarSection id="excerpt" title="Excerpt" icon={FileText} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                <SidebarSection id="excerpt" title="Extracto" icon={FileText} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
                   <Textarea
-                    placeholder="Write a brief excerpt..."
+                    placeholder="Escribe un extracto breve..."
                     className="text-xs bg-background min-h-[100px] border-border focus-visible:ring-primary/20 rounded-md resize-none leading-relaxed"
                     value={post.postExcerpt}
                     onChange={(e) => setPost({ ...post, postExcerpt: e.target.value })}
                   />
-                  <p className="text-[10px] text-muted-foreground/70 mt-2 italic leading-relaxed">Excerpts are optional hand-crafted summaries.</p>
+                  <p className="text-[10px] text-muted-foreground/70 mt-2 italic leading-relaxed">Los extractos son resúmenes opcionales hechos a mano.</p>
+                </SidebarSection>
+
+                <SidebarSection id="schema" title="Marcado Schema (JSON-LD)" icon={Code2} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
+                  <div className="rounded-md border border-input overflow-hidden bg-slate-50 dark:bg-slate-900">
+                    <div className="flex items-center justify-between px-3 py-1.5 bg-muted/50 border-b border-input">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">JSON-LD / HTML</span>
+                    </div>
+                    <Textarea
+                      placeholder='<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is Puerto Morelos snorkeling good for families?","acceptedAnswer":{"@type":"Answer","text":"Yes..."}}]}</script>'
+                      className="text-xs bg-transparent text-foreground font-mono min-h-[150px] border-0 rounded-none resize-y leading-relaxed p-3 focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none placeholder:text-muted-foreground/50"
+                      value={post.schemaMarkup || ''}
+                      onChange={(e) => setPost({ ...post, schemaMarkup: e.target.value })}
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground/70 mt-2 italic leading-relaxed">
+                    Pega aquí el código JSON-LD (incluyendo la etiqueta &lt;script&gt;) para estructurar tu entrada para Google.
+                  </p>
                 </SidebarSection>
 
                 <SidebarSection id="seo-summary" title="SEO Status" icon={ShieldCheck} activeAccordion={activeAccordion} toggleAccordion={toggleAccordion}>
@@ -868,7 +886,7 @@ export const BlogForm: React.FC<BlogFormProps & { isLoading?: boolean }> = ({
               </TabsContent>
 
               <TabsContent value="block" className="m-0 p-6 text-center text-sm text-muted-foreground">
-                No block selected.
+                Ningún bloque seleccionado.
               </TabsContent>
             </Tabs>
           </aside>

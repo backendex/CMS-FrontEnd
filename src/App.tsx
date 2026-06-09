@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom" // <-- 1. Cambiado a HashRouter
 import LoginPage from "@/pages/auth/loginPage"
 import ChangePasswordPage from "@/pages/auth/changePasswordPage"
 import DashboardLayout from "@/pages/dashboard/dashboardLayout"
@@ -13,7 +13,7 @@ import TourEditPage  from "./pages/content/Tour/tourEditPage"
 import BlogPage from "./pages/content/blog/blogPage"
 import AddBlogPage  from "./pages/content/blog/addBlogPage"
 import EditBlogPage  from "./pages/content/blog/editBlogPage"
-
+import PageContentManager from "./pages/content/pageContentManager"
 import { ProtectedRoute } from "@/features/auth"
 import { SiteProvider } from "@/features/sites"
 import { MediaProvider } from "@/features/media"
@@ -29,7 +29,7 @@ export default function App() {
     <ImageKitProvider 
       urlEndpoint={urlEndpoint}
     >
-      <BrowserRouter>
+      <HashRouter> {/* <-- 2. Cambiado de <BrowserRouter> a <HashRouter> */}
       <SiteProvider>
         <MediaProvider>
           <Routes>
@@ -50,6 +50,7 @@ export default function App() {
                 <Route path="blog" element={<BlogPage/>} />
                 <Route path="blog/new" element={<AddBlogPage/>}/>
                 <Route path="blog/edit/:id" element={<EditBlogPage/>} />
+                <Route path="contenido" element={<PageContentManager />} />
               </Route>
               <Route path="*" element={<Navigate to="/site" replace />} />
             </Route>
@@ -57,7 +58,7 @@ export default function App() {
           <Toaster />
         </MediaProvider>
       </SiteProvider>
-    </BrowserRouter>
+    </HashRouter> {/* <-- 2. Cambiado de </BrowserRouter> a </HashRouter> */}
   </ImageKitProvider>
   );
 }

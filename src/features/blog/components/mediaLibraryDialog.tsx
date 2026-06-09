@@ -59,7 +59,7 @@ export const MediaLibraryDialog = ({
       )}
       <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="p-6 pb-2 flex flex-row items-center justify-between space-y-0">
-          <DialogTitle className="text-xl font-bold">Media Library</DialogTitle>
+          <DialogTitle className="text-xl font-bold">Biblioteca de Medios</DialogTitle>
           <ImageKitUpload
             onSuccess={handleUploadSuccess}
             siteId={activeSite?.id}
@@ -70,7 +70,7 @@ export const MediaLibraryDialog = ({
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
             <Tabs defaultValue="site" className="w-full sm:w-auto">
               <TabsList className="grid w-full grid-cols-2 sm:w-[240px]">
-                <TabsTrigger value="site">This Site</TabsTrigger>
+                <TabsTrigger value="site">Este Sitio</TabsTrigger>
                 <TabsTrigger value="global" className="flex gap-2">
                   <Globe className="h-4 w-4" /> Global
                 </TabsTrigger>
@@ -80,7 +80,7 @@ export const MediaLibraryDialog = ({
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Search files..."
+                placeholder="Buscar archivos..."
                 className="pl-8 w-full h-9"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -92,13 +92,13 @@ export const MediaLibraryDialog = ({
             {isLoading ? (
               <div className="flex items-center justify-center h-48 text-muted-foreground gap-2">
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span className="text-sm">Loading files...</span>
+                <span className="text-sm">Cargando archivos...</span>
               </div>
             ) : filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-48 text-muted-foreground gap-2">
                 <ImageIcon className="w-10 h-10 opacity-20" />
                 <span className="text-sm">
-                  {search ? "No results found for your search" : "No files in the library"}
+                  {search ? "No se encontraron resultados para tu búsqueda" : "No hay archivos en la biblioteca"}
                 </span>
               </div>
             ) : (
@@ -116,7 +116,7 @@ export const MediaLibraryDialog = ({
                         className="object-cover w-full h-full transition-transform group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <Button size="sm" className="h-8 font-bold">Select</Button>
+                        <Button size="sm" className="h-8 font-bold">Seleccionar</Button>
                       </div>
                     </CardContent>
                     <div className="p-2">

@@ -45,58 +45,58 @@ interface BlockDef {
 const BLOCKS: BlockDef[] = [
   // TEXT
   {
-    id: 'paragraph', label: 'Paragraph', icon: <Type className="w-5 h-5" />, category: 'text',
+    id: 'paragraph', label: 'Párrafo', icon: <Type className="w-5 h-5" />, category: 'text',
     action: (e) => e.chain().focus().setParagraph().run(),
   },
   {
-    id: 'heading1', label: 'Heading', icon: <Heading1 className="w-5 h-5" />, category: 'text',
+    id: 'heading1', label: 'Título 1', icon: <Heading1 className="w-5 h-5" />, category: 'text',
     action: (e) => e.chain().focus().toggleHeading({ level: 1 }).run(),
   },
   {
-    id: 'heading2', label: 'Heading 2', icon: <Heading2 className="w-5 h-5" />, category: 'text',
+    id: 'heading2', label: 'Título 2', icon: <Heading2 className="w-5 h-5" />, category: 'text',
     action: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(),
   },
   {
-    id: 'heading3', label: 'Heading 3', icon: <Heading3 className="w-5 h-5" />, category: 'text',
+    id: 'heading3', label: 'Título 3', icon: <Heading3 className="w-5 h-5" />, category: 'text',
     action: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(),
   },
   {
-    id: 'list', label: 'List', icon: <List className="w-5 h-5" />, category: 'text',
+    id: 'list', label: 'Lista', icon: <List className="w-5 h-5" />, category: 'text',
     action: (e) => e.chain().focus().toggleBulletList().run(),
   },
   {
-    id: 'orderedList', label: 'Ordered List', icon: <ListOrdered className="w-5 h-5" />, category: 'text',
+    id: 'orderedList', label: 'Lista ordenada', icon: <ListOrdered className="w-5 h-5" />, category: 'text',
     action: (e) => e.chain().focus().toggleOrderedList().run(),
   },
   {
-    id: 'quote', label: 'Quote', icon: <Quote className="w-5 h-5" />, category: 'text',
+    id: 'quote', label: 'Cita', icon: <Quote className="w-5 h-5" />, category: 'text',
     action: (e) => e.chain().focus().toggleBlockquote().run(),
   },
   {
-    id: 'code', label: 'Code', icon: <Code className="w-5 h-5" />, category: 'text',
+    id: 'code', label: 'Código', icon: <Code className="w-5 h-5" />, category: 'text',
     action: (e) => e.chain().focus().toggleCodeBlock().run(),
   },
   {
-    id: 'separator', label: 'Separator', icon: <Minus className="w-5 h-5" />, category: 'text',
+    id: 'separator', label: 'Separador', icon: <Minus className="w-5 h-5" />, category: 'text',
     action: (e) => e.chain().focus().setHorizontalRule().run(),
   },
   // MEDIA
   {
-    id: 'image', label: 'Image', icon: <ImageIcon className="w-5 h-5" />, category: 'media',
+    id: 'image', label: 'Imagen', icon: <ImageIcon className="w-5 h-5" />, category: 'media',
     action: (e) => {
       const url = window.prompt('URL de la imagen:')
       if (url) e.chain().focus().setImage({ src: url }).run()
     },
   },
   {
-    id: 'html', label: 'Custom HTML', icon: <FileCode2 className="w-5 h-5" />, category: 'media',
+    id: 'html', label: 'HTML personalizado', icon: <FileCode2 className="w-5 h-5" />, category: 'media',
     action: (e) => {
       e.chain().focus().insertContent('<pre><code>&lt;!-- Tu HTML aquí --&gt;</code></pre>').run()
     },
   },
   // LAYOUT
   {
-    id: 'hr', label: 'Divider', icon: <SeparatorHorizontal className="w-5 h-5" />, category: 'layout',
+    id: 'hr', label: 'Divisor', icon: <SeparatorHorizontal className="w-5 h-5" />, category: 'layout',
     action: (e) => e.chain().focus().setHorizontalRule().run(),
   },
 ]
@@ -179,7 +179,7 @@ const BlockInserter = ({
           <div className="w-7 h-7 bg-slate-900 rounded-lg flex items-center justify-center">
             <Plus className="w-4 h-4 text-white" />
           </div>
-          <span className="text-sm font-bold">Blocks</span>
+          <span className="text-sm font-bold">Bloques</span>
         </div>
         <button
           type="button"
@@ -196,7 +196,7 @@ const BlockInserter = ({
           <Search className="w-4 h-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Search"
+            placeholder="Buscar"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-transparent text-sm outline-none flex-1 placeholder:text-slate-400"
@@ -206,9 +206,9 @@ const BlockInserter = ({
 
       {/* Blocks grid */}
       <div className="flex-1 overflow-y-auto">
-        <Section title="Text" blocks={textBlocks} />
-        <Section title="Media" blocks={mediaBlocks} />
-        <Section title="Layout" blocks={layoutBlocks} />
+        <Section title="Texto" blocks={textBlocks} />
+        <Section title="Medios" blocks={mediaBlocks} />
+        <Section title="Diseño" blocks={layoutBlocks} />
         {filtered.length === 0 && (
           <p className="text-center text-sm text-slate-400 py-10">
             No se encontraron bloques
