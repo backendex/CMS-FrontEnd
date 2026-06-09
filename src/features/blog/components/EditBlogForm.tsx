@@ -30,8 +30,10 @@ export const EditBlogForm = () => {
 
   const getTableName = () => {
     if (activeSite?.tableName) return activeSite.tableName;
-    if (activeSite?.name === "Snorkeling Adventure") return "snorkell";
-    if (activeSite?.name === "Cenote Adventuring") return "cenote";
+    const name = activeSite?.name?.toLowerCase() || "";
+    if (name.includes("snorkeling")) return "snorkell";
+    if (name.includes("cenote")) return "cenote";
+    if (name.includes("extreme")) return "extreme";
     return "";
   };
 

@@ -7,7 +7,7 @@ const BASE_URL = "/Content";
 export const getBlogs = async (siteId: string, tableName: string): Promise<BlogPost[]> => {
   try {
     const res = await api.get(`${BASE_URL}/getPosts`, {
-      params: { siteId, TableName: tableName } 
+      params: { siteId, TableName: tableName, siteName: tableName } 
     }); 
     console.log("Datos crudos recibidos:", res.data)
     return res.data;
@@ -33,7 +33,7 @@ export const createPost = async (postData: BlogPost, tableName: string): Promise
 export const getPostById = async (id: string, siteId: string, tableName: string): Promise<BlogPost> => {
   try {
     const res = await api.get(`${BASE_URL}/getByIdPost`, {
-      params: { id, siteId, TableName: tableName }
+      params: { id, siteId, TableName: tableName, siteName: tableName }
     });
     return res.data;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,6 +66,7 @@ export const deletePost = async (id: number, tableName: string, siteId: string):
       params: { 
         id, 
         TableName: tableName, 
+        siteName: tableName,
         siteId // Aunque el backend no lo pida explícitamente en el código mostrado, se mantiene por contexto si el controlador lo requiere.
       }
     });

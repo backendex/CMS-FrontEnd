@@ -34,6 +34,7 @@ export const BlogList = () => {
     const name = activeSite?.name?.toLowerCase() || "";
     if (name.includes("snorkeling")) return "snorkell";
     if (name.includes("cenote")) return "cenote";
+    if (name.includes("extreme")) return "extreme";
     return "";
   };
 
